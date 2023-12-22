@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package message_v1;
+
+option go_package = "careerhub/queue/message_v1";
+
+message JobPostingInfo{
+	string site 					= 1;
+	string postingId      			= 2;
+	string companyId      			= 3;
+	string companyName    			= 4;
+	repeated string jobCategory 	= 5;
+	MainContent    mainContent 		= 6;
+	repeated string requiredSkill	= 7;
+	repeated string tags			= 8;
+	Career requiredCareer			= 9;
+	optional int64 publishedAt		= 10;
+	optional int64 closedAt			= 11;
+	repeated string address			= 12;
+}
+
+message MainContent{
+   string postUrl					= 1;
+	string title					= 2;
+	string intro					= 3;
+	string mainTask					= 4;
+	string qualifications			= 5;
+	string preferred				= 6;
+	string benefits					= 7;
+	optional string recruitProcess	= 8;
+
+}
+
+
+
+message Career{
+    optional int32 min				= 1;
+    optional int32 max				= 2;
+}

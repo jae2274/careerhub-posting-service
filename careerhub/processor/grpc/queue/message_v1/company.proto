@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package message_v1;
+
+option go_package = "careerhub/queue/message_v1";
+
+message Company{
+	string site = 1;
+    string companyId= 2;
+	string name = 3;
+	optional string companyUrl = 	4;
+	repeated string companyImages = 5;
+	string description   = 		6;
+	string companyLogo   = 		7;
+}
