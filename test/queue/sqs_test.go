@@ -3,7 +3,7 @@ package queue
 import (
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/vars"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/vars"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/stretchr/testify/require"
 )

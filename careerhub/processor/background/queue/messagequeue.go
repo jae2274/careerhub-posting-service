@@ -1,7 +1,7 @@
 package queue
 
 import (
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/queue/message_v1"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/background/queue/message_v1"
 	"google.golang.org/protobuf/proto"
 )
 

@@ -9,9 +9,9 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/awscfg"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/queue"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/vars"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/awscfg"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/background/queue"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/vars"
 	"github.com/jae2274/goutils/terr"
 )
 

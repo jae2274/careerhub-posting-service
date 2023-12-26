@@ -36,8 +36,7 @@ stop:
 restart: stop start
 
 proto:
-	@export PATH="$PATH:$(go env GOPATH)/bin"
-	@protoc careerhub/processor/grpc/queue/message_v1/*.proto  --go_out=.  --go_opt=paths=source_relative  --proto_path=.
+	@export PATH="$PATH:$(go env GOPATH)/bin"; protoc careerhub/processor/grpc/queue/message_v1/*.proto  --go_out=.  --go_opt=paths=source_relative  --proto_path=.
 
 ## test: runs all tests
 test:	
