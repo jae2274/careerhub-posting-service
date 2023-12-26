@@ -15,7 +15,7 @@ import (
 	"github.com/jae2274/goutils/terr"
 )
 
-func InitSQS(t *testing.T, queueName string) queue.Queue {
+func InitSQS(t *testing.T, queueName string) *queue.SQS {
 	variables, err := vars.Variables()
 	checkError(t, err)
 

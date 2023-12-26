@@ -34,8 +34,8 @@ func TestSQS(t *testing.T) {
 			require.NoError(t, err)
 
 			require.Equal(t, 2, len(results))
-			require.Equal(t, "test", string(results[0]))
-			require.Equal(t, "Hello, World!", string(results[1]))
+			require.Equal(t, "test", string(results[0].Body))
+			require.Equal(t, "Hello, World!", string(results[1].Body))
 		}
 	})
 }

@@ -55,7 +55,12 @@ func (q *SQS) Send(b []byte) error {
 	return nil
 }
 
-func (q *SQS) Recv() ([][]byte, error) {
+type Message struct {
+	Body          []byte
+	ReceiptHandle *string
+}
+
+func (q *SQS) Recv() ([]*Message, error) {
 	result, err := q.client.ReceiveMessage(context.Background(), &sqs.ReceiveMessageInput{
 		QueueUrl:            &q.queueUrl,
 		MaxNumberOfMessages: 10,
@@ -65,7 +70,7 @@ func (q *SQS) Recv() ([][]byte, error) {
 		return nil, terr.Wrap(err)
 	}
 
-	var messages [][]byte
+	var messages []*Message
 
 	for _, message := range result.Messages {
 		decodedString, err := base64.StdEncoding.DecodeString(*message.Body)
@@ -74,8 +79,24 @@ func (q *SQS) Recv() ([][]byte, error) {
 			return nil, terr.Wrap(err)
 		}
 
-		messages = append(messages, decodedString)
+		messages = append(messages, &Message{
+			Body:          decodedString,
+			ReceiptHandle: message.ReceiptHandle,
+		})
 	}
 
 	return messages, nil
+}
+
+func (q *SQS) Delete(receiptHandle *string) error {
+	_, err := q.client.DeleteMessage(context.Background(), &sqs.DeleteMessageInput{
+		QueueUrl:      &q.queueUrl,
+		ReceiptHandle: receiptHandle,
+	})
+
+	if err != nil {
+		return terr.Wrap(err)
+	}
+
+	return nil
 }
