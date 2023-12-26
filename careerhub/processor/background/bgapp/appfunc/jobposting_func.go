@@ -78,6 +78,6 @@ func SaveJobPosting(bgJpRepo *bgrepo.JobPostingRepo, msg *message_v1.JobPostingI
 	return bgJpRepo.Save(&jobPosting)
 }
 
-func DeleteJobPosting(jpQueue queue.JobPostingQueue, recipeHandle *string) error {
+func DeleteJobPosting(jpQueue *queue.JobPostingQueue, recipeHandle *string) error {
 	return jpQueue.Delete(recipeHandle)
 }
