@@ -3,7 +3,7 @@ package mongocfg
 import (
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/mongocfg"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
