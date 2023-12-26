@@ -15,13 +15,23 @@ func NewCompanyQueue(queue Queue) *CompanyQueue {
 	}
 }
 
-func (cq *CompanyQueue) Send(message *message_v1.Company) error {
-	b, err := proto.Marshal(message)
+func (cq *CompanyQueue) Recv() ([]*message_v1.Company, error) {
+	bMsgs, err := cq.queue.Recv()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return cq.queue.Send(b)
+	var companies []*message_v1.Company
+	for _, bMsg := range bMsgs {
+		var company message_v1.Company
+		err := proto.Unmarshal(bMsg, &company)
+		if err != nil {
+			return nil, err
+		}
+		companies = append(companies, &company)
+	}
+
+	return companies, nil
 }
 
 type JobPostingQueue struct {
@@ -34,13 +44,23 @@ func NewJobPostingQueue(queue Queue) *JobPostingQueue {
 	}
 }
 
-func (jpq *JobPostingQueue) Send(message *message_v1.JobPostingInfo) error {
-	b, err := proto.Marshal(message)
+func (jpq *JobPostingQueue) Recv() ([]*message_v1.JobPostingInfo, error) {
+	bMsgs, err := jpq.queue.Recv()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return jpq.queue.Send(b)
+	var jobPostings []*message_v1.JobPostingInfo
+	for _, bMsg := range bMsgs {
+		var jobPosting message_v1.JobPostingInfo
+		err := proto.Unmarshal(bMsg, &jobPosting)
+		if err != nil {
+			return nil, err
+		}
+		jobPostings = append(jobPostings, &jobPosting)
+	}
+
+	return jobPostings, nil
 }
 
 type ClosedJobPostingQueue struct {
@@ -53,11 +73,21 @@ func NewClosedJobPostingQueue(queue Queue) *ClosedJobPostingQueue {
 	}
 }
 
-func (cjpq *ClosedJobPostingQueue) Send(message *message_v1.ClosedJobPostings) error {
-	b, err := proto.Marshal(message)
+func (cjpq *ClosedJobPostingQueue) Recv() ([]*message_v1.ClosedJobPostings, error) {
+	bMsgs, err := cjpq.queue.Recv()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return cjpq.queue.Send(b)
+	var closedJobPostings []*message_v1.ClosedJobPostings
+	for _, bMsg := range bMsgs {
+		var closedJobPosting message_v1.ClosedJobPostings
+		err := proto.Unmarshal(bMsg, &closedJobPosting)
+		if err != nil {
+			return nil, err
+		}
+		closedJobPostings = append(closedJobPostings, &closedJobPosting)
+	}
+
+	return closedJobPostings, nil
 }
