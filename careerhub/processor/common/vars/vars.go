@@ -10,6 +10,8 @@ type Vars struct {
 	JobPostingQueue string
 	ClosedQueue     string
 	CompanyQueue    string
+	MongoUri        string
+	DbName          string
 }
 
 type ErrNotExistedVar struct {
@@ -25,6 +27,16 @@ func (e *ErrNotExistedVar) Error() string {
 }
 
 func Variables() (*Vars, error) {
+	mongoUri, err := getFromEnv("MONGO_URI")
+	if err != nil {
+		return nil, err
+	}
+
+	dbName, err := getFromEnv("DB_NAME")
+	if err != nil {
+		return nil, err
+	}
+
 	sqsEndpoint := getFromEnvPtr("SQS_ENDPOINT")
 
 	companyQueue, err := getFromEnv("COMPANY_QUEUE")
@@ -47,6 +59,8 @@ func Variables() (*Vars, error) {
 		JobPostingQueue: jobPostingQueue,
 		ClosedQueue:     closedQueue,
 		CompanyQueue:    companyQueue,
+		MongoUri:        mongoUri,
+		DbName:          dbName,
 	}, nil
 }
 
