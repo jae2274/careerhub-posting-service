@@ -47,7 +47,7 @@ type Career struct {
 }
 
 func (*JobPostingInfo) Collection() string {
-	return "deck"
+	return "jobPostingInfo"
 }
 
 func (*JobPostingInfo) IndexModels() map[string]*mongo.IndexModel {

@@ -46,8 +46,16 @@ type ReceiptError struct {
 	error
 }
 
-func NewReceiptError(receiptHandle *string, err error) ReceiptError {
-	return ReceiptError{
+func (err ReceiptError) Error() string {
+	return err.error.Error()
+}
+
+func NewReceiptError(receiptHandle *string, err error) *ReceiptError {
+	if err == nil {
+		return nil
+	}
+
+	return &ReceiptError{
 		ReceiptHandle: receiptHandle,
 		error:         err,
 	}
@@ -56,25 +64,25 @@ func NewReceiptError(receiptHandle *string, err error) ReceiptError {
 func (app *BackgroundApp) Run(quitChan <-chan QuitSignal) (<-chan ProcessedSignal, <-chan error) {
 	errChan := make(chan error, 100)
 	msgChan := appfunc.NewJobPostingChannel(time.Minute, app.jobPostingQueue, errChan)
-	step1 := pipe.NewStep(nil, func(msg *queue.Message) (WithRecipt[*message_v1.JobPostingInfo], ReceiptError) {
+	step1 := pipe.NewStep(nil, func(msg *queue.Message) (WithRecipt[*message_v1.JobPostingInfo], *ReceiptError) {
 		jobPostingMsg, err := appfunc.UnmarshalJobPosting(msg.Body)
 		return NewWithRecipt(jobPostingMsg, msg.ReceiptHandle), NewReceiptError(msg.ReceiptHandle, err)
 	})
 
-	step2 := pipe.NewStep(nil, func(msg WithRecipt[*message_v1.JobPostingInfo]) (WithRecipt[bool], ReceiptError) {
+	step2 := pipe.NewStep(nil, func(msg WithRecipt[*message_v1.JobPostingInfo]) (WithRecipt[bool], *ReceiptError) {
 		ok, err := appfunc.SaveJobPosting(app.jpRepo, msg.Data)
 		return NewWithRecipt(ok, msg.ReceiptHandle), NewReceiptError(msg.ReceiptHandle, err)
 	})
 
-	deleteMsgStep := pipe.NewStep(nil, func(msg WithRecipt[bool]) (ProcessedSignal, ReceiptError) {
+	deleteMsgStep := pipe.NewStep(nil, func(msg WithRecipt[bool]) (ProcessedSignal, *ReceiptError) {
 		err := appfunc.DeleteJobPosting(app.jobPostingQueue, msg.ReceiptHandle)
 		return ProcessedSignal{}, NewReceiptError(msg.ReceiptHandle, err)
 	})
 
-	receiptErrChan := make(chan ReceiptError, 100)
+	receiptErrChan := make(chan *ReceiptError, 100)
 	processedChan := pipe.Pipeline3(msgChan, receiptErrChan, quitChan, step1, step2, deleteMsgStep)
 
-	pipe.Transform(receiptErrChan, errChan, quitChan, nil, func(recpErr ReceiptError) (ProcessedSignal, error) { //이곳에 도달하는 에러는 그대로 다시 errChan으로 전달된다.
+	pipe.Transform(receiptErrChan, errChan, quitChan, nil, func(recpErr *ReceiptError) (ProcessedSignal, error) { //이곳에 도달하는 에러는 그대로 다시 errChan으로 전달된다.
 		//TODO: 데드 큐에 넣기
 		err := appfunc.DeleteJobPosting(app.jobPostingQueue, recpErr.ReceiptHandle)
 		if err != nil {

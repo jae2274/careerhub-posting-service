@@ -1,5 +1,5 @@
 BINARY_NAME=myapp
-CODE_DIR=./tft/producer
+CODE_DIR=./careerhub/processor
 
 include test.env
 
@@ -10,10 +10,9 @@ build:
 	@echo "Built!"
 
 ## run: builds and runs the application
-run: build	env
+run: build
 	@echo "Starting..."
-	@env API_KEY=${API_KEY} DB_ENDPOINT=${DB_ENDPOINT} SQS_ENDPOINT=${SQS_ENDPOINT} COMPANY_QUEUE=${COMPANY_QUEUE} JOB_POSTING_QUEUE=${JOB_POSTING_QUEUE} CLOSED_QUEUE=${CLOSED_QUEUE} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} 
-	@./${BINARY_NAME} 
+	@env API_KEY=${API_KEY} DB_ENDPOINT=${DB_ENDPOINT} SQS_ENDPOINT=${SQS_ENDPOINT} COMPANY_QUEUE=${COMPANY_QUEUE} JOB_POSTING_QUEUE=${JOB_POSTING_QUEUE} CLOSED_QUEUE=${CLOSED_QUEUE} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} ./${BINARY_NAME} 
 	@echo "Started!"
 
 ## clean: runs go clean and deletes binaries

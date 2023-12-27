@@ -13,14 +13,10 @@ func CheckIndex(indexes []bson.M, indexModels map[string]*mongo.IndexModel) erro
 		return terr.New("invalid index")
 	}
 
-	isValidIndex, err := checkIndexes(indexes, indexModels)
+	err := checkIndexes(indexes, indexModels)
 
 	if err != nil {
 		return err
-	}
-
-	if !isValidIndex {
-		return terr.New("invalid index")
 	}
 
 	return nil
@@ -56,11 +52,11 @@ func indexesFromCursor(cursor *mongo.Cursor) ([]bson.M, error) {
 	return indexes, nil
 }
 
-func checkIndexes(indexes []bson.M, indexModels map[string]*mongo.IndexModel) (bool, error) {
+func checkIndexes(indexes []bson.M, indexModels map[string]*mongo.IndexModel) error {
 	for _, indexSpec := range indexes {
 		indexName, ok := indexSpec["name"].(string)
 		if !ok {
-			return false, terr.New("invalid index")
+			return terr.New("invalid index")
 		}
 
 		if indexName == "_id_" {
@@ -69,16 +65,16 @@ func checkIndexes(indexes []bson.M, indexModels map[string]*mongo.IndexModel) (b
 
 		indexModel, ok := indexModels[indexName]
 		if !ok {
-			return false, nil
+			return terr.New("invalid index")
 		}
 
 		isEqual, err := isEqualIndex(indexSpec, indexModel)
 		if !isEqual {
-			return false, err
+			return err
 		}
 	}
 
-	return true, nil
+	return nil
 }
 
 func isEqualIndex(indexSpec bson.M, indexModel *mongo.IndexModel) (bool, error) {
