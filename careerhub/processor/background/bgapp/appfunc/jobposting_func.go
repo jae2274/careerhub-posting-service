@@ -10,9 +10,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func NewJobPostingChannel(delayTime time.Duration, jpQueue *queue.JobPostingQueue) (<-chan *queue.Message, <-chan error) {
+func NewJobPostingChannel(delayTime time.Duration, jpQueue *queue.JobPostingQueue, errChan chan<- error) <-chan *queue.Message {
 	msgsChan := make(chan *queue.Message)
-	errChan := make(chan error)
 
 	go func() {
 		for {
@@ -34,7 +33,7 @@ func NewJobPostingChannel(delayTime time.Duration, jpQueue *queue.JobPostingQueu
 		}
 	}()
 
-	return msgsChan, errChan
+	return msgsChan
 }
 
 func UnmarshalJobPosting(bMsg []byte) (*message_v1.JobPostingInfo, error) {
