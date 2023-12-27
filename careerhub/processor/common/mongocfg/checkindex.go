@@ -26,7 +26,21 @@ func CheckIndex(indexes []bson.M, indexModels map[string]*mongo.IndexModel) erro
 	return nil
 }
 
-func IndexesFromCursor(cursor *mongo.Cursor) ([]bson.M, error) {
+func CheckIndexViaCollection(col *mongo.Collection, indexModels map[string]*mongo.IndexModel) error {
+	cursor, err := col.Indexes().List(context.TODO())
+	if err != nil {
+		return terr.Wrap(err)
+	}
+
+	indexes, err := indexesFromCursor(cursor)
+	if err != nil {
+		return err
+	}
+
+	return CheckIndex(indexes, indexModels)
+}
+
+func indexesFromCursor(cursor *mongo.Cursor) ([]bson.M, error) {
 	var indexes []bson.M
 
 	for cursor.Next(context.TODO()) {

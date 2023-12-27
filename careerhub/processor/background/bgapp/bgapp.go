@@ -20,8 +20,9 @@ type BackgroundApp struct {
 	closedQueue     *queue.ClosedJobPostingQueue
 }
 
-func NewBackgroundApp(companyQueue *queue.CompanyQueue, jobPostingQueue *queue.JobPostingQueue, closedQueue *queue.ClosedJobPostingQueue) *BackgroundApp {
+func NewBackgroundApp(jpRepo *bgrepo.JobPostingRepo, companyQueue *queue.CompanyQueue, jobPostingQueue *queue.JobPostingQueue, closedQueue *queue.ClosedJobPostingQueue) *BackgroundApp {
 	return &BackgroundApp{
+		jpRepo:          jpRepo,
 		companyQueue:    companyQueue,
 		jobPostingQueue: jobPostingQueue,
 		closedQueue:     closedQueue,
