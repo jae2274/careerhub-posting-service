@@ -1,6 +1,8 @@
 package bgapp
 
 import (
+	"fmt"
+	"log"
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/background/bgapp/appfunc"
@@ -47,7 +49,7 @@ type ReceiptError struct {
 }
 
 func (err ReceiptError) Error() string {
-	return err.error.Error()
+	return fmt.Sprintf("%s\treceipeHandle: %s", err.error.Error(), *err.ReceiptHandle)
 }
 
 func NewReceiptError(receiptHandle *string, err error) *ReceiptError {
@@ -61,7 +63,7 @@ func NewReceiptError(receiptHandle *string, err error) *ReceiptError {
 	}
 }
 
-func (app *BackgroundApp) Run(quitChan <-chan QuitSignal) (<-chan ProcessedSignal, <-chan error) {
+func (app *BackgroundApp) Run(quitChan <-chan QuitSignal) (<-chan WithRecipt[ProcessedSignal], <-chan error) {
 	errChan := make(chan error, 100)
 	msgChan := appfunc.NewJobPostingChannel(time.Minute, app.jobPostingQueue, errChan)
 	step1 := pipe.NewStep(nil, func(msg *queue.Message) (WithRecipt[*message_v1.JobPostingInfo], *ReceiptError) {
@@ -74,22 +76,23 @@ func (app *BackgroundApp) Run(quitChan <-chan QuitSignal) (<-chan ProcessedSigna
 		return NewWithRecipt(ok, msg.ReceiptHandle), NewReceiptError(msg.ReceiptHandle, err)
 	})
 
-	deleteMsgStep := pipe.NewStep(nil, func(msg WithRecipt[bool]) (ProcessedSignal, *ReceiptError) {
+	deleteMsgStep := pipe.NewStep(nil, func(msg WithRecipt[bool]) (WithRecipt[ProcessedSignal], *ReceiptError) {
 		err := appfunc.DeleteJobPosting(app.jobPostingQueue, msg.ReceiptHandle)
-		return ProcessedSignal{}, NewReceiptError(msg.ReceiptHandle, err)
+		return NewWithRecipt(ProcessedSignal{}, msg.ReceiptHandle), NewReceiptError(msg.ReceiptHandle, err)
 	})
 
 	receiptErrChan := make(chan *ReceiptError, 100)
 	processedChan := pipe.Pipeline3(msgChan, receiptErrChan, quitChan, step1, step2, deleteMsgStep)
 
-	pipe.Transform(receiptErrChan, errChan, quitChan, nil, func(recpErr *ReceiptError) (ProcessedSignal, error) { //이곳에 도달하는 에러는 그대로 다시 errChan으로 전달된다.
+	pipe.Transform(receiptErrChan, errChan, quitChan, nil, func(recpErr *ReceiptError) (WithRecipt[ProcessedSignal], error) { //이곳에 도달하는 에러는 그대로 다시 errChan으로 전달된다.
 		//TODO: 데드 큐에 넣기
+		log.Println("ReceiptError: ", recpErr.Error())
 		err := appfunc.DeleteJobPosting(app.jobPostingQueue, recpErr.ReceiptHandle)
 		if err != nil {
-			return ProcessedSignal{}, NewReceiptError(recpErr.ReceiptHandle, err)
+			return NewWithRecipt(ProcessedSignal{}, recpErr.ReceiptHandle), NewReceiptError(recpErr.ReceiptHandle, err)
 		}
 
-		return ProcessedSignal{}, recpErr
+		return NewWithRecipt(ProcessedSignal{}, recpErr.ReceiptHandle), recpErr
 	})
 
 	return processedChan, errChan
