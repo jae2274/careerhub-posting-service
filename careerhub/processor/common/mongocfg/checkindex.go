@@ -69,8 +69,13 @@ func checkIndexes(indexes []bson.M, indexModels map[string]*mongo.IndexModel) er
 		}
 
 		isEqual, err := isEqualIndex(indexSpec, indexModel)
-		if !isEqual {
+
+		if err != nil {
 			return err
+		}
+
+		if !isEqual {
+			return terr.New("invalid index")
 		}
 	}
 
