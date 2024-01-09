@@ -1,8 +1,24 @@
 syntax = "proto3";
 
-package message_v1;
+package careerhub.processor.processor_grpc;
+option go_package = "careerhub/processor/processor_grpc";
 
-option go_package = "careerhub/queue/message_v1";
+service DataProcessor{
+    rpc CloseJobPostings(JobPostings) returns (BoolResponse);
+    rpc RegisterJobPostingInfo(JobPostingInfo) returns (BoolResponse);
+    rpc RegisterCompany(Company) returns (BoolResponse);
+}
+
+message JobPostings{
+    repeated JobPostingId jobPostingIds = 1;
+}
+
+message JobPostingId{
+    string site = 1;
+    string postingId = 2;
+}
+
+
 
 message JobPostingInfo{
 	string site 					= 1;
@@ -36,4 +52,19 @@ message MainContent{
 message Career{
     optional int32 min				= 1;
     optional int32 max				= 2;
+}
+
+
+message Company{
+	string site = 1;
+    string companyId= 2;
+	string name = 3;
+	optional string companyUrl = 	4;
+	repeated string companyImages = 5;
+	string description   = 		6;
+	string companyLogo   = 		7;
+}
+
+message BoolResponse{
+	bool success = 1;
 }

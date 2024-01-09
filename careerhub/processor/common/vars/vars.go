@@ -6,12 +6,8 @@ import (
 )
 
 type Vars struct {
-	SqsEndpoint     *string
-	JobPostingQueue string
-	ClosedQueue     string
-	CompanyQueue    string
-	MongoUri        string
-	DbName          string
+	MongoUri string
+	DbName   string
 }
 
 type ErrNotExistedVar struct {
@@ -37,30 +33,9 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
-	sqsEndpoint := getFromEnvPtr("SQS_ENDPOINT")
-
-	companyQueue, err := getFromEnv("COMPANY_QUEUE")
-	if err != nil {
-		return nil, err
-	}
-
-	jobPostingQueue, err := getFromEnv("JOB_POSTING_QUEUE")
-	if err != nil {
-		return nil, err
-	}
-
-	closedQueue, err := getFromEnv("CLOSED_QUEUE")
-	if err != nil {
-		return nil, err
-	}
-
 	return &Vars{
-		SqsEndpoint:     sqsEndpoint,
-		JobPostingQueue: jobPostingQueue,
-		ClosedQueue:     closedQueue,
-		CompanyQueue:    companyQueue,
-		MongoUri:        mongoUri,
-		DbName:          dbName,
+		MongoUri: mongoUri,
+		DbName:   dbName,
 	}, nil
 }
 
@@ -72,14 +47,4 @@ func getFromEnv(envVar string) (string, error) {
 	}
 
 	return ev, nil
-}
-
-func getFromEnvPtr(envVar string) *string {
-	ev := os.Getenv(envVar)
-
-	if ev == "" {
-		return nil
-	}
-
-	return &ev
 }

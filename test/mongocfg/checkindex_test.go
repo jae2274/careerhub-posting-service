@@ -304,7 +304,7 @@ func TestCheckIndex(t *testing.T) {
 	for _, tc := range invalidTestCases {
 		t.Run(tc.name, func(t *testing.T) {
 			err := mongocfg.CheckIndex(tc.indexes, indexModel)
-			require.Error(t, err)
+			require.Error(t, err, "test case: %s, indexes: %v, indexModel: %v", tc.name, tc.indexes, indexModel)
 		})
 	}
 

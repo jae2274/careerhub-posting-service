@@ -35,11 +35,11 @@ stop:
 restart: stop start
 
 proto:
-	@export PATH="$PATH:$(go env GOPATH)/bin"; protoc careerhub/processor/grpc/queue/message_v1/*.proto  --go_out=.  --go_opt=paths=source_relative  --proto_path=.
+	@protoc careerhub/processor/processor_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 
 ## test: runs all tests
 test:	
 	@echo "Testing..."
-	@env API_KEY=${API_KEY} DB_ENDPOINT=${DB_ENDPOINT} SQS_ENDPOINT=${SQS_ENDPOINT} COMPANY_QUEUE=${COMPANY_QUEUE} JOB_POSTING_QUEUE=${JOB_POSTING_QUEUE} CLOSED_QUEUE=${CLOSED_QUEUE} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME}  go test -p 1 -timeout 60s ./test/...
+	@env API_KEY=${API_KEY} DB_ENDPOINT=${DB_ENDPOINT}  MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME}  go test -p 1 -timeout 60s ./test/...
 	
 

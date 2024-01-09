@@ -2,12 +2,14 @@ package tinit
 
 import (
 	"context"
+	"fmt"
+	"runtime"
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/background/bgrepo"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/repo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -40,11 +42,20 @@ func createIndexes(t *testing.T, col *mongo.Collection, indexModels map[string]*
 	}
 }
 
-func InitBgJobPostingRepo(t *testing.T) *bgrepo.JobPostingRepo {
+func InitBgJobPostingRepo(t *testing.T) *repo.JobPostingRepo {
 	db := InitDB(t)
 
 	jobpostingCollection := db.Collection((&jobposting.JobPostingInfo{}).Collection())
-	jobpostingRepo := bgrepo.NewJobPostingRepo(jobpostingCollection)
+	jobpostingRepo := repo.NewJobPostingRepo(jobpostingCollection)
 
 	return jobpostingRepo
+}
+
+func checkError(t *testing.T, err error) {
+	if err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		fmt.Printf("%s:%d\n", file, line)
+		t.Error(err)
+		t.FailNow()
+	}
 }
