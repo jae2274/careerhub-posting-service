@@ -20,13 +20,28 @@ func NewDataProcessorServer(jpRepo *repo.JobPostingRepo) *DataProcessorServer {
 	return &DataProcessorServer{jpRepo: jpRepo}
 }
 
-func (sv *DataProcessorServer) CloseJobPostings(context.Context, *grpc.JobPostings) (*grpc.BoolResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CloseJobPostings not implemented")
+func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *grpc.JobPostings) (*grpc.BoolResponse, error) {
+	jpIds := make([]*jobposting.JobPostingId, len(gJpId.JobPostingIds))
+
+	for i, gJpId := range gJpId.JobPostingIds {
+		jpIds[i] = &jobposting.JobPostingId{
+			Site:      gJpId.Site,
+			PostingId: gJpId.PostingId,
+		}
+	}
+
+	err := sv.jpRepo.CloseAll(jpIds)
+
+	return &grpc.BoolResponse{Success: err == nil}, err
 }
+
 func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *grpc.JobPostingInfo) (*grpc.BoolResponse, error) {
 	jobPosting := jobposting.JobPostingInfo{
-		Site:        msg.Site,
-		PostingId:   msg.PostingId,
+		JobPostingId: jobposting.JobPostingId{
+			Site:      msg.Site,
+			PostingId: msg.PostingId,
+		},
+		Status:      jobposting.HIRING,
 		CompanyId:   msg.CompanyId,
 		CompanyName: msg.CompanyName,
 		JobCategory: msg.JobCategory,
@@ -49,6 +64,7 @@ func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *
 		PublishedAt: msg.PublishedAt,
 		ClosedAt:    msg.ClosedAt,
 		Address:     msg.Address,
+		CreatedAt:   msg.CreatedAt,
 	}
 
 	result, err := sv.jpRepo.Save(&jobPosting)

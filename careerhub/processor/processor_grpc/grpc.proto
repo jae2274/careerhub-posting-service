@@ -33,6 +33,7 @@ message JobPostingInfo{
 	optional int64 publishedAt		= 10;
 	optional int64 closedAt			= 11;
 	repeated string address			= 12;
+	int64 createdAt					= 13;
 }
 
 message MainContent{

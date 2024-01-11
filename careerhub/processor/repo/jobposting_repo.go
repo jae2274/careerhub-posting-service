@@ -2,6 +2,7 @@ package repo
 
 import (
 	"context"
+	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"go.mongodb.org/mongo-driver/bson"
@@ -20,6 +21,9 @@ func NewJobPostingRepo(col *mongo.Collection) *JobPostingRepo {
 
 func (jpRepo *JobPostingRepo) Save(jobPosting *jobposting.JobPostingInfo) (bool, error) {
 	// Convert decks to []interface{}
+	jobPosting.Status = jobposting.HIRING
+	jobPosting.InsertedAt = time.Now().Unix()
+	jobPosting.UpdatedAt = time.Now().Unix()
 
 	_, err := jpRepo.col.InsertOne(context.TODO(), jobPosting)
 
@@ -49,4 +53,19 @@ func (jpRepo *JobPostingRepo) FindAll() ([]*jobposting.JobPostingInfo, error) {
 	}
 
 	return jobPostings, nil
+}
+
+func (jpRepo *JobPostingRepo) CloseAll(jobPostingIds []*jobposting.JobPostingId) error {
+
+	_, err := jpRepo.col.UpdateMany(context.Background(), bson.M{
+		"jobPostingId": bson.M{
+			"$in": jobPostingIds,
+		},
+	}, bson.M{
+		"$set": bson.M{
+			jobposting.StatusField: jobposting.CLOSED,
+		},
+	})
+
+	return err
 }

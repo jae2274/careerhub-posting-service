@@ -3,6 +3,7 @@ package jobposting
 import (
 	"fmt"
 
+	"github.com/jae2274/goutils/enum"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,14 +11,44 @@ import (
 )
 
 const (
-	SiteField      = "site"
-	PostingIdField = "postingId"
+	SiteField      = "jobPostingId.site"
+	PostingIdField = "jobPostingId.postingId"
+	StatusField    = "status"
 )
+
+type StatusValues struct{}
+
+type Status = enum.Enum[StatusValues]
+
+const (
+	HIRING = Status("hiring")
+	CLOSED = Status("closed")
+)
+
+func (StatusValues) Values() []string {
+	return []string{string(HIRING), string(CLOSED)}
+}
+
+func (StatusValues) ParseStatus(s string) (Status, error) {
+	switch s {
+	case string(HIRING):
+		return HIRING, nil
+	case string(CLOSED):
+		return CLOSED, nil
+	default:
+		return "", fmt.Errorf("invalid status: %s", s)
+	}
+}
+
+type JobPostingId struct {
+	Site      string `bson:"site"`
+	PostingId string `bson:"postingId"`
+}
 
 type JobPostingInfo struct {
 	ID             primitive.ObjectID `bson:"_id,omitempty"`
-	Site           string             `bson:"site"`
-	PostingId      string             `bson:"postingId"`
+	JobPostingId   JobPostingId       `bson:"jobPostingId"`
+	Status         Status             `bson:"status"`
 	CompanyId      string             `bson:"companyId"`
 	CompanyName    string             `bson:"companyName"`
 	JobCategory    []string           `bson:"jobCategory"`
@@ -28,6 +59,9 @@ type JobPostingInfo struct {
 	PublishedAt    *int64             `bson:"publishedAt,omitempty"`
 	ClosedAt       *int64             `bson:"closedAt,omitempty"`
 	Address        []string           `bson:"address"`
+	CreatedAt      int64              `bson:"createdAt"`
+	InsertedAt     int64              `bson:"insertedAt"`
+	UpdatedAt      int64              `bson:"updatedAt"`
 }
 
 type MainContent struct {

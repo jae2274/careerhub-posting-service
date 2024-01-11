@@ -41,12 +41,34 @@ func TestJobPostingRepo(t *testing.T) {
 		jobPostings[1].ID = primitive.ObjectID{} // ignore ID
 		require.Equal(t, *sampleJobPostings[1], *(jobPostings[1]))
 	})
+
+	t.Run("CloseAll", func(t *testing.T) {
+		jpRepo := tinit.InitBgJobPostingRepo(t)
+
+		_, err := jpRepo.Save(sampleJobPostings[0])
+		require.NoError(t, err)
+		_, err = jpRepo.Save(sampleJobPostings[1])
+		require.NoError(t, err)
+
+		err = jpRepo.CloseAll([]*jobposting.JobPostingId{&sampleJobPostings[1].JobPostingId})
+		require.NoError(t, err)
+
+		jobPostings, err := jpRepo.FindAll()
+		require.NoError(t, err)
+
+		require.Equal(t, 2, len(jobPostings))
+		require.Equal(t, jobposting.HIRING, jobPostings[0].Status)
+		require.Equal(t, jobposting.CLOSED, jobPostings[1].Status)
+	})
 }
 
 func samples() []*jobposting.JobPostingInfo {
 	sampleJobPosting := &jobposting.JobPostingInfo{
-		Site:        "sampleSite",
-		PostingId:   "samplePostingId",
+		JobPostingId: jobposting.JobPostingId{
+			Site:      "sampleSite",
+			PostingId: "samplePostingId",
+		},
+		Status:      jobposting.HIRING,
 		CompanyId:   "sampleCompanyId",
 		CompanyName: "sampleCompanyName",
 		JobCategory: []string{"sampleJobCategory"},
@@ -71,8 +93,11 @@ func samples() []*jobposting.JobPostingInfo {
 	}
 
 	sampleJobPosting2 := &jobposting.JobPostingInfo{
-		Site:        "sampleSite2",
-		PostingId:   "samplePostingId2",
+		JobPostingId: jobposting.JobPostingId{
+			Site:      "sampleSite2",
+			PostingId: "samplePostingId2",
+		},
+		Status:      jobposting.HIRING,
 		CompanyId:   "sampleCompanyId2",
 		CompanyName: "sampleCompanyName2",
 		JobCategory: []string{"sampleJobCategory2"},
