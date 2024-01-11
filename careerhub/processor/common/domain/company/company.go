@@ -11,6 +11,9 @@ import (
 )
 
 const (
+	IdField                      = "_id"
+	DefaultNameField             = "defaultName"
+	SiteCompaniesField           = "siteCompanies"
 	SiteCompanies_SiteField      = "siteCompanies.site"
 	SiteCompanies_CompanyIdField = "siteCompanies.companyId"
 )
@@ -19,6 +22,8 @@ type Company struct {
 	ID            primitive.ObjectID `bson:"_id,omitempty"`
 	DefaultName   string             `bson:"defaultName"`
 	SiteCompanies []*SiteCompany     `bson:"siteCompanies"`
+	InsertedAt    time.Time          `bson:"insertedAt"`
+	UpdatedAt     time.Time          `bson:"updatedAt"`
 }
 
 type SiteCompany struct {

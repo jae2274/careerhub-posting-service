@@ -87,8 +87,7 @@ func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *
 }
 
 func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *grpc.Company) (*grpc.BoolResponse, error) {
-
-	companyInfo := company.SiteCompany{
+	siteCompany := &company.SiteCompany{
 		Site:          gCompany.Site,
 		CompanyId:     gCompany.CompanyId,
 		Name:          gCompany.Name,
@@ -99,7 +98,23 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *gr
 		CreatedAt:     time.Unix(gCompany.CreatedAt, 0),
 	}
 
-	result, err := sv.companyRepo.Save(ctx, &companyInfo)
+	existedCompanyId, err := sv.companyRepo.FindByName(ctx, gCompany.Name)
+
+	if err != nil {
+		return &grpc.BoolResponse{Success: false}, err
+	}
+
+	var result bool
+	if existedCompanyId != nil {
+		result, err = sv.companyRepo.InsertSiteCompany(ctx, *existedCompanyId, siteCompany)
+	} else {
+		company := &company.Company{
+			DefaultName:   gCompany.Name,
+			SiteCompanies: []*company.SiteCompany{siteCompany},
+		}
+
+		result, err = sv.companyRepo.InsertCompany(ctx, company)
+	}
 
 	return &grpc.BoolResponse{Success: result}, err
 }

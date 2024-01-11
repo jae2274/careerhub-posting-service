@@ -1,4 +1,4 @@
-package bgrepo
+package repo
 
 import (
 	"context"
