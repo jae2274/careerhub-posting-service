@@ -2,6 +2,7 @@ package company
 
 import (
 	"fmt"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -21,13 +22,16 @@ type Company struct {
 }
 
 type SiteCompany struct {
-	Site          string   `bson:"site"`
-	CompanyId     string   `bson:"companyId"`
-	Name          string   `bson:"name"`
-	CompanyUrl    string   `bson:"companyUrl"`
-	CompanyImages []string `bson:"companyImages"`
-	Description   string   `bson:"description"`
-	CompanyLogo   string   `bson:"companyLogo"`
+	Site          string    `bson:"site"`
+	CompanyId     string    `bson:"companyId"`
+	Name          string    `bson:"name"`
+	CompanyUrl    *string   `bson:"companyUrl"`
+	CompanyImages []string  `bson:"companyImages"`
+	Description   string    `bson:"description"`
+	CompanyLogo   string    `bson:"companyLogo"`
+	CreatedAt     time.Time `bson:"createdAt"`
+	InsertedAt    time.Time `bson:"insertedAt"`
+	UpdatedAt     time.Time `bson:"updatedAt"`
 }
 
 func (*Company) Collection() string {

@@ -4,16 +4,16 @@ import (
 	"context"
 	"time"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	grpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/processor_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/repo"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 // server is used to implement helloworld.GreeterServer.
 type DataProcessorServer struct {
-	jpRepo *repo.JobPostingRepo
+	jpRepo      *repo.JobPostingRepo
+	companyRepo *repo.CompanyRepo
 	grpc.UnimplementedDataProcessorServer
 }
 
@@ -31,7 +31,7 @@ func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *grpc
 		}
 	}
 
-	err := sv.jpRepo.CloseAll(jpIds)
+	err := sv.jpRepo.CloseAll(ctx, jpIds)
 
 	return &grpc.BoolResponse{Success: err == nil}, err
 }
@@ -81,11 +81,25 @@ func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *
 		CreatedAt:   createdAt,
 	}
 
-	result, err := sv.jpRepo.Save(&jobPosting)
+	result, err := sv.jpRepo.Save(ctx, &jobPosting)
 
 	return &grpc.BoolResponse{Success: result}, err
 }
 
-func (sv *DataProcessorServer) RegisterCompany(context.Context, *grpc.Company) (*grpc.BoolResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RegisterCompany not implemented")
+func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *grpc.Company) (*grpc.BoolResponse, error) {
+
+	companyInfo := company.SiteCompany{
+		Site:          gCompany.Site,
+		CompanyId:     gCompany.CompanyId,
+		Name:          gCompany.Name,
+		CompanyUrl:    gCompany.CompanyUrl,
+		CompanyImages: gCompany.CompanyImages,
+		Description:   gCompany.Description,
+		CompanyLogo:   gCompany.CompanyLogo,
+		CreatedAt:     time.Unix(gCompany.CreatedAt, 0),
+	}
+
+	result, err := sv.companyRepo.Save(ctx, &companyInfo)
+
+	return &grpc.BoolResponse{Success: result}, err
 }

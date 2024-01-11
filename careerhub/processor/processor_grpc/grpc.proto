@@ -64,6 +64,7 @@ message Company{
 	repeated string companyImages = 5;
 	string description   = 		6;
 	string companyLogo   = 		7;
+	int64 createdAt					= 8;
 }
 
 message BoolResponse{

@@ -19,13 +19,13 @@ func NewJobPostingRepo(col *mongo.Collection) *JobPostingRepo {
 	}
 }
 
-func (jpRepo *JobPostingRepo) Save(jobPosting *jobposting.JobPostingInfo) (bool, error) {
+func (jpRepo *JobPostingRepo) Save(ctx context.Context, jobPosting *jobposting.JobPostingInfo) (bool, error) {
 	// Convert decks to []interface{}
 	jobPosting.Status = jobposting.HIRING
 	jobPosting.InsertedAt = time.Now()
 	jobPosting.UpdatedAt = time.Now()
 
-	_, err := jpRepo.col.InsertOne(context.TODO(), jobPosting)
+	_, err := jpRepo.col.InsertOne(ctx, jobPosting)
 
 	if err != nil {
 		if mongo.IsDuplicateKeyError(err) { // Ignore duplicate key error
@@ -55,9 +55,9 @@ func (jpRepo *JobPostingRepo) FindAll() ([]*jobposting.JobPostingInfo, error) {
 	return jobPostings, nil
 }
 
-func (jpRepo *JobPostingRepo) CloseAll(jobPostingIds []*jobposting.JobPostingId) error {
+func (jpRepo *JobPostingRepo) CloseAll(ctx context.Context, jobPostingIds []*jobposting.JobPostingId) error {
 
-	_, err := jpRepo.col.UpdateMany(context.Background(), bson.M{
+	_, err := jpRepo.col.UpdateMany(ctx, bson.M{
 		"jobPostingId": bson.M{
 			"$in": jobPostingIds,
 		},
