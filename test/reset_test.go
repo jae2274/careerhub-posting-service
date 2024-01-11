@@ -10,10 +10,7 @@ package reset
 
 // func TestReset(t *testing.T) {
 // 	tinit.InitDB(t)
-// 	envVars, err := vars.Variables()
+// 	_, err := vars.Variables()
 // 	require.NoError(t, err)
 
-// 	tinit.InitSQS(t, envVars.JobPostingQueue)
-// 	tinit.InitSQS(t, envVars.CompanyQueue)
-// 	tinit.InitSQS(t, envVars.ClosedQueue)
 // }

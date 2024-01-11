@@ -57,6 +57,9 @@ func (jpRepo *JobPostingRepo) FindAll() ([]*jobposting.JobPostingInfo, error) {
 }
 
 func (jpRepo *JobPostingRepo) CloseAll(ctx context.Context, jobPostingIds []*jobposting.JobPostingId) error {
+	if len(jobPostingIds) == 0 {
+		return nil
+	}
 
 	_, err := jpRepo.col.UpdateMany(ctx, bson.M{
 		"jobPostingId": bson.M{
