@@ -21,9 +21,10 @@ func NewJobPostingRepo(col *mongo.Collection) *JobPostingRepo {
 
 func (jpRepo *JobPostingRepo) Save(ctx context.Context, jobPosting *jobposting.JobPostingInfo) (bool, error) {
 	// Convert decks to []interface{}
+	now := time.Now()
 	jobPosting.Status = jobposting.HIRING
-	jobPosting.InsertedAt = time.Now()
-	jobPosting.UpdatedAt = time.Now()
+	jobPosting.InsertedAt = now
+	jobPosting.UpdatedAt = now
 
 	_, err := jpRepo.col.InsertOne(ctx, jobPosting)
 

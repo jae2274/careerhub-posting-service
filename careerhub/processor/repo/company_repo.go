@@ -22,7 +22,7 @@ func NewCompanyRepo(col *mongo.Collection) *CompanyRepo {
 	}
 }
 
-func (cRepo *CompanyRepo) FindByName(ctx context.Context, companyName string) (*primitive.ObjectID, error) {
+func (cRepo *CompanyRepo) FindIDByName(ctx context.Context, companyName string) (*primitive.ObjectID, error) {
 	var result struct {
 		ID primitive.ObjectID `bson:"_id"`
 	}
@@ -41,12 +41,13 @@ func (cRepo *CompanyRepo) FindByName(ctx context.Context, companyName string) (*
 }
 
 func (cRepo *CompanyRepo) InsertCompany(ctx context.Context, company *company.Company) (bool, error) {
-	company.InsertedAt = time.Now()
-	company.UpdatedAt = time.Now()
+	now := time.Now()
+	company.InsertedAt = now
+	company.UpdatedAt = now
 
 	for _, siteCompany := range company.SiteCompanies {
-		siteCompany.InsertedAt = time.Now()
-		siteCompany.UpdatedAt = time.Now()
+		siteCompany.InsertedAt = now
+		siteCompany.UpdatedAt = now
 	}
 
 	result, err := cRepo.col.InsertOne(ctx, company)
@@ -62,9 +63,10 @@ func (cRepo *CompanyRepo) InsertCompany(ctx context.Context, company *company.Co
 	return true, nil
 }
 
-func (cRepo *CompanyRepo) InsertSiteCompany(ctx context.Context, companyId primitive.ObjectID, siteCompany *company.SiteCompany) (bool, error) {
-	siteCompany.InsertedAt = time.Now()
-	siteCompany.UpdatedAt = time.Now()
+func (cRepo *CompanyRepo) AppendSiteCompany(ctx context.Context, companyId primitive.ObjectID, siteCompany *company.SiteCompany) (bool, error) {
+	now := time.Now()
+	siteCompany.InsertedAt = now
+	siteCompany.UpdatedAt = now
 
 	result, err := cRepo.col.UpdateByID(ctx, companyId, bson.M{
 		"$push": bson.M{
@@ -81,4 +83,22 @@ func (cRepo *CompanyRepo) InsertSiteCompany(ctx context.Context, companyId primi
 	}
 
 	return true, nil
+}
+
+func (cRepo *CompanyRepo) FindAll() ([]*company.Company, error) {
+	var companies []*company.Company
+
+	cursor, err := cRepo.col.Find(context.Background(), bson.D{})
+	if err != nil {
+		if mongo.ErrNilDocument == err {
+			return []*company.Company{}, nil
+		}
+		return nil, err
+	}
+
+	if err := cursor.All(context.Background(), &companies); err != nil {
+		return nil, err
+	}
+
+	return companies, nil
 }

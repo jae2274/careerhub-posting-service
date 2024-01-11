@@ -16,7 +16,7 @@ func TestJobPostingRepo(t *testing.T) {
 	sampleJobPostings := samples()
 
 	t.Run("FindAll from empty DB", func(t *testing.T) {
-		jpRepo := tinit.InitBgJobPostingRepo(t)
+		jpRepo := tinit.InitJobPostingRepo(t)
 
 		jobPostings, err := jpRepo.FindAll()
 		if err != nil {
@@ -27,7 +27,7 @@ func TestJobPostingRepo(t *testing.T) {
 	})
 
 	t.Run("Save and FindAll", func(t *testing.T) {
-		jpRepo := tinit.InitBgJobPostingRepo(t)
+		jpRepo := tinit.InitJobPostingRepo(t)
 
 		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
@@ -38,14 +38,14 @@ func TestJobPostingRepo(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, 2, len(jobPostings))
-		setIgnoreFields(sampleJobPostings)
-		setIgnoreFields(jobPostings)
+		setIgnoreJobPostingFields(sampleJobPostings)
+		setIgnoreJobPostingFields(jobPostings)
 		require.Equal(t, *sampleJobPostings[0], *(jobPostings[0]))
 		require.Equal(t, *sampleJobPostings[1], *(jobPostings[1]))
 	})
 
 	t.Run("CloseAll", func(t *testing.T) {
-		jpRepo := tinit.InitBgJobPostingRepo(t)
+		jpRepo := tinit.InitJobPostingRepo(t)
 
 		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
@@ -129,7 +129,7 @@ func samples() []*jobposting.JobPostingInfo {
 	return []*jobposting.JobPostingInfo{sampleJobPosting, sampleJobPosting2}
 }
 
-func setIgnoreFields(jobPostings []*jobposting.JobPostingInfo) {
+func setIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
 	for _, jobPosting := range jobPostings {
 		jobPosting.ID = primitive.ObjectID{} // ignore ID
 		jobPosting.InsertedAt = time.Unix(jobPosting.InsertedAt.Unix(), 0)

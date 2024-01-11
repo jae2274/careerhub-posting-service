@@ -17,8 +17,8 @@ type DataProcessorServer struct {
 	grpc.UnimplementedDataProcessorServer
 }
 
-func NewDataProcessorServer(jpRepo *repo.JobPostingRepo) *DataProcessorServer {
-	return &DataProcessorServer{jpRepo: jpRepo}
+func NewDataProcessorServer(jpRepo *repo.JobPostingRepo, companyRepo *repo.CompanyRepo) *DataProcessorServer {
+	return &DataProcessorServer{jpRepo: jpRepo, companyRepo: companyRepo}
 }
 
 func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *grpc.JobPostings) (*grpc.BoolResponse, error) {
@@ -98,7 +98,7 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *gr
 		CreatedAt:     time.Unix(gCompany.CreatedAt, 0),
 	}
 
-	existedCompanyId, err := sv.companyRepo.FindByName(ctx, gCompany.Name)
+	existedCompanyId, err := sv.companyRepo.FindIDByName(ctx, gCompany.Name)
 
 	if err != nil {
 		return &grpc.BoolResponse{Success: false}, err
@@ -106,7 +106,7 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *gr
 
 	var result bool
 	if existedCompanyId != nil {
-		result, err = sv.companyRepo.InsertSiteCompany(ctx, *existedCompanyId, siteCompany)
+		result, err = sv.companyRepo.AppendSiteCompany(ctx, *existedCompanyId, siteCompany)
 	} else {
 		company := &company.Company{
 			DefaultName:   gCompany.Name,

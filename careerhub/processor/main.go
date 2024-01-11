@@ -5,6 +5,7 @@ import (
 	"log"
 	"net"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
@@ -25,11 +26,15 @@ func main() {
 		(&jobposting.JobPostingInfo{}).Collection(),
 	))
 
+	companyRepo := repo.NewCompanyRepo(db.Collection(
+		(&company.Company{}).Collection(),
+	))
+
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", vars.GRPC_PORT))
 	checkErr(err)
 
 	grpcServer := grpc.NewServer()
-	dataProcessorServer := svc.NewDataProcessorServer(jobPostingRepo)
+	dataProcessorServer := svc.NewDataProcessorServer(jobPostingRepo, companyRepo)
 
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 
