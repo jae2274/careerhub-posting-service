@@ -2,7 +2,6 @@ package svc
 
 import (
 	"context"
-	"flag"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	grpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/processor_grpc"
@@ -11,14 +10,14 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var (
-	Port = flag.Int("port", 50051, "The server port")
-)
-
 // server is used to implement helloworld.GreeterServer.
 type DataProcessorServer struct {
 	jpRepo *repo.JobPostingRepo
 	grpc.UnimplementedDataProcessorServer
+}
+
+func NewDataProcessorServer(jpRepo *repo.JobPostingRepo) *DataProcessorServer {
+	return &DataProcessorServer{jpRepo: jpRepo}
 }
 
 func (sv *DataProcessorServer) CloseJobPostings(context.Context, *grpc.JobPostings) (*grpc.BoolResponse, error) {

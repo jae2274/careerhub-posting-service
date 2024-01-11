@@ -12,7 +12,7 @@ build:
 ## run: builds and runs the application
 run: build
 	@echo "Starting..."
-	@env API_KEY=${API_KEY} DB_ENDPOINT=${DB_ENDPOINT} SQS_ENDPOINT=${SQS_ENDPOINT} COMPANY_QUEUE=${COMPANY_QUEUE} JOB_POSTING_QUEUE=${JOB_POSTING_QUEUE} CLOSED_QUEUE=${CLOSED_QUEUE} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} ./${BINARY_NAME} 
+	@env GRPC_PORT=${GRPC_PORT} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} ./${BINARY_NAME} 
 	@echo "Started!"
 
 ## clean: runs go clean and deletes binaries
@@ -40,6 +40,6 @@ proto:
 ## test: runs all tests
 test:	
 	@echo "Testing..."
-	@env API_KEY=${API_KEY} DB_ENDPOINT=${DB_ENDPOINT}  MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME}  go test -p 1 -timeout 60s ./test/...
+	@env GRPC_PORT=${GRPC_PORT} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME}  go test -p 1 -timeout 60s ./test/...
 	
 

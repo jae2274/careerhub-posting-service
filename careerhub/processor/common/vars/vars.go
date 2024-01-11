@@ -3,11 +3,13 @@ package vars
 import (
 	"fmt"
 	"os"
+	"strconv"
 )
 
 type Vars struct {
-	MongoUri string
-	DbName   string
+	MongoUri  string
+	DbName    string
+	GRPC_PORT int
 }
 
 type ErrNotExistedVar struct {
@@ -33,9 +35,20 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
+	grpcPort, err := getFromEnv("GRPC_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	grpcPortInt, err := strconv.ParseInt(grpcPort, 10, 32)
+	if err != nil {
+		return nil, fmt.Errorf("GRPC_PORT is not integer.\tGRPC_PORT: %s", grpcPort)
+	}
+
 	return &Vars{
-		MongoUri: mongoUri,
-		DbName:   dbName,
+		MongoUri:  mongoUri,
+		DbName:    dbName,
+		GRPC_PORT: int(grpcPortInt),
 	}, nil
 }
 
