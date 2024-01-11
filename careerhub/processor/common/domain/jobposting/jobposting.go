@@ -2,6 +2,7 @@ package jobposting
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/jae2274/goutils/enum"
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,12 +57,12 @@ type JobPostingInfo struct {
 	RequiredSkill  []string           `bson:"requiredSkill"`
 	Tags           []string           `bson:"tags"`
 	RequiredCareer Career             `bson:"requiredCareer"`
-	PublishedAt    *int64             `bson:"publishedAt,omitempty"`
-	ClosedAt       *int64             `bson:"closedAt,omitempty"`
+	PublishedAt    *time.Time         `bson:"publishedAt,omitempty"`
+	ClosedAt       *time.Time         `bson:"closedAt,omitempty"`
 	Address        []string           `bson:"address"`
-	CreatedAt      int64              `bson:"createdAt"`
-	InsertedAt     int64              `bson:"insertedAt"`
-	UpdatedAt      int64              `bson:"updatedAt"`
+	CreatedAt      time.Time          `bson:"createdAt"`
+	InsertedAt     time.Time          `bson:"insertedAt"`
+	UpdatedAt      time.Time          `bson:"updatedAt"`
 }
 
 type MainContent struct {

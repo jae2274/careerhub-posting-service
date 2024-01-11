@@ -2,6 +2,7 @@ package bgrepo
 
 import (
 	"testing"
+	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
@@ -36,9 +37,9 @@ func TestJobPostingRepo(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, 2, len(jobPostings))
-		jobPostings[0].ID = primitive.ObjectID{} // ignore ID
+		setIgnoreFields(sampleJobPostings)
+		setIgnoreFields(jobPostings)
 		require.Equal(t, *sampleJobPostings[0], *(jobPostings[0]))
-		jobPostings[1].ID = primitive.ObjectID{} // ignore ID
 		require.Equal(t, *sampleJobPostings[1], *(jobPostings[1]))
 	})
 
@@ -87,8 +88,9 @@ func samples() []*jobposting.JobPostingInfo {
 			Min: ptr.P(int32(1)),
 			Max: ptr.P(int32(3)),
 		},
-		PublishedAt: ptr.P(int64(1234567890)),
-		ClosedAt:    ptr.P(int64(1234567890)),
+		PublishedAt: ptr.P(time.Now()),
+		ClosedAt:    ptr.P(time.Now()),
+		CreatedAt:   time.Now(),
 		Address:     []string{"sampleAddress"},
 	}
 
@@ -117,10 +119,27 @@ func samples() []*jobposting.JobPostingInfo {
 			Min: ptr.P(int32(2)),
 			Max: ptr.P(int32(4)),
 		},
-		PublishedAt: ptr.P(int64(1234567891)),
-		ClosedAt:    ptr.P(int64(1234567891)),
+		PublishedAt: ptr.P(time.Now()),
+		ClosedAt:    ptr.P(time.Now()),
+		CreatedAt:   time.Now(),
 		Address:     []string{"sampleAddress2"},
 	}
 
 	return []*jobposting.JobPostingInfo{sampleJobPosting, sampleJobPosting2}
+}
+
+func setIgnoreFields(jobPostings []*jobposting.JobPostingInfo) {
+	for _, jobPosting := range jobPostings {
+		jobPosting.ID = primitive.ObjectID{} // ignore ID
+		jobPosting.InsertedAt = time.Unix(jobPosting.InsertedAt.Unix(), 0)
+		jobPosting.UpdatedAt = time.Unix(jobPosting.UpdatedAt.Unix(), 0)
+		jobPosting.CreatedAt = time.Unix(jobPosting.CreatedAt.Unix(), 0)
+
+		if jobPosting.PublishedAt != nil {
+			*jobPosting.PublishedAt = time.Unix(jobPosting.PublishedAt.Unix(), 0)
+		}
+		if jobPosting.ClosedAt != nil {
+			*jobPosting.ClosedAt = time.Unix(jobPosting.ClosedAt.Unix(), 0)
+		}
+	}
 }

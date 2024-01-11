@@ -2,6 +2,7 @@ package svc
 
 import (
 	"context"
+	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	grpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/processor_grpc"
@@ -36,6 +37,19 @@ func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *grpc
 }
 
 func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *grpc.JobPostingInfo) (*grpc.BoolResponse, error) {
+	var publishedAt *time.Time = nil
+	if msg.PublishedAt != nil {
+		temp := time.Unix(*msg.PublishedAt, 0)
+		publishedAt = &temp
+	}
+
+	var closedAt *time.Time = nil
+	if msg.ClosedAt != nil {
+		temp := time.Unix(*msg.ClosedAt, 0)
+		closedAt = &temp
+	}
+
+	createdAt := time.Unix(msg.CreatedAt, 0)
 	jobPosting := jobposting.JobPostingInfo{
 		JobPostingId: jobposting.JobPostingId{
 			Site:      msg.Site,
@@ -61,10 +75,10 @@ func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *
 			Min: msg.RequiredCareer.Min,
 			Max: msg.RequiredCareer.Max,
 		},
-		PublishedAt: msg.PublishedAt,
-		ClosedAt:    msg.ClosedAt,
+		PublishedAt: publishedAt,
+		ClosedAt:    closedAt,
 		Address:     msg.Address,
-		CreatedAt:   msg.CreatedAt,
+		CreatedAt:   createdAt,
 	}
 
 	result, err := sv.jpRepo.Save(&jobPosting)
