@@ -27,7 +27,7 @@ func (cRepo *CompanyRepo) FindIDByName(ctx context.Context, companyName string) 
 		ID primitive.ObjectID `bson:"_id"`
 	}
 
-	opts := options.FindOne().SetProjection(bson.D{{company.IdField, 1}})
+	opts := options.FindOne().SetProjection(bson.D{{Key: company.IdField, Value: 1}})
 	err := cRepo.col.FindOne(ctx, bson.M{company.DefaultNameField: companyName}, opts).Decode(&result)
 
 	if err != nil {

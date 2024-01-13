@@ -8,6 +8,7 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
@@ -33,6 +34,12 @@ func InitDB(t *testing.T) *mongo.Database {
 	err = companyCol.Drop(context.TODO())
 	checkError(t, err)
 	createIndexes(t, companyCol, companyModel.IndexModels())
+
+	skillModel := &skill.Skill{}
+	skillCol := db.Collection(skillModel.Collection())
+	err = skillCol.Drop(context.TODO())
+	checkError(t, err)
+	createIndexes(t, skillCol, skillModel.IndexModels())
 
 	return db
 }
@@ -65,6 +72,15 @@ func InitCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
 	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
 
 	return companyRepo
+}
+
+func InitSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
+	db := InitDB(t)
+
+	skillCollection := db.Collection((&skill.Skill{}).Collection())
+	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
+
+	return skillRepo
 }
 
 func checkError(t *testing.T, err error) {
