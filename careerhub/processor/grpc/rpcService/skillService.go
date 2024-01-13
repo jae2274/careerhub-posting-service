@@ -38,7 +38,6 @@ func preprocessSkillNames(skillNames []string) []string {
 
 func preprocessSkillName(skillName string) string {
 	skillName = strings.TrimSpace(skillName)
-	skillName = strings.ToLower(skillName)
 	skillName = regexp.MustCompile(`\s+`).ReplaceAllString(skillName, " ")
 	return skillName
 }

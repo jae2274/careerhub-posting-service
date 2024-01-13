@@ -12,11 +12,12 @@ import (
 type DataProcessorServer struct {
 	jobPostingService *rpcService.JobPostingService
 	companyService    *rpcService.CompanyService
+	skillService      *rpcService.SkillService
 	processor_grpc.UnimplementedDataProcessorServer
 }
 
-func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService) *DataProcessorServer {
-	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService}
+func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService) *DataProcessorServer {
+	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService}
 }
 
 func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *processor_grpc.JobPostings) (*processor_grpc.BoolResponse, error) {
@@ -26,6 +27,12 @@ func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *proc
 }
 
 func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, jobPostingInfo *processor_grpc.JobPostingInfo) (*processor_grpc.BoolResponse, error) {
+	preprocessedSkillNames, err := sv.skillService.RegisterSkill(ctx, jobPostingInfo.RequiredSkill)
+	if err != nil {
+		return &processor_grpc.BoolResponse{Success: false}, err
+	}
+
+	jobPostingInfo.RequiredSkill = preprocessedSkillNames
 	result, err := sv.jobPostingService.RegisterJobPostingInfo(ctx, jobPostingInfo)
 
 	return &processor_grpc.BoolResponse{Success: result}, err

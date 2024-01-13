@@ -7,6 +7,7 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/gServer"
@@ -31,6 +32,10 @@ func main() {
 		(&company.Company{}).Collection(),
 	))
 
+	skillRepo := rpcRepo.NewSkillRepo(db.Collection(
+		(&skill.Skill{}).Collection(),
+	))
+
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", vars.GRPC_PORT))
 	checkErr(err)
 
@@ -38,6 +43,7 @@ func main() {
 	dataProcessorServer := gServer.NewDataProcessorServer(
 		rpcService.NewJobPostingService(jobPostingRepo),
 		rpcService.NewCompanyService(companyRepo),
+		rpcService.NewSkillService(skillRepo),
 	)
 
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
