@@ -37,14 +37,14 @@ func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *proc
 }
 
 func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *processor_grpc.JobPostingInfo) (*processor_grpc.BoolResponse, error) {
-	publishedAt := unixMilliToTimePtr(msg.PublishedAt)
-	closedAt := unixMilliToTimePtr(msg.ClosedAt)
-	createdAt := unixMilliToTime(msg.CreatedAt)
+	publishedAt := UnixMilliToTimePtr(msg.PublishedAt)
+	closedAt := UnixMilliToTimePtr(msg.ClosedAt)
+	createdAt := UnixMilliToTime(msg.CreatedAt)
 
 	jobPosting := jobposting.JobPostingInfo{
 		JobPostingId: jobposting.JobPostingId{
-			Site:      msg.Site,
-			PostingId: msg.PostingId,
+			Site:      msg.JobPostingId.Site,
+			PostingId: msg.JobPostingId.PostingId,
 		},
 		Status:      jobposting.HIRING,
 		CompanyId:   msg.CompanyId,
@@ -86,7 +86,7 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *pr
 		CompanyImages: gCompany.CompanyImages,
 		Description:   gCompany.Description,
 		CompanyLogo:   gCompany.CompanyLogo,
-		CreatedAt:     unixMilliToTime(gCompany.CreatedAt),
+		CreatedAt:     UnixMilliToTime(gCompany.CreatedAt),
 	}
 
 	existedCompanyId, err := sv.companyRepo.FindIDByName(ctx, gCompany.Name)
@@ -110,16 +110,16 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *pr
 	return &processor_grpc.BoolResponse{Success: result}, err
 }
 
-func unixMilliToTime(unixMilli int64) time.Time {
+func UnixMilliToTime(unixMilli int64) time.Time {
 	seconds := unixMilli / 1000
 	nanoseconds := (unixMilli % 1000) * 1e6
 	return time.Unix(seconds, nanoseconds)
 }
 
-func unixMilliToTimePtr(unixMilli *int64) *time.Time {
+func UnixMilliToTimePtr(unixMilli *int64) *time.Time {
 	if unixMilli == nil {
 		return nil
 	}
-	result := unixMilliToTime(*unixMilli)
+	result := UnixMilliToTime(*unixMilli)
 	return &result
 }
