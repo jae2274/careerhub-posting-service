@@ -19,8 +19,7 @@ type Skill struct {
 }
 
 type SkillName struct {
-	Name   string `bson:"name"`
-	Regexp string `bson:"regexp"`
+	Name string `bson:"name"`
 }
 
 func (*Skill) Collection() string {

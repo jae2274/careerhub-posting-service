@@ -12,6 +12,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/gServer"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcService"
 	"google.golang.org/grpc"
 )
 
@@ -34,7 +35,10 @@ func main() {
 	checkErr(err)
 
 	grpcServer := grpc.NewServer()
-	dataProcessorServer := gServer.NewDataProcessorServer(jobPostingRepo, companyRepo)
+	dataProcessorServer := gServer.NewDataProcessorServer(
+		rpcService.NewJobPostingService(jobPostingRepo),
+		rpcService.NewCompanyService(companyRepo),
+	)
 
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 
