@@ -9,9 +9,9 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/processor_grpc"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/repo"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/svc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/gServer"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
 	"google.golang.org/grpc"
 )
 
@@ -22,11 +22,11 @@ func main() {
 	db, err := mongocfg.NewDatabase(vars.MongoUri, vars.DbName)
 	checkErr(err)
 
-	jobPostingRepo := repo.NewJobPostingRepo(db.Collection(
+	jobPostingRepo := rpcRepo.NewJobPostingRepo(db.Collection(
 		(&jobposting.JobPostingInfo{}).Collection(),
 	))
 
-	companyRepo := repo.NewCompanyRepo(db.Collection(
+	companyRepo := rpcRepo.NewCompanyRepo(db.Collection(
 		(&company.Company{}).Collection(),
 	))
 
@@ -34,7 +34,7 @@ func main() {
 	checkErr(err)
 
 	grpcServer := grpc.NewServer()
-	dataProcessorServer := svc.NewDataProcessorServer(jobPostingRepo, companyRepo)
+	dataProcessorServer := gServer.NewDataProcessorServer(jobPostingRepo, companyRepo)
 
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 

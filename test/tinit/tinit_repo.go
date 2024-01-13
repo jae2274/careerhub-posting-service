@@ -10,7 +10,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/repo"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -49,20 +49,20 @@ func createIndexes(t *testing.T, col *mongo.Collection, indexModels map[string]*
 	}
 }
 
-func InitJobPostingRepo(t *testing.T) *repo.JobPostingRepo {
+func InitJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {
 	db := InitDB(t)
 
 	jobpostingCollection := db.Collection((&jobposting.JobPostingInfo{}).Collection())
-	jobpostingRepo := repo.NewJobPostingRepo(jobpostingCollection)
+	jobpostingRepo := rpcRepo.NewJobPostingRepo(jobpostingCollection)
 
 	return jobpostingRepo
 }
 
-func InitCompanyRepo(t *testing.T) *repo.CompanyRepo {
+func InitCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
 	db := InitDB(t)
 
 	companyCollection := db.Collection((&company.Company{}).Collection())
-	companyRepo := repo.NewCompanyRepo(companyCollection)
+	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
 
 	return companyRepo
 }

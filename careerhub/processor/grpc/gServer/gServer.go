@@ -1,4 +1,4 @@
-package svc
+package gServer
 
 import (
 	"context"
@@ -6,22 +6,22 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
-	grpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/processor_grpc"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/repo"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
 )
 
 // server is used to implement helloworld.GreeterServer.
 type DataProcessorServer struct {
-	jpRepo      *repo.JobPostingRepo
-	companyRepo *repo.CompanyRepo
-	grpc.UnimplementedDataProcessorServer
+	jpRepo      *rpcRepo.JobPostingRepo
+	companyRepo *rpcRepo.CompanyRepo
+	processor_grpc.UnimplementedDataProcessorServer
 }
 
-func NewDataProcessorServer(jpRepo *repo.JobPostingRepo, companyRepo *repo.CompanyRepo) *DataProcessorServer {
+func NewDataProcessorServer(jpRepo *rpcRepo.JobPostingRepo, companyRepo *rpcRepo.CompanyRepo) *DataProcessorServer {
 	return &DataProcessorServer{jpRepo: jpRepo, companyRepo: companyRepo}
 }
 
-func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *grpc.JobPostings) (*grpc.BoolResponse, error) {
+func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *processor_grpc.JobPostings) (*processor_grpc.BoolResponse, error) {
 	jpIds := make([]*jobposting.JobPostingId, len(gJpId.JobPostingIds))
 
 	for i, gJpId := range gJpId.JobPostingIds {
@@ -33,10 +33,10 @@ func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *grpc
 
 	err := sv.jpRepo.CloseAll(ctx, jpIds)
 
-	return &grpc.BoolResponse{Success: err == nil}, err
+	return &processor_grpc.BoolResponse{Success: err == nil}, err
 }
 
-func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *grpc.JobPostingInfo) (*grpc.BoolResponse, error) {
+func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *processor_grpc.JobPostingInfo) (*processor_grpc.BoolResponse, error) {
 	publishedAt := unixMilliToTimePtr(msg.PublishedAt)
 	closedAt := unixMilliToTimePtr(msg.ClosedAt)
 	createdAt := unixMilliToTime(msg.CreatedAt)
@@ -74,10 +74,10 @@ func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, msg *
 
 	result, err := sv.jpRepo.Save(ctx, &jobPosting)
 
-	return &grpc.BoolResponse{Success: result}, err
+	return &processor_grpc.BoolResponse{Success: result}, err
 }
 
-func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *grpc.Company) (*grpc.BoolResponse, error) {
+func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *processor_grpc.Company) (*processor_grpc.BoolResponse, error) {
 	siteCompany := &company.SiteCompany{
 		Site:          gCompany.Site,
 		CompanyId:     gCompany.CompanyId,
@@ -92,7 +92,7 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *gr
 	existedCompanyId, err := sv.companyRepo.FindIDByName(ctx, gCompany.Name)
 
 	if err != nil {
-		return &grpc.BoolResponse{Success: false}, err
+		return &processor_grpc.BoolResponse{Success: false}, err
 	}
 
 	var result bool
@@ -107,7 +107,7 @@ func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *gr
 		result, err = sv.companyRepo.InsertCompany(ctx, company)
 	}
 
-	return &grpc.BoolResponse{Success: result}, err
+	return &processor_grpc.BoolResponse{Success: result}, err
 }
 
 func unixMilliToTime(unixMilli int64) time.Time {

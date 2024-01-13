@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/processor_grpc"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/svc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/gServer"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/stretchr/testify/require"
@@ -16,7 +16,7 @@ import (
 func TestRegisterCompany(t *testing.T) {
 	t.Run("RegisterCompany", func(t *testing.T) {
 		companyRepo := tinit.InitCompanyRepo(t)
-		grpcServer := svc.NewDataProcessorServer(tinit.InitJobPostingRepo(t), companyRepo)
+		grpcServer := gServer.NewDataProcessorServer(tinit.InitJobPostingRepo(t), companyRepo)
 
 		pbCompanies := samplePbCompany()
 
