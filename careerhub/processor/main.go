@@ -18,23 +18,30 @@ import (
 )
 
 func main() {
+	log.Default().Println("Starting data processor...")
 	vars, err := vars.Variables()
 	checkErr(err)
 
 	db, err := mongocfg.NewDatabase(vars.MongoUri, vars.DbName)
 	checkErr(err)
 
-	jobPostingRepo := rpcRepo.NewJobPostingRepo(db.Collection(
-		(&jobposting.JobPostingInfo{}).Collection(),
-	))
+	jobPostingModel := &jobposting.JobPostingInfo{}
+	jobPostingCollection := db.Collection(jobPostingModel.Collection())
+	err = mongocfg.CheckIndexViaCollection(jobPostingCollection, jobPostingModel.IndexModels())
+	checkErr(err)
+	jobPostingRepo := rpcRepo.NewJobPostingRepo(jobPostingCollection)
 
-	companyRepo := rpcRepo.NewCompanyRepo(db.Collection(
-		(&company.Company{}).Collection(),
-	))
+	companyModel := &company.Company{}
+	companyCollection := db.Collection(companyModel.Collection())
+	err = mongocfg.CheckIndexViaCollection(companyCollection, companyModel.IndexModels())
+	checkErr(err)
+	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
 
-	skillRepo := rpcRepo.NewSkillRepo(db.Collection(
-		(&skill.Skill{}).Collection(),
-	))
+	skillModel := &skill.Skill{}
+	skillCollection := db.Collection(skillModel.Collection())
+	err = mongocfg.CheckIndexViaCollection(skillCollection, skillModel.IndexModels())
+	checkErr(err)
+	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", vars.GRPC_PORT))
 	checkErr(err)
@@ -48,6 +55,7 @@ func main() {
 
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 
+	log.Printf("gRPC server is running on port %d...", vars.GRPC_PORT)
 	err = grpcServer.Serve(listener)
 	checkErr(err)
 }

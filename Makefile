@@ -1,5 +1,6 @@
 BINARY_NAME=myapp
 CODE_DIR=./careerhub/processor
+CONTAINER_IMAGE_NAME=careerhub-dataprocessor
 
 include test.env
 
@@ -7,6 +8,11 @@ include test.env
 build:
 	@echo "Building..."
 	@go build -ldflags="-s -w" -o ${BINARY_NAME} ${CODE_DIR}
+	@echo "Built!"
+
+image_build:
+	@echo "Building..."
+	@docker build -t ${CONTAINER_IMAGE_NAME}:latest .
 	@echo "Built!"
 
 ## run: builds and runs the application

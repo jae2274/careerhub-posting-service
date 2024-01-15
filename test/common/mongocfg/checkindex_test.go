@@ -3,7 +3,11 @@ package mongocfg
 import (
 	"testing"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
+	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -59,6 +63,33 @@ func TestCheckIndex(t *testing.T) {
 
 		err := mongocfg.CheckIndex(indexes, indexModel)
 		require.NoError(t, err)
+	})
+
+	t.Run("Valid indexes via collection", func(t *testing.T) {
+		db := tinit.InitDB(t)
+
+		t.Run("jobposting", func(t *testing.T) {
+			jobpostingModel := &jobposting.JobPostingInfo{}
+
+			col := db.Collection(jobpostingModel.Collection())
+			err := mongocfg.CheckIndexViaCollection(col, jobpostingModel.IndexModels())
+			require.NoError(t, err)
+		})
+		t.Run("company", func(t *testing.T) {
+			companyModel := &company.Company{}
+
+			col := db.Collection(companyModel.Collection())
+			err := mongocfg.CheckIndexViaCollection(col, companyModel.IndexModels())
+			require.NoError(t, err)
+		})
+
+		t.Run("skill", func(t *testing.T) {
+			skillModel := &skill.Skill{}
+
+			col := db.Collection(skillModel.Collection())
+			err := mongocfg.CheckIndexViaCollection(col, skillModel.IndexModels())
+			require.NoError(t, err)
+		})
 	})
 
 	t.Run("Invalid indexes", func(t *testing.T) {

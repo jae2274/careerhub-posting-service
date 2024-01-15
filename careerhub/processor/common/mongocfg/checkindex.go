@@ -2,6 +2,7 @@ package mongocfg
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/bson"
@@ -56,7 +57,7 @@ func checkIndexes(indexes []bson.M, indexModels map[string]*mongo.IndexModel) er
 	for _, indexSpec := range indexes {
 		indexName, ok := indexSpec["name"].(string)
 		if !ok {
-			return terr.New("invalid index")
+			return terr.New("invalid index. name is not string")
 		}
 
 		if indexName == "_id_" {
@@ -65,44 +66,43 @@ func checkIndexes(indexes []bson.M, indexModels map[string]*mongo.IndexModel) er
 
 		indexModel, ok := indexModels[indexName]
 		if !ok {
-			return terr.New("invalid index")
+			return terr.New(fmt.Sprintf("invalid index. index name is not exist. indexName:%s", indexName))
 		}
 
-		isEqual, err := isEqualIndex(indexSpec, indexModel)
+		err := isEqualIndex(indexName, indexSpec, indexModel)
 
 		if err != nil {
 			return err
-		}
-
-		if !isEqual {
-			return terr.New("invalid index")
 		}
 	}
 
 	return nil
 }
 
-func isEqualIndex(indexSpec bson.M, indexModel *mongo.IndexModel) (bool, error) {
+func isEqualIndex(indexName string, indexSpec bson.M, indexModel *mongo.IndexModel) error {
 	// fmt.Println(indexSpec)
 	// fmt.Println(indexModel)
 	modelKey, ok := indexModel.Keys.(bson.D)
 	if !ok {
-		return false, terr.New("invalid index")
+		return terr.New(fmt.Sprintf("invalid index %s. keys is not bson.D", indexName))
 	}
 
 	specKey, ok := indexSpec["key"].(bson.M)
 
 	if !ok {
-		return false, terr.New("invalid index")
+		return terr.New(fmt.Sprintf("invalid index %s. key is not bson.M", indexName))
 	}
 
 	if len(modelKey) != len(specKey) {
-		return false, nil
+		return terr.New(fmt.Sprintf("invalid index %s. key length is not equal. len(modelKey): %d, len(specKey): %d", indexName, len(modelKey), len(specKey)))
 	}
 
 	for _, modelKeyElem := range modelKey {
-		if specKey[modelKeyElem.Key] != modelKeyElem.Value {
-			return false, nil
+		specValue := int(specKey[modelKeyElem.Key].(int32))
+		modelValue := modelKeyElem.Value.(int)
+
+		if specValue != modelValue {
+			return terr.New(fmt.Sprintf("invalid index %s. key is not equal. specKey[modelKeyElem.Key]: %v, modelKeyElem.Value: %v", indexName, specValue, modelValue))
 		}
 	}
 
@@ -118,17 +118,17 @@ func isEqualIndex(indexSpec bson.M, indexModel *mongo.IndexModel) (bool, error) 
 	if existedSpecUnique {
 		specUnique, ok = uniqueM.(bool)
 		if !ok {
-			return false, terr.New("invalid index")
+			return terr.New(fmt.Sprintf("invalid index %s. unique is not bool", indexName))
 		}
 	}
 
 	if existedModelUnique != existedSpecUnique {
-		return false, nil
+		return terr.New(fmt.Sprintf("invalid index %s. unique is not equal. existedModelUnique:%v, existedSpecUnique:%v", indexName, existedModelUnique, existedSpecUnique))
 	}
 
 	if modelUnique != specUnique {
-		return false, nil
+		return terr.New(fmt.Sprintf("invalid index %s. unique is not equal. modelUnique:%v, specUnique:%v", indexName, modelUnique, specUnique))
 	}
 
-	return true, nil
+	return nil
 }
