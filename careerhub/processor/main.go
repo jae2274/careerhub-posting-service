@@ -1,8 +1,8 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"log"
 	"net"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
@@ -14,37 +14,40 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcService"
+	"github.com/jae2274/goutils/llog"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	log.Default().Println("Starting data processor...")
+	ctx := context.Background()
+	llog.Info(ctx, "Starting data processor...")
+
 	vars, err := vars.Variables()
-	checkErr(err)
+	checkErr(ctx, err)
 
 	db, err := mongocfg.NewDatabase(vars.MongoUri, vars.DbName)
-	checkErr(err)
+	checkErr(ctx, err)
 
 	jobPostingModel := &jobposting.JobPostingInfo{}
 	jobPostingCollection := db.Collection(jobPostingModel.Collection())
 	err = mongocfg.CheckIndexViaCollection(jobPostingCollection, jobPostingModel.IndexModels())
-	checkErr(err)
+	checkErr(ctx, err)
 	jobPostingRepo := rpcRepo.NewJobPostingRepo(jobPostingCollection)
 
 	companyModel := &company.Company{}
 	companyCollection := db.Collection(companyModel.Collection())
 	err = mongocfg.CheckIndexViaCollection(companyCollection, companyModel.IndexModels())
-	checkErr(err)
+	checkErr(ctx, err)
 	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
 
 	skillModel := &skill.Skill{}
 	skillCollection := db.Collection(skillModel.Collection())
 	err = mongocfg.CheckIndexViaCollection(skillCollection, skillModel.IndexModels())
-	checkErr(err)
+	checkErr(ctx, err)
 	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", vars.GRPC_PORT))
-	checkErr(err)
+	checkErr(ctx, err)
 
 	grpcServer := grpc.NewServer()
 	dataProcessorServer := gServer.NewDataProcessorServer(
@@ -55,13 +58,14 @@ func main() {
 
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 
-	log.Printf("gRPC server is running on port %d...", vars.GRPC_PORT)
+	llog.Msg("gRPC server is running").Data("port", vars.GRPC_PORT).Log(ctx)
+
 	err = grpcServer.Serve(listener)
-	checkErr(err)
+	checkErr(ctx, err)
 }
 
-func checkErr(err error) {
+func checkErr(ctx context.Context, err error) {
 	if err != nil {
-		log.Fatal(err)
+		llog.LogErr(ctx, err)
 	}
 }
