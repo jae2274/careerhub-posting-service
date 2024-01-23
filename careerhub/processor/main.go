@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
@@ -67,5 +68,6 @@ func main() {
 func checkErr(ctx context.Context, err error) {
 	if err != nil {
 		llog.LogErr(ctx, err)
+		os.Exit(1)
 	}
 }
