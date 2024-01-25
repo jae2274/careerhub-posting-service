@@ -19,8 +19,44 @@ import (
 	"google.golang.org/grpc"
 )
 
+const (
+	app     = "data-processor"
+	service = "careerhub"
+
+	ctxKeyTraceID = "trace_id"
+)
+
 func main() {
 	ctx := context.Background()
+
+	initLogger(ctx)
+	listener, jobPostingRepo, companyRepo, skillRepo := initApp(ctx)
+
+	dataProcessorServer := gServer.NewDataProcessorServer(
+		rpcService.NewJobPostingService(jobPostingRepo),
+		rpcService.NewCompanyService(companyRepo),
+		rpcService.NewSkillService(skillRepo),
+	)
+
+	grpcServer := grpc.NewServer()
+	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
+
+	err := grpcServer.Serve(listener)
+	checkErr(ctx, err)
+}
+
+func initLogger(ctx context.Context) {
+	llog.SetMetadata("service", service)
+	llog.SetMetadata("app", app)
+	llog.SetDefaultContextData(ctxKeyTraceID)
+
+	hostname, err := os.Hostname()
+	checkErr(ctx, err)
+
+	llog.SetMetadata("hostname", hostname)
+}
+
+func initApp(ctx context.Context) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRepo.CompanyRepo, *rpcRepo.SkillRepo) {
 	llog.Info(ctx, "Starting data processor...")
 
 	vars, err := vars.Variables()
@@ -45,24 +81,16 @@ func main() {
 	skillCollection := db.Collection(skillModel.Collection())
 	err = mongocfg.CheckIndexViaCollection(skillCollection, skillModel.IndexModels())
 	checkErr(ctx, err)
+
 	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
+	checkErr(ctx, err)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", vars.GRPC_PORT))
 	checkErr(ctx, err)
 
-	grpcServer := grpc.NewServer()
-	dataProcessorServer := gServer.NewDataProcessorServer(
-		rpcService.NewJobPostingService(jobPostingRepo),
-		rpcService.NewCompanyService(companyRepo),
-		rpcService.NewSkillService(skillRepo),
-	)
+	llog.Msg("Start gRPC server").Data("port", vars.GRPC_PORT).Log(context.Background())
 
-	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
-
-	llog.Msg("gRPC server is running").Data("port", vars.GRPC_PORT).Log(ctx)
-
-	err = grpcServer.Serve(listener)
-	checkErr(ctx, err)
+	return listener, jobPostingRepo, companyRepo, skillRepo
 }
 
 func checkErr(ctx context.Context, err error) {
