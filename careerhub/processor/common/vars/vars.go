@@ -7,9 +7,10 @@ import (
 )
 
 type Vars struct {
-	MongoUri  string
-	DbName    string
-	GRPC_PORT int
+	MongoUri   string
+	DbName     string
+	GRPC_PORT  int
+	PostLogUrl string
 }
 
 type ErrNotExistedVar struct {
@@ -40,15 +41,21 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
+	postLogUrl, err := getFromEnv("POST_LOG_URL")
+	if err != nil {
+		return nil, err
+	}
+
 	grpcPortInt, err := strconv.ParseInt(grpcPort, 10, 32)
 	if err != nil {
 		return nil, fmt.Errorf("GRPC_PORT is not integer.\tGRPC_PORT: %s", grpcPort)
 	}
 
 	return &Vars{
-		MongoUri:  mongoUri,
-		DbName:    dbName,
-		GRPC_PORT: int(grpcPortInt),
+		MongoUri:   mongoUri,
+		DbName:     dbName,
+		GRPC_PORT:  int(grpcPortInt),
+		PostLogUrl: postLogUrl,
 	}, nil
 }
 

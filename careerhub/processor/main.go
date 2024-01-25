@@ -15,6 +15,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcService"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/logger"
 	"github.com/jae2274/goutils/llog"
 	"google.golang.org/grpc"
 )
@@ -28,9 +29,11 @@ const (
 
 func main() {
 	ctx := context.Background()
+	envVars, err := vars.Variables()
+	checkErr(ctx, err)
 
-	initLogger(ctx)
-	listener, jobPostingRepo, companyRepo, skillRepo := initApp(ctx)
+	initLogger(ctx, envVars.PostLogUrl)
+	listener, jobPostingRepo, companyRepo, skillRepo := initApp(ctx, envVars)
 
 	dataProcessorServer := gServer.NewDataProcessorServer(
 		rpcService.NewJobPostingService(jobPostingRepo),
@@ -41,11 +44,11 @@ func main() {
 	grpcServer := grpc.NewServer()
 	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 
-	err := grpcServer.Serve(listener)
+	err = grpcServer.Serve(listener)
 	checkErr(ctx, err)
 }
 
-func initLogger(ctx context.Context) {
+func initLogger(ctx context.Context, postUrl string) {
 	llog.SetMetadata("service", service)
 	llog.SetMetadata("app", app)
 	llog.SetDefaultContextData(ctxKeyTraceID)
@@ -54,15 +57,17 @@ func initLogger(ctx context.Context) {
 	checkErr(ctx, err)
 
 	llog.SetMetadata("hostname", hostname)
-}
 
-func initApp(ctx context.Context) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRepo.CompanyRepo, *rpcRepo.SkillRepo) {
-	llog.Info(ctx, "Starting data processor...")
-
-	vars, err := vars.Variables()
+	appLogger, err := logger.NewAppLogger(ctx, postUrl)
 	checkErr(ctx, err)
 
-	db, err := mongocfg.NewDatabase(vars.MongoUri, vars.DbName)
+	llog.SetDefaultLLoger(appLogger)
+}
+
+func initApp(ctx context.Context, envVars *vars.Vars) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRepo.CompanyRepo, *rpcRepo.SkillRepo) {
+	llog.Info(ctx, "Starting data processor...")
+
+	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName)
 	checkErr(ctx, err)
 
 	jobPostingModel := &jobposting.JobPostingInfo{}
@@ -85,10 +90,10 @@ func initApp(ctx context.Context) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRe
 	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
 	checkErr(ctx, err)
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", vars.GRPC_PORT))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", envVars.GRPC_PORT))
 	checkErr(ctx, err)
 
-	llog.Msg("Start gRPC server").Data("port", vars.GRPC_PORT).Log(context.Background())
+	llog.Msg("Start gRPC server").Data("port", envVars.GRPC_PORT).Log(context.Background())
 
 	return listener, jobPostingRepo, companyRepo, skillRepo
 }
