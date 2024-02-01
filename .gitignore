@@ -1,3 +1,3 @@
 test.env
 myapp
-*.pb.go
+# *.pb.go
