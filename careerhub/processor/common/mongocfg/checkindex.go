@@ -98,7 +98,17 @@ func isEqualIndex(indexName string, indexSpec bson.M, indexModel *mongo.IndexMod
 	}
 
 	for _, modelKeyElem := range modelKey {
-		specValue := int(specKey[modelKeyElem.Key].(int32))
+		var specValue int
+
+		switch v := specKey[modelKeyElem.Key].(type) {
+		case int32:
+			specValue = int(v)
+		case int:
+			specValue = v
+		default:
+			return terr.New(fmt.Sprintf("unsupported type %T for specKey[modelKeyElem.Key]", v))
+		}
+
 		modelValue := modelKeyElem.Value.(int)
 
 		if specValue != modelValue {
