@@ -6,9 +6,15 @@ import (
 	"strconv"
 )
 
+type DBUser struct {
+	Username string
+	Password string
+}
+
 type Vars struct {
 	MongoUri   string
 	DbName     string
+	DBUser     *DBUser
 	GRPC_PORT  int
 	PostLogUrl string
 }
@@ -29,6 +35,17 @@ func Variables() (*Vars, error) {
 	mongoUri, err := getFromEnv("MONGO_URI")
 	if err != nil {
 		return nil, err
+	}
+
+	dbUsername := getFromEnvPtr("DB_USERNAME")
+	dbPassword := getFromEnvPtr("DB_PASSWORD")
+
+	var dbUser *DBUser
+	if dbUsername != nil && dbPassword != nil {
+		dbUser = &DBUser{
+			Username: *dbUsername,
+			Password: *dbPassword,
+		}
 	}
 
 	dbName, err := getFromEnv("DB_NAME")
@@ -53,6 +70,7 @@ func Variables() (*Vars, error) {
 
 	return &Vars{
 		MongoUri:   mongoUri,
+		DBUser:     dbUser,
 		DbName:     dbName,
 		GRPC_PORT:  int(grpcPortInt),
 		PostLogUrl: postLogUrl,
@@ -67,4 +85,14 @@ func getFromEnv(envVar string) (string, error) {
 	}
 
 	return ev, nil
+}
+
+func getFromEnvPtr(envVar string) *string {
+	ev := os.Getenv(envVar)
+
+	if ev == "" {
+		return nil
+	}
+
+	return &ev
 }

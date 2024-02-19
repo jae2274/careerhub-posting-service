@@ -67,7 +67,7 @@ func initLogger(ctx context.Context, postUrl string) {
 func initApp(ctx context.Context, envVars *vars.Vars) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRepo.CompanyRepo, *rpcRepo.SkillRepo) {
 	llog.Info(ctx, "Starting data processor...")
 
-	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName)
+	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
 	checkErr(ctx, err)
 
 	jobPostingModel := &jobposting.JobPostingInfo{}

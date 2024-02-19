@@ -20,7 +20,7 @@ func InitDB(t *testing.T) *mongo.Database {
 	envVars, err := vars.Variables()
 	checkError(t, err)
 
-	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName)
+	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
 	checkError(t, err)
 
 	jpModel := &jobposting.JobPostingInfo{}
