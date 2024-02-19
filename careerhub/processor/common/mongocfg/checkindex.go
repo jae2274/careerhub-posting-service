@@ -11,7 +11,7 @@ import (
 
 func CheckIndex(indexes []bson.M, indexModels map[string]*mongo.IndexModel) error {
 	if len(indexes)-1 != len(indexModels) { // -1 because of _id_
-		return terr.New("invalid index")
+		return terr.New("invalid index. index length is not equal. indexes: " + fmt.Sprint(indexes) + ", indexModels: " + fmt.Sprint(indexModels))
 	}
 
 	err := checkIndexes(indexes, indexModels)
