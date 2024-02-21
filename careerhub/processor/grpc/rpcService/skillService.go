@@ -19,6 +19,10 @@ func NewSkillService(skillRepo *rpcRepo.SkillRepo) *SkillService {
 }
 
 func (s *SkillService) RegisterSkill(ctx context.Context, skillNames []string) ([]string, error) {
+	if len(skillNames) == 0 {
+		return []string{}, nil
+	}
+
 	skillNames = preprocessSkillNames(skillNames)
 	err := s.skillRepo.SaveSkills(ctx, skillNames)
 
