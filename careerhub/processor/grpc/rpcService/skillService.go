@@ -37,6 +37,7 @@ func preprocessSkillNames(skillNames []string) []string {
 
 	skillNames = removeEmpty(skillNames)
 	skillNames = removeDuplicate(skillNames)
+	skillNames = lowerCase(skillNames)
 	return skillNames
 }
 
@@ -68,4 +69,11 @@ func removeDuplicate(skillNames []string) []string {
 	}
 
 	return resultSkillNames
+}
+
+func lowerCase(skillNames []string) []string {
+	for i, skillName := range skillNames {
+		skillNames[i] = strings.ToLower(skillName)
+	}
+	return skillNames
 }
