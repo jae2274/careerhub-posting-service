@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/provider_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/jae2274/goutils/ptr"
@@ -34,8 +34,8 @@ func TestRegisterNCloseJobPostings(t *testing.T) {
 		}
 
 		// CloseJobPostings
-		jobPostingService.CloseJobPostings(context.TODO(), &processor_grpc.JobPostings{
-			JobPostingIds: []*processor_grpc.JobPostingId{
+		jobPostingService.CloseJobPostings(context.TODO(), &provider_grpc.JobPostings{
+			JobPostingIds: []*provider_grpc.JobPostingId{
 				pbJobPostings[0].JobPostingId,
 				pbJobPostings[2].JobPostingId,
 			},
@@ -52,7 +52,7 @@ func TestRegisterNCloseJobPostings(t *testing.T) {
 	})
 }
 
-func assertJobPostingEqual(t *testing.T, pbJobPosting *processor_grpc.JobPostingInfo, savedJobPosting *jobposting.JobPostingInfo) {
+func assertJobPostingEqual(t *testing.T, pbJobPosting *provider_grpc.JobPostingInfo, savedJobPosting *jobposting.JobPostingInfo) {
 	require.Equal(t, pbJobPosting.JobPostingId.Site, savedJobPosting.JobPostingId.Site)
 	require.Equal(t, pbJobPosting.JobPostingId.PostingId, savedJobPosting.JobPostingId.PostingId)
 	require.Equal(t, pbJobPosting.CompanyId, savedJobPosting.CompanyId)
@@ -107,17 +107,17 @@ func assertJobPostingEqual(t *testing.T, pbJobPosting *processor_grpc.JobPosting
 	require.Equal(t, pbJobPosting.CreatedAt, (savedJobPosting.CreatedAt).UnixMilli())
 }
 
-func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
-	return []*processor_grpc.JobPostingInfo{
+func samplePbJobPostings() []*provider_grpc.JobPostingInfo {
+	return []*provider_grpc.JobPostingInfo{
 		{
-			JobPostingId: &processor_grpc.JobPostingId{
+			JobPostingId: &provider_grpc.JobPostingId{
 				Site:      "jumpit",
 				PostingId: "jumpit_job1",
 			},
 			CompanyId:   "jumpit_company1",
 			CompanyName: "gogule job1",
 			JobCategory: []string{"IT", "WEB"},
-			MainContent: &processor_grpc.MainContent{
+			MainContent: &provider_grpc.MainContent{
 				PostUrl:        "https://www.gogule.com/job1",
 				Title:          "gogule job1",
 				Intro:          "gogule intro is a job by jumpit",
@@ -129,7 +129,7 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			},
 			RequiredSkill: []string{"golang", "python"},
 			Tags:          []string{"간식", "칼퇴"},
-			RequiredCareer: &processor_grpc.Career{
+			RequiredCareer: &provider_grpc.Career{
 				Min: ptr.P(int32(1)),
 				Max: ptr.P(int32(3)),
 			},
@@ -139,14 +139,14 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			CreatedAt:   time.Now().UnixMilli(),
 		},
 		{
-			JobPostingId: &processor_grpc.JobPostingId{
+			JobPostingId: &provider_grpc.JobPostingId{
 				Site:      "jumpit",
 				PostingId: "jumpit_job2",
 			},
 			CompanyId:   "jumpit_company1",
 			CompanyName: "gogule job1",
 			JobCategory: []string{"MARKETING", "BUSENESS"},
-			MainContent: &processor_grpc.MainContent{
+			MainContent: &provider_grpc.MainContent{
 				PostUrl:        "https://www.gogule.com/job2",
 				Title:          "gogule job2",
 				Intro:          "gogule intro2 is a job by jumpit",
@@ -158,7 +158,7 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			},
 			RequiredSkill: []string{"excel", "powerpoint"},
 			Tags:          []string{"연봉1%", "스톡옵션"},
-			RequiredCareer: &processor_grpc.Career{
+			RequiredCareer: &provider_grpc.Career{
 				Min: ptr.P(int32(5)),
 			},
 			PublishedAt: ptr.P(time.Now().UnixMilli()),
@@ -167,14 +167,14 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			CreatedAt:   time.Now().UnixMilli(),
 		},
 		{
-			JobPostingId: &processor_grpc.JobPostingId{
+			JobPostingId: &provider_grpc.JobPostingId{
 				Site:      "wanted",
 				PostingId: "wanted_job1",
 			},
 			CompanyId:   "wanted_company1",
 			CompanyName: "fadeout job1",
 			JobCategory: []string{"ENGINEER"},
-			MainContent: &processor_grpc.MainContent{
+			MainContent: &provider_grpc.MainContent{
 				PostUrl:        "https://www.fadeout.com/job1",
 				Title:          "fadeout job1",
 				Intro:          "fadeout intro is a job by wanted",
@@ -186,7 +186,7 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			},
 			RequiredSkill: []string{"linux", "c++"},
 			Tags:          []string{"점심지급"},
-			RequiredCareer: &processor_grpc.Career{
+			RequiredCareer: &provider_grpc.Career{
 				Max: ptr.P(int32(5)),
 			},
 			PublishedAt: ptr.P(time.Now().UnixMilli()),
@@ -194,14 +194,14 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			CreatedAt:   time.Now().UnixMilli(),
 		},
 		{
-			JobPostingId: &processor_grpc.JobPostingId{
+			JobPostingId: &provider_grpc.JobPostingId{
 				Site:      "wanted",
 				PostingId: "wanted_job2",
 			},
 			CompanyId:   "wanted_company2",
 			CompanyName: "applepie job1",
 			JobCategory: []string{"DESIGN"},
-			MainContent: &processor_grpc.MainContent{
+			MainContent: &provider_grpc.MainContent{
 				PostUrl:        "https://www.applepie.com/job1",
 				Title:          "applepie job1",
 				Intro:          "applepie intro is a job by wanted",
@@ -213,7 +213,7 @@ func samplePbJobPostings() []*processor_grpc.JobPostingInfo {
 			},
 			RequiredSkill:  []string{"photoshop", "illustrator"},
 			Tags:           []string{"퇴근시간자유"},
-			RequiredCareer: &processor_grpc.Career{},
+			RequiredCareer: &provider_grpc.Career{},
 			ClosedAt:       ptr.P(time.Now().UnixMilli()),
 			Address:        []string{"중국", "북경"},
 			CreatedAt:      time.Now().UnixMilli(),

@@ -5,7 +5,7 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/utils"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/provider_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
 )
 
@@ -19,7 +19,7 @@ func NewJobPostingService(jobPostingRepo *rpcRepo.JobPostingRepo) *JobPostingSer
 	}
 }
 
-func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *processor_grpc.JobPostingInfo) (bool, error) {
+func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *provider_grpc.JobPostingInfo) (bool, error) {
 	publishedAt := utils.UnixMilliToTimePtr(msg.PublishedAt)
 	closedAt := utils.UnixMilliToTimePtr(msg.ClosedAt)
 	createdAt := utils.UnixMilliToTime(msg.CreatedAt)
@@ -66,7 +66,7 @@ func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *pr
 	return sv.jpRepo.Save(ctx, &jobPosting)
 }
 
-func (sv *JobPostingService) CloseJobPostings(ctx context.Context, gJpId *processor_grpc.JobPostings) error {
+func (sv *JobPostingService) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) error {
 	jpIds := make([]*jobposting.JobPostingId, len(gJpId.JobPostingIds))
 
 	for i, gJpId := range gJpId.JobPostingIds {

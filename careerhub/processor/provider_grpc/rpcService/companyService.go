@@ -5,7 +5,7 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/utils"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/provider_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
 )
 
@@ -17,7 +17,7 @@ func NewCompanyService(companyRepo *rpcRepo.CompanyRepo) *CompanyService {
 	return &CompanyService{companyRepo: companyRepo}
 }
 
-func (sv *CompanyService) RegisterCompany(ctx context.Context, gCompany *processor_grpc.Company) (bool, error) {
+func (sv *CompanyService) RegisterCompany(ctx context.Context, gCompany *provider_grpc.Company) (bool, error) {
 	siteCompany := &company.SiteCompany{
 		Site:          gCompany.Site,
 		CompanyId:     gCompany.CompanyId,

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/provider_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
 )
 
@@ -13,35 +13,35 @@ type DataProcessorServer struct {
 	jobPostingService *rpcService.JobPostingService
 	companyService    *rpcService.CompanyService
 	skillService      *rpcService.SkillService
-	processor_grpc.UnimplementedDataProcessorServer
+	provider_grpc.UnimplementedDataProcessorServer
 }
 
 func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService) *DataProcessorServer {
 	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService}
 }
 
-func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *processor_grpc.JobPostings) (*processor_grpc.BoolResponse, error) {
+func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) (*provider_grpc.BoolResponse, error) {
 	err := sv.jobPostingService.CloseJobPostings(ctx, gJpId)
 
-	return &processor_grpc.BoolResponse{Success: err == nil}, err
+	return &provider_grpc.BoolResponse{Success: err == nil}, err
 }
 
-func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, jobPostingInfo *processor_grpc.JobPostingInfo) (*processor_grpc.BoolResponse, error) {
+func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, jobPostingInfo *provider_grpc.JobPostingInfo) (*provider_grpc.BoolResponse, error) {
 	preprocessedSkillNames, err := sv.skillService.RegisterSkill(ctx, jobPostingInfo.RequiredSkill)
 	if err != nil {
-		return &processor_grpc.BoolResponse{Success: false}, err
+		return &provider_grpc.BoolResponse{Success: false}, err
 	}
 
 	jobPostingInfo.RequiredSkill = preprocessedSkillNames
 	result, err := sv.jobPostingService.RegisterJobPostingInfo(ctx, jobPostingInfo)
 
-	return &processor_grpc.BoolResponse{Success: result}, err
+	return &provider_grpc.BoolResponse{Success: result}, err
 }
 
-func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *processor_grpc.Company) (*processor_grpc.BoolResponse, error) {
+func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *provider_grpc.Company) (*provider_grpc.BoolResponse, error) {
 	result, err := sv.companyService.RegisterCompany(ctx, gCompany)
 
-	return &processor_grpc.BoolResponse{Success: result}, err
+	return &provider_grpc.BoolResponse{Success: result}, err
 }
 
 func UnixMilliToTime(unixMilli int64) time.Time {

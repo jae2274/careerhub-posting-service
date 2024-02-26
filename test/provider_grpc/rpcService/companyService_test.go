@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/provider_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/jae2274/goutils/ptr"
@@ -51,8 +51,8 @@ func TestRegisterCompany(t *testing.T) {
 	})
 }
 
-func samplePbCompany() []*processor_grpc.Company {
-	return []*processor_grpc.Company{
+func samplePbCompany() []*provider_grpc.Company {
+	return []*provider_grpc.Company{
 		{
 			Site:       "jumpit",
 			CompanyId:  "jumpit_company1",

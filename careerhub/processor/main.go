@@ -13,7 +13,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/logger"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/gServer"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/provider_grpc"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
 	"github.com/jae2274/goutils/llog"
@@ -42,7 +42,7 @@ func main() {
 	)
 
 	grpcServer := grpc.NewServer()
-	processor_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
+	provider_grpc.RegisterDataProcessorServer(grpcServer, dataProcessorServer) //client가 사용할 수 있도록 등록
 
 	err = grpcServer.Serve(listener)
 	checkErr(ctx, err)

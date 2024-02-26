@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v4.25.1
-// source: careerhub/processor/grpc/processor_grpc/grpc.proto
+// source: careerhub/processor/provider_grpc/provider_grpc/grpc.proto
 
-package processor_grpc
+package provider_grpc
 
 import (
 	context "context"
@@ -37,7 +37,7 @@ func NewDataProcessorClient(cc grpc.ClientConnInterface) DataProcessorClient {
 
 func (c *dataProcessorClient) CloseJobPostings(ctx context.Context, in *JobPostings, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.processor_grpc.DataProcessor/CloseJobPostings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.DataProcessor/CloseJobPostings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +46,7 @@ func (c *dataProcessorClient) CloseJobPostings(ctx context.Context, in *JobPosti
 
 func (c *dataProcessorClient) RegisterJobPostingInfo(ctx context.Context, in *JobPostingInfo, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.processor_grpc.DataProcessor/RegisterJobPostingInfo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.DataProcessor/RegisterJobPostingInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (c *dataProcessorClient) RegisterJobPostingInfo(ctx context.Context, in *Jo
 
 func (c *dataProcessorClient) RegisterCompany(ctx context.Context, in *Company, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.processor_grpc.DataProcessor/RegisterCompany", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.DataProcessor/RegisterCompany", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +108,7 @@ func _DataProcessor_CloseJobPostings_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.processor_grpc.DataProcessor/CloseJobPostings",
+		FullMethod: "/careerhub.processor.provider_grpc.DataProcessor/CloseJobPostings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataProcessorServer).CloseJobPostings(ctx, req.(*JobPostings))
@@ -126,7 +126,7 @@ func _DataProcessor_RegisterJobPostingInfo_Handler(srv interface{}, ctx context.
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.processor_grpc.DataProcessor/RegisterJobPostingInfo",
+		FullMethod: "/careerhub.processor.provider_grpc.DataProcessor/RegisterJobPostingInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataProcessorServer).RegisterJobPostingInfo(ctx, req.(*JobPostingInfo))
@@ -144,7 +144,7 @@ func _DataProcessor_RegisterCompany_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.processor_grpc.DataProcessor/RegisterCompany",
+		FullMethod: "/careerhub.processor.provider_grpc.DataProcessor/RegisterCompany",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(DataProcessorServer).RegisterCompany(ctx, req.(*Company))
@@ -156,7 +156,7 @@ func _DataProcessor_RegisterCompany_Handler(srv interface{}, ctx context.Context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var DataProcessor_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "careerhub.processor.processor_grpc.DataProcessor",
+	ServiceName: "careerhub.processor.provider_grpc.DataProcessor",
 	HandlerType: (*DataProcessorServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -173,5 +173,5 @@ var DataProcessor_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "careerhub/processor/grpc/processor_grpc/grpc.proto",
+	Metadata: "careerhub/processor/provider_grpc/provider_grpc/grpc.proto",
 }
