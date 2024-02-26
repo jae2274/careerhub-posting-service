@@ -83,8 +83,13 @@ func samples() []*jobposting.JobPostingInfo {
 			Preferred:      "samplePreferred",
 			Benefits:       "sampleBenefits",
 		},
-		RequiredSkill: []string{"sampleRequiredSkill"},
-		Tags:          []string{"sampleTags"},
+		RequiredSkill: []jobposting.RequiredSkill{
+			{
+				SkillFrom: jobposting.Origin,
+				SkillName: "sampleSkillName",
+			},
+		},
+		Tags: []string{"sampleTags"},
 		RequiredCareer: jobposting.Career{
 			Min: ptr.P(int32(1)),
 			Max: ptr.P(int32(3)),
@@ -114,8 +119,13 @@ func samples() []*jobposting.JobPostingInfo {
 			Preferred:      "samplePreferred2",
 			Benefits:       "sampleBenefits2",
 		},
-		RequiredSkill: []string{"sampleRequiredSkill2"},
-		Tags:          []string{"sampleTags2"},
+		RequiredSkill: []jobposting.RequiredSkill{
+			{
+				SkillFrom: jobposting.Origin,
+				SkillName: "sampleSkillName2",
+			},
+		},
+		Tags: []string{"sampleTags2"},
 		RequiredCareer: jobposting.Career{
 			Min: ptr.P(int32(2)),
 			Max: ptr.P(int32(4)),

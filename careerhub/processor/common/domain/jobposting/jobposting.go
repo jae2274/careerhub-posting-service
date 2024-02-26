@@ -54,7 +54,7 @@ type JobPostingInfo struct {
 	CompanyName    string             `bson:"companyName"`
 	JobCategory    []string           `bson:"jobCategory"`
 	MainContent    MainContent        `bson:"mainContent"`
-	RequiredSkill  []string           `bson:"requiredSkill"`
+	RequiredSkill  []RequiredSkill    `bson:"requiredSkill"`
 	Tags           []string           `bson:"tags"`
 	RequiredCareer Career             `bson:"requiredCareer"`
 	PublishedAt    *time.Time         `bson:"publishedAt,omitempty"`
@@ -74,6 +74,23 @@ type MainContent struct {
 	Preferred      string  `bson:"preferred"`
 	Benefits       string  `bson:"benefits"`
 	RecruitProcess *string `bson:"recruitProcess,omitempty"`
+}
+
+type SkillFromValues struct{}
+type SkillFrom = enum.Enum[SkillFromValues]
+
+const (
+	Scanned = SkillFrom("SCANNED")
+	Origin  = SkillFrom("ORIGIN")
+)
+
+func (SkillFromValues) Values() []string {
+	return []string{string(Scanned), string(Origin)}
+}
+
+type RequiredSkill struct {
+	SkillFrom SkillFrom `bson:"skillFrom"`
+	SkillName string    `bson:"skillName"`
 }
 
 type Career struct {

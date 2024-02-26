@@ -68,7 +68,13 @@ func assertJobPostingEqual(t *testing.T, pbJobPosting *processor_grpc.JobPosting
 	if pbJobPosting.MainContent.RecruitProcess != nil {
 		require.Equal(t, *pbJobPosting.MainContent.RecruitProcess, *savedJobPosting.MainContent.RecruitProcess)
 	}
-	require.Equal(t, pbJobPosting.RequiredSkill, savedJobPosting.RequiredSkill)
+
+	savedJobPostingRequiredSkills := make([]string, len(savedJobPosting.RequiredSkill))
+	for i, skill := range savedJobPosting.RequiredSkill {
+		savedJobPostingRequiredSkills[i] = skill.SkillName
+	}
+
+	require.Equal(t, pbJobPosting.RequiredSkill, savedJobPostingRequiredSkills)
 	require.Equal(t, pbJobPosting.Tags, savedJobPosting.Tags)
 	if pbJobPosting.RequiredCareer.Min != nil {
 		require.NotNil(t, savedJobPosting.RequiredCareer.Min)

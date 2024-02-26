@@ -24,6 +24,14 @@ func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *pr
 	closedAt := utils.UnixMilliToTimePtr(msg.ClosedAt)
 	createdAt := utils.UnixMilliToTime(msg.CreatedAt)
 
+	requiredSkills := make([]jobposting.RequiredSkill, len(msg.RequiredSkill))
+	for i, skill := range msg.RequiredSkill {
+		requiredSkills[i] = jobposting.RequiredSkill{
+			SkillFrom: jobposting.Origin,
+			SkillName: skill,
+		}
+	}
+
 	jobPosting := jobposting.JobPostingInfo{
 		JobPostingId: jobposting.JobPostingId{
 			Site:      msg.JobPostingId.Site,
@@ -43,7 +51,7 @@ func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *pr
 			Benefits:       msg.MainContent.Benefits,
 			RecruitProcess: msg.MainContent.RecruitProcess,
 		},
-		RequiredSkill: msg.RequiredSkill,
+		RequiredSkill: requiredSkills,
 		Tags:          msg.Tags,
 		RequiredCareer: jobposting.Career{
 			Min: msg.RequiredCareer.Min,
