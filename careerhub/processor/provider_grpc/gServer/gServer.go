@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcService"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
 )
 
 // server is used to implement helloworld.GreeterServer.

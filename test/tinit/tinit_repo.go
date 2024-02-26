@@ -11,7 +11,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/mongocfg"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

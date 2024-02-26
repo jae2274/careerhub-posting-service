@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
 )
 
 type SkillService struct {

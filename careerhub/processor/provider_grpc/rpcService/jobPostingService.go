@@ -5,8 +5,8 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/utils"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcRepo"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
 )
 
 type JobPostingService struct {

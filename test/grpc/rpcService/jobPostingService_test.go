@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/processor_grpc"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/grpc/rpcService"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/processor_grpc"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/stretchr/testify/require"
