@@ -41,6 +41,12 @@ func InitDB(t *testing.T) *mongo.Database {
 	checkError(t, err)
 	createIndexes(t, skillCol, skillModel.IndexModels())
 
+	skillNameModel := &skill.SkillName{}
+	skillNameCol := db.Collection(skillNameModel.Collection())
+	err = skillNameCol.Drop(context.TODO())
+	checkError(t, err)
+	createIndexes(t, skillNameCol, skillNameModel.IndexModels())
+
 	return db
 }
 
@@ -81,6 +87,15 @@ func InitSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
 	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
 
 	return skillRepo
+}
+
+func InitSkillNameRepo(t *testing.T) *rpcRepo.SkillNameRepo {
+	db := InitDB(t)
+
+	skillNameCollection := db.Collection((&skill.SkillName{}).Collection())
+	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
+
+	return skillNameRepo
 }
 
 func checkError(t *testing.T, err error) {

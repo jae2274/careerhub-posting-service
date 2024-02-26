@@ -33,12 +33,12 @@ func main() {
 	checkErr(ctx, err)
 
 	initLogger(ctx, envVars.PostLogUrl)
-	listener, jobPostingRepo, companyRepo, skillRepo := initApp(ctx, envVars)
+	listener, jobPostingRepo, companyRepo, skillRepo, skillNameRepo := initApp(ctx, envVars)
 
 	dataProcessorServer := gServer.NewDataProcessorServer(
 		rpcService.NewJobPostingService(jobPostingRepo),
 		rpcService.NewCompanyService(companyRepo),
-		rpcService.NewSkillService(skillRepo),
+		rpcService.NewSkillService(skillRepo, skillNameRepo),
 	)
 
 	grpcServer := grpc.NewServer()
@@ -64,7 +64,7 @@ func initLogger(ctx context.Context, postUrl string) {
 	llog.SetDefaultLLoger(appLogger)
 }
 
-func initApp(ctx context.Context, envVars *vars.Vars) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRepo.CompanyRepo, *rpcRepo.SkillRepo) {
+func initApp(ctx context.Context, envVars *vars.Vars) (net.Listener, *rpcRepo.JobPostingRepo, *rpcRepo.CompanyRepo, *rpcRepo.SkillRepo, *rpcRepo.SkillNameRepo) {
 	llog.Info(ctx, "Starting data processor...")
 
 	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
@@ -90,12 +90,20 @@ func initApp(ctx context.Context, envVars *vars.Vars) (net.Listener, *rpcRepo.Jo
 	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
 	checkErr(ctx, err)
 
+	skillNameModel := &skill.SkillName{}
+	skillNameCollection := db.Collection(skillNameModel.Collection())
+	err = mongocfg.CheckIndexViaCollection(skillNameCollection, skillNameModel.IndexModels())
+	checkErr(ctx, err)
+
+	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
+	checkErr(ctx, err)
+
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", envVars.GRPC_PORT))
 	checkErr(ctx, err)
 
 	llog.Msg("Start gRPC server").Data("port", envVars.GRPC_PORT).Log(context.Background())
 
-	return listener, jobPostingRepo, companyRepo, skillRepo
+	return listener, jobPostingRepo, companyRepo, skillRepo, skillNameRepo
 }
 
 func checkErr(ctx context.Context, err error) {

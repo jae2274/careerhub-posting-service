@@ -12,7 +12,8 @@ import (
 func TestSkillService(t *testing.T) {
 	t.Run("RegisterSkill", func(t *testing.T) {
 		skillRepo := tinit.InitSkillRepo(t)
-		skillService := rpcService.NewSkillService(skillRepo)
+		skillNameRepo := tinit.InitSkillNameRepo(t)
+		skillService := rpcService.NewSkillService(skillRepo, skillNameRepo)
 
 		sampleSkillGroups := [][]string{
 			{"Python", "C++", "Linux", "aws    eks", "Linux", "linux", " java ", ""}, //공백 치환, 중복 제거, 빈 문자열 제거
@@ -21,8 +22,8 @@ func TestSkillService(t *testing.T) {
 		}
 
 		expectedSkillGroupResults := [][]string{
-			{"Python", "C++", "Linux", "aws eks", "linux", "java"}, //대소문자가 다른 Linux, linux는 별도의 skill로 간주된다.
-			{"pyThon", "kubernetes", "aws", "java"},
+			{"python", "c++", "linux", "aws eks", "java"}, //대문자는 소문자로 변환되어 중복 제외
+			{"python", "kubernetes", "aws", "java"},
 			{"k8s", "aws eks", "eks"},
 		}
 
@@ -41,7 +42,17 @@ func TestSkillService(t *testing.T) {
 			allSavedSkillNames[i] = savedSkill.DefaultName
 		}
 
-		expectedAllSavedSkills := []string{"Python", "C++", "Linux", "aws eks", "linux", "java", "pyThon", "kubernetes", "aws", "k8s", "eks"} //대소문자는 구분되어 중복 제외되지 않는다.
+		expectedAllSavedSkills := []string{"python", "c++", "linux", "aws eks", "java", "kubernetes", "aws", "k8s", "eks"} //대소문자는 구분되어 중복 제외되지 않는다.
 		require.Equal(t, expectedAllSavedSkills, allSavedSkillNames)
+
+		allSavedSkillNameStructs, err := skillNameRepo.FindAll()
+		require.NoError(t, err)
+
+		skillNameStructStrings := make([]string, len(allSavedSkillNameStructs))
+		for i, skillNameStruct := range allSavedSkillNameStructs {
+			skillNameStructStrings[i] = skillNameStruct.Name
+		}
+
+		require.Equal(t, expectedAllSavedSkills, skillNameStructStrings)
 	})
 }

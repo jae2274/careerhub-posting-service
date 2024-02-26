@@ -9,12 +9,14 @@ import (
 )
 
 type SkillService struct {
-	skillRepo *rpcRepo.SkillRepo
+	skillRepo     *rpcRepo.SkillRepo
+	skillNameRepo *rpcRepo.SkillNameRepo
 }
 
-func NewSkillService(skillRepo *rpcRepo.SkillRepo) *SkillService {
+func NewSkillService(skillRepo *rpcRepo.SkillRepo, skillNameRepo *rpcRepo.SkillNameRepo) *SkillService {
 	return &SkillService{
-		skillRepo: skillRepo,
+		skillRepo:     skillRepo,
+		skillNameRepo: skillNameRepo,
 	}
 }
 
@@ -24,7 +26,16 @@ func (s *SkillService) RegisterSkill(ctx context.Context, skillNames []string) (
 	}
 
 	skillNames = preprocessSkillNames(skillNames)
-	err := s.skillRepo.SaveSkills(ctx, skillNames)
+
+	err := s.skillNameRepo.SaveSkillNames(ctx, skillNames)
+	if err != nil {
+		return skillNames, err
+	}
+
+	err = s.skillRepo.SaveSkills(ctx, skillNames)
+	if err != nil {
+		return skillNames, err
+	}
 
 	return skillNames, err
 }
@@ -36,8 +47,8 @@ func preprocessSkillNames(skillNames []string) []string {
 	}
 
 	skillNames = removeEmpty(skillNames)
-	skillNames = removeDuplicate(skillNames)
 	skillNames = lowerCase(skillNames)
+	skillNames = removeDuplicate(skillNames)
 	return skillNames
 }
 

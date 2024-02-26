@@ -6,7 +6,6 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -21,23 +20,23 @@ func NewSkillRepo(col *mongo.Collection) *SkillRepo {
 	}
 }
 
-func (cRepo *SkillRepo) FindIDByName(ctx context.Context, skillName string) (*primitive.ObjectID, error) {
-	var result struct {
-		ID primitive.ObjectID `bson:"_id"`
-	}
+// func (cRepo *SkillRepo) FindIDByName(ctx context.Context, skillName string) (*primitive.ObjectID, error) {
+// 	var result struct {
+// 		ID primitive.ObjectID `bson:"_id"`
+// 	}
 
-	opts := options.FindOne().SetProjection(bson.D{{Key: skill.IdField, Value: 1}})
-	err := cRepo.col.FindOne(ctx, bson.M{skill.SkillName_NameField: skillName}, opts).Decode(&result)
+// 	opts := options.FindOne().SetProjection(bson.D{{Key: skill.Skill_IdField, Value: 1}})
+// 	err := cRepo.col.FindOne(ctx, bson.M{skill.Skill_SkillNamesField: skillName}, opts).Decode(&result)
 
-	if err != nil {
-		if err == mongo.ErrNoDocuments {
-			return nil, nil
-		}
-		return nil, err
-	}
+// 	if err != nil {
+// 		if err == mongo.ErrNoDocuments {
+// 			return nil, nil
+// 		}
+// 		return nil, err
+// 	}
 
-	return &result.ID, nil
-}
+// 	return &result.ID, nil
+// }
 
 func (cRepo *SkillRepo) SaveSkills(ctx context.Context, skillNames []string) error {
 	now := time.Now()
@@ -46,15 +45,9 @@ func (cRepo *SkillRepo) SaveSkills(ctx context.Context, skillNames []string) err
 	for i, skillName := range skillNames {
 		skills[i] = &skill.Skill{
 			DefaultName: skillName,
-			SkillNames: []*skill.SkillName{
-				{
-					Name:       skillName,
-					InsertedAt: now,
-					UpdatedAt:  now,
-				},
-			},
-			InsertedAt: now,
-			UpdatedAt:  now,
+			SkillNames:  []string{skillName},
+			InsertedAt:  now,
+			UpdatedAt:   now,
 		}
 	}
 

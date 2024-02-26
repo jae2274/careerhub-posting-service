@@ -25,6 +25,7 @@ func (jpRepo *JobPostingRepo) Save(ctx context.Context, jobPosting *jobposting.J
 	jobPosting.Status = jobposting.HIRING
 	jobPosting.InsertedAt = now
 	jobPosting.UpdatedAt = now
+	jobPosting.IsScanComplete = false
 
 	_, err := jpRepo.col.InsertOne(ctx, jobPosting)
 

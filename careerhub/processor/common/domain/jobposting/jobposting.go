@@ -63,6 +63,7 @@ type JobPostingInfo struct {
 	CreatedAt      time.Time          `bson:"createdAt"`
 	InsertedAt     time.Time          `bson:"insertedAt"`
 	UpdatedAt      time.Time          `bson:"updatedAt"`
+	IsScanComplete bool               `bson:"isScanComplete"`
 }
 
 type MainContent struct {
