@@ -15,7 +15,7 @@ import (
 
 func TestRegisterCompany(t *testing.T) {
 	t.Run("RegisterCompany", func(t *testing.T) {
-		companyRepo := tinit.InitCompanyRepo(t)
+		companyRepo := tinit.InitProviderCompanyRepo(t)
 		companyService := rpcService.NewCompanyService(companyRepo)
 
 		pbCompanies := samplePbCompany()

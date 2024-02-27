@@ -11,8 +11,9 @@ import (
 )
 
 const (
-	SkillName_IdField   = "_id"
-	SkillName_NameField = "name"
+	SkillName_IdField             = "_id"
+	SkillName_NameField           = "name"
+	SkillName_IsScanCompleteField = "isScanComplete"
 )
 
 type SkillName struct {

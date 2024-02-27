@@ -15,7 +15,7 @@ import (
 
 func TestRegisterNCloseJobPostings(t *testing.T) {
 	t.Run("RegisterNCloseJobPostings", func(t *testing.T) {
-		jobPostingRepo := tinit.InitJobPostingRepo(t)
+		jobPostingRepo := tinit.InitProviderJobPostingRepo(t)
 		jobPostingService := rpcService.NewJobPostingService(jobPostingRepo)
 
 		pbJobPostings := samplePbJobPostings()

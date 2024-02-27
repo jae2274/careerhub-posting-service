@@ -62,7 +62,7 @@ func createIndexes(t *testing.T, col *mongo.Collection, indexModels map[string]*
 	}
 }
 
-func InitJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {
+func InitProviderJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {
 	db := InitDB(t)
 
 	jobpostingCollection := db.Collection((&jobposting.JobPostingInfo{}).Collection())
@@ -71,7 +71,7 @@ func InitJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {
 	return jobpostingRepo
 }
 
-func InitCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
+func InitProviderCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
 	db := InitDB(t)
 
 	companyCollection := db.Collection((&company.Company{}).Collection())
@@ -80,7 +80,7 @@ func InitCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
 	return companyRepo
 }
 
-func InitSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
+func InitProviderSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
 	db := InitDB(t)
 
 	skillCollection := db.Collection((&skill.Skill{}).Collection())
@@ -89,7 +89,7 @@ func InitSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
 	return skillRepo
 }
 
-func InitSkillNameRepo(t *testing.T) *rpcRepo.SkillNameRepo {
+func InitProviderSkillNameRepo(t *testing.T) *rpcRepo.SkillNameRepo {
 	db := InitDB(t)
 
 	skillNameCollection := db.Collection((&skill.SkillName{}).Collection())

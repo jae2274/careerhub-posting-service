@@ -6,17 +6,17 @@ import (
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/test/testutils"
 	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/stretchr/testify/require"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func TestJobPostingRepo(t *testing.T) {
 	sampleJobPostings := samples()
 
 	t.Run("FindAll from empty DB", func(t *testing.T) {
-		jpRepo := tinit.InitJobPostingRepo(t)
+		jpRepo := tinit.InitProviderJobPostingRepo(t)
 
 		jobPostings, err := jpRepo.FindAll()
 		if err != nil {
@@ -27,7 +27,7 @@ func TestJobPostingRepo(t *testing.T) {
 	})
 
 	t.Run("Save and FindAll", func(t *testing.T) {
-		jpRepo := tinit.InitJobPostingRepo(t)
+		jpRepo := tinit.InitProviderJobPostingRepo(t)
 
 		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
@@ -38,14 +38,14 @@ func TestJobPostingRepo(t *testing.T) {
 		require.NoError(t, err)
 
 		require.Equal(t, 2, len(jobPostings))
-		setIgnoreJobPostingFields(sampleJobPostings)
-		setIgnoreJobPostingFields(jobPostings)
+		testutils.SetIgnoreJobPostingFields(sampleJobPostings)
+		testutils.SetIgnoreJobPostingFields(jobPostings)
 		require.Equal(t, *sampleJobPostings[0], *(jobPostings[0]))
 		require.Equal(t, *sampleJobPostings[1], *(jobPostings[1]))
 	})
 
 	t.Run("CloseAll", func(t *testing.T) {
-		jpRepo := tinit.InitJobPostingRepo(t)
+		jpRepo := tinit.InitProviderJobPostingRepo(t)
 
 		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
@@ -137,20 +137,4 @@ func samples() []*jobposting.JobPostingInfo {
 	}
 
 	return []*jobposting.JobPostingInfo{sampleJobPosting, sampleJobPosting2}
-}
-
-func setIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
-	for _, jobPosting := range jobPostings {
-		jobPosting.ID = primitive.ObjectID{} // ignore ID
-		jobPosting.InsertedAt = time.Unix(jobPosting.InsertedAt.Unix(), 0)
-		jobPosting.UpdatedAt = time.Unix(jobPosting.UpdatedAt.Unix(), 0)
-		jobPosting.CreatedAt = time.Unix(jobPosting.CreatedAt.Unix(), 0)
-
-		if jobPosting.PublishedAt != nil {
-			*jobPosting.PublishedAt = time.Unix(jobPosting.PublishedAt.Unix(), 0)
-		}
-		if jobPosting.ClosedAt != nil {
-			*jobPosting.ClosedAt = time.Unix(jobPosting.ClosedAt.Unix(), 0)
-		}
-	}
 }

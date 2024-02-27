@@ -11,8 +11,8 @@ import (
 
 func TestSkillService(t *testing.T) {
 	t.Run("RegisterSkill", func(t *testing.T) {
-		skillRepo := tinit.InitSkillRepo(t)
-		skillNameRepo := tinit.InitSkillNameRepo(t)
+		skillRepo := tinit.InitProviderSkillRepo(t)
+		skillNameRepo := tinit.InitProviderSkillNameRepo(t)
 		skillService := rpcService.NewSkillService(skillRepo, skillNameRepo)
 
 		sampleSkillGroups := [][]string{
