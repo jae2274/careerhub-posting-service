@@ -13,7 +13,7 @@ type DataProcessorServer struct {
 	jobPostingService *rpcService.JobPostingService
 	companyService    *rpcService.CompanyService
 	skillService      *rpcService.SkillService
-	provider_grpc.UnimplementedDataProcessorServer
+	provider_grpc.UnimplementedProviderGrpcServer
 }
 
 func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService) *DataProcessorServer {

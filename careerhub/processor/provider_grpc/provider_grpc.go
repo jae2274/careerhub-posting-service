@@ -45,7 +45,7 @@ func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collec
 	llog.Msg("Start gRPC server").Data("port", grpcPort).Log(ctx)
 
 	grpcServer := grpc.NewServer()
-	provider_grpc.RegisterDataProcessorServer(grpcServer, providerGrpcServer) //client가 사용할 수 있도록 등록
+	provider_grpc.RegisterProviderGrpcServer(grpcServer, providerGrpcServer) //client가 사용할 수 있도록 등록
 
 	err = grpcServer.Serve(listener)
 	if err != nil {

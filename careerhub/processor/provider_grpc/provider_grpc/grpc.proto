@@ -3,7 +3,7 @@ syntax = "proto3";
 package careerhub.processor.provider_grpc;
 option go_package = "careerhub/processor/provider_grpc";
 
-service DataProcessor{
+service ProviderGrpc{
     rpc CloseJobPostings(JobPostings) returns (BoolResponse);
     rpc RegisterJobPostingInfo(JobPostingInfo) returns (BoolResponse);
     rpc RegisterCompany(Company) returns (BoolResponse);

@@ -18,158 +18,158 @@ import (
 // Requires gRPC-Go v1.32.0 or later.
 const _ = grpc.SupportPackageIsVersion7
 
-// DataProcessorClient is the client API for DataProcessor service.
+// ProviderGrpcClient is the client API for ProviderGrpc service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type DataProcessorClient interface {
+type ProviderGrpcClient interface {
 	CloseJobPostings(ctx context.Context, in *JobPostings, opts ...grpc.CallOption) (*BoolResponse, error)
 	RegisterJobPostingInfo(ctx context.Context, in *JobPostingInfo, opts ...grpc.CallOption) (*BoolResponse, error)
 	RegisterCompany(ctx context.Context, in *Company, opts ...grpc.CallOption) (*BoolResponse, error)
 }
 
-type dataProcessorClient struct {
+type providerGrpcClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewDataProcessorClient(cc grpc.ClientConnInterface) DataProcessorClient {
-	return &dataProcessorClient{cc}
+func NewProviderGrpcClient(cc grpc.ClientConnInterface) ProviderGrpcClient {
+	return &providerGrpcClient{cc}
 }
 
-func (c *dataProcessorClient) CloseJobPostings(ctx context.Context, in *JobPostings, opts ...grpc.CallOption) (*BoolResponse, error) {
+func (c *providerGrpcClient) CloseJobPostings(ctx context.Context, in *JobPostings, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.DataProcessor/CloseJobPostings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/CloseJobPostings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataProcessorClient) RegisterJobPostingInfo(ctx context.Context, in *JobPostingInfo, opts ...grpc.CallOption) (*BoolResponse, error) {
+func (c *providerGrpcClient) RegisterJobPostingInfo(ctx context.Context, in *JobPostingInfo, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.DataProcessor/RegisterJobPostingInfo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterJobPostingInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *dataProcessorClient) RegisterCompany(ctx context.Context, in *Company, opts ...grpc.CallOption) (*BoolResponse, error) {
+func (c *providerGrpcClient) RegisterCompany(ctx context.Context, in *Company, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.DataProcessor/RegisterCompany", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterCompany", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// DataProcessorServer is the server API for DataProcessor service.
-// All implementations must embed UnimplementedDataProcessorServer
+// ProviderGrpcServer is the server API for ProviderGrpc service.
+// All implementations must embed UnimplementedProviderGrpcServer
 // for forward compatibility
-type DataProcessorServer interface {
+type ProviderGrpcServer interface {
 	CloseJobPostings(context.Context, *JobPostings) (*BoolResponse, error)
 	RegisterJobPostingInfo(context.Context, *JobPostingInfo) (*BoolResponse, error)
 	RegisterCompany(context.Context, *Company) (*BoolResponse, error)
-	mustEmbedUnimplementedDataProcessorServer()
+	mustEmbedUnimplementedProviderGrpcServer()
 }
 
-// UnimplementedDataProcessorServer must be embedded to have forward compatible implementations.
-type UnimplementedDataProcessorServer struct {
+// UnimplementedProviderGrpcServer must be embedded to have forward compatible implementations.
+type UnimplementedProviderGrpcServer struct {
 }
 
-func (UnimplementedDataProcessorServer) CloseJobPostings(context.Context, *JobPostings) (*BoolResponse, error) {
+func (UnimplementedProviderGrpcServer) CloseJobPostings(context.Context, *JobPostings) (*BoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CloseJobPostings not implemented")
 }
-func (UnimplementedDataProcessorServer) RegisterJobPostingInfo(context.Context, *JobPostingInfo) (*BoolResponse, error) {
+func (UnimplementedProviderGrpcServer) RegisterJobPostingInfo(context.Context, *JobPostingInfo) (*BoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterJobPostingInfo not implemented")
 }
-func (UnimplementedDataProcessorServer) RegisterCompany(context.Context, *Company) (*BoolResponse, error) {
+func (UnimplementedProviderGrpcServer) RegisterCompany(context.Context, *Company) (*BoolResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegisterCompany not implemented")
 }
-func (UnimplementedDataProcessorServer) mustEmbedUnimplementedDataProcessorServer() {}
+func (UnimplementedProviderGrpcServer) mustEmbedUnimplementedProviderGrpcServer() {}
 
-// UnsafeDataProcessorServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to DataProcessorServer will
+// UnsafeProviderGrpcServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to ProviderGrpcServer will
 // result in compilation errors.
-type UnsafeDataProcessorServer interface {
-	mustEmbedUnimplementedDataProcessorServer()
+type UnsafeProviderGrpcServer interface {
+	mustEmbedUnimplementedProviderGrpcServer()
 }
 
-func RegisterDataProcessorServer(s grpc.ServiceRegistrar, srv DataProcessorServer) {
-	s.RegisterService(&DataProcessor_ServiceDesc, srv)
+func RegisterProviderGrpcServer(s grpc.ServiceRegistrar, srv ProviderGrpcServer) {
+	s.RegisterService(&ProviderGrpc_ServiceDesc, srv)
 }
 
-func _DataProcessor_CloseJobPostings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProviderGrpc_CloseJobPostings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(JobPostings)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataProcessorServer).CloseJobPostings(ctx, in)
+		return srv.(ProviderGrpcServer).CloseJobPostings(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.DataProcessor/CloseJobPostings",
+		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/CloseJobPostings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataProcessorServer).CloseJobPostings(ctx, req.(*JobPostings))
+		return srv.(ProviderGrpcServer).CloseJobPostings(ctx, req.(*JobPostings))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataProcessor_RegisterJobPostingInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProviderGrpc_RegisterJobPostingInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(JobPostingInfo)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataProcessorServer).RegisterJobPostingInfo(ctx, in)
+		return srv.(ProviderGrpcServer).RegisterJobPostingInfo(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.DataProcessor/RegisterJobPostingInfo",
+		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterJobPostingInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataProcessorServer).RegisterJobPostingInfo(ctx, req.(*JobPostingInfo))
+		return srv.(ProviderGrpcServer).RegisterJobPostingInfo(ctx, req.(*JobPostingInfo))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _DataProcessor_RegisterCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ProviderGrpc_RegisterCompany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Company)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(DataProcessorServer).RegisterCompany(ctx, in)
+		return srv.(ProviderGrpcServer).RegisterCompany(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.DataProcessor/RegisterCompany",
+		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterCompany",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(DataProcessorServer).RegisterCompany(ctx, req.(*Company))
+		return srv.(ProviderGrpcServer).RegisterCompany(ctx, req.(*Company))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// DataProcessor_ServiceDesc is the grpc.ServiceDesc for DataProcessor service.
+// ProviderGrpc_ServiceDesc is the grpc.ServiceDesc for ProviderGrpc service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var DataProcessor_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "careerhub.processor.provider_grpc.DataProcessor",
-	HandlerType: (*DataProcessorServer)(nil),
+var ProviderGrpc_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "careerhub.processor.provider_grpc.ProviderGrpc",
+	HandlerType: (*ProviderGrpcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "CloseJobPostings",
-			Handler:    _DataProcessor_CloseJobPostings_Handler,
+			Handler:    _ProviderGrpc_CloseJobPostings_Handler,
 		},
 		{
 			MethodName: "RegisterJobPostingInfo",
-			Handler:    _DataProcessor_RegisterJobPostingInfo_Handler,
+			Handler:    _ProviderGrpc_RegisterJobPostingInfo_Handler,
 		},
 		{
 			MethodName: "RegisterCompany",
-			Handler:    _DataProcessor_RegisterCompany_Handler,
+			Handler:    _ProviderGrpc_RegisterCompany_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
