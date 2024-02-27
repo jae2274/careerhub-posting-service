@@ -1,4 +1,4 @@
-package gServer
+package scanner_server
 
 import (
 	"context"
@@ -12,10 +12,14 @@ import (
 type ScannerServer struct {
 	skillNameRepo  repo.SkillNameRepo
 	jobPostingRepo repo.JobPostingRepo
-	scanner_grpc.UnimplementedScannerServer
+	scanner_grpc.UnimplementedScannerGrpcServer
 }
 
-func (ss *ScannerServer) GetJobPostings(request *scanner_grpc.ScanComplete, sendSteam scanner_grpc.Scanner_GetJobPostingsServer) error {
+func NewScannerServer(skillNameRepo repo.SkillNameRepo, jobPostingRepo repo.JobPostingRepo) *ScannerServer {
+	return &ScannerServer{skillNameRepo: skillNameRepo, jobPostingRepo: jobPostingRepo}
+}
+
+func (ss *ScannerServer) GetJobPostings(request *scanner_grpc.ScanComplete, sendSteam scanner_grpc.ScannerGrpc_GetJobPostingsServer) error {
 	ctx := sendSteam.Context()
 	jobPostingChan, err := ss.jobPostingRepo.GetJobPostings(ctx, request.IsScanComplete)
 	if err != nil {
@@ -51,7 +55,7 @@ func (ss *ScannerServer) GetSkills(ctx context.Context, request *scanner_grpc.Sc
 
 	return &scanner_grpc.Skills{SkillNames: skillNames}, nil
 }
-func (scanner *ScannerServer) SetRequiredSkills(recvStream scanner_grpc.Scanner_SetRequiredSkillsServer) error {
+func (scanner *ScannerServer) SetRequiredSkills(recvStream scanner_grpc.ScannerGrpc_SetRequiredSkillsServer) error {
 	ctx := recvStream.Context()
 	for {
 		jobPosting, err := recvStream.Recv()

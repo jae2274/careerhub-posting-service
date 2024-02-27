@@ -11,6 +11,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/logger"
 	providergrpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc"
+	scannergrpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/scanner_grpc"
 	"github.com/jae2274/goutils/llog"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -36,7 +37,18 @@ func main() {
 	collections, err := initCollections(db)
 	checkErr(ctx, err)
 
-	err = providergrpc.Run(ctx, envVars.GRPC_PORT, collections)
+	runErr := make(chan error)
+	go func() {
+		err := providergrpc.Run(ctx, envVars.ProviderGrpcPort, collections)
+		runErr <- err
+	}()
+
+	go func() {
+		err = scannergrpc.Run(ctx, envVars.ScannerGrpcPort, collections)
+		runErr <- err
+	}()
+
+	err = <-runErr
 	checkErr(ctx, err)
 }
 

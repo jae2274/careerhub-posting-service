@@ -19,7 +19,6 @@ import (
 )
 
 func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collection) error {
-	llog.Info(ctx, "Starting data processor...")
 
 	jobPostingCollection := collections[(&jobposting.JobPostingInfo{}).Collection()]
 	companyCollection := collections[(&company.Company{}).Collection()]
@@ -42,7 +41,7 @@ func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collec
 		return terr.Wrap(err)
 	}
 
-	llog.Msg("Start gRPC server").Data("port", grpcPort).Log(ctx)
+	llog.Msg("Starting Provider server...").Data("port", grpcPort).Log(ctx)
 
 	grpcServer := grpc.NewServer()
 	provider_grpc.RegisterProviderGrpcServer(grpcServer, providerGrpcServer) //client가 사용할 수 있도록 등록

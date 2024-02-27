@@ -12,11 +12,12 @@ type DBUser struct {
 }
 
 type Vars struct {
-	MongoUri   string
-	DbName     string
-	DBUser     *DBUser
-	GRPC_PORT  int
-	PostLogUrl string
+	MongoUri         string
+	DbName           string
+	DBUser           *DBUser
+	ProviderGrpcPort int
+	ScannerGrpcPort  int
+	PostLogUrl       string
 }
 
 type ErrNotExistedVar struct {
@@ -53,7 +54,12 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
-	grpcPort, err := getFromEnv("GRPC_PORT")
+	providerGrpcPort, err := getFromEnv("PROVIDER_GRPC_PORT")
+	if err != nil {
+		return nil, err
+	}
+
+	scannerGrpcPort, err := getFromEnv("SCANNER_GRPC_PORT")
 	if err != nil {
 		return nil, err
 	}
@@ -63,17 +69,23 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
-	grpcPortInt, err := strconv.ParseInt(grpcPort, 10, 32)
+	grpcPortInt, err := strconv.ParseInt(providerGrpcPort, 10, 32)
 	if err != nil {
-		return nil, fmt.Errorf("GRPC_PORT is not integer.\tGRPC_PORT: %s", grpcPort)
+		return nil, fmt.Errorf("GRPC_PORT is not integer.\tGRPC_PORT: %s", providerGrpcPort)
+	}
+
+	scannerGrpcPortInt, err := strconv.ParseInt(scannerGrpcPort, 10, 32)
+	if err != nil {
+		return nil, fmt.Errorf("SCANNER_GRPC_PORT is not integer.\tSCANNER_GRPC_PORT: %s", scannerGrpcPort)
 	}
 
 	return &Vars{
-		MongoUri:   mongoUri,
-		DBUser:     dbUser,
-		DbName:     dbName,
-		GRPC_PORT:  int(grpcPortInt),
-		PostLogUrl: postLogUrl,
+		MongoUri:         mongoUri,
+		DBUser:           dbUser,
+		DbName:           dbName,
+		ProviderGrpcPort: int(grpcPortInt),
+		ScannerGrpcPort:  int(scannerGrpcPortInt),
+		PostLogUrl:       postLogUrl,
 	}, nil
 }
 
