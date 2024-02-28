@@ -2,9 +2,12 @@ package dto
 
 type JobPostingRes struct {
 	Site        string   `json:"site"`
-	PostingId   string   `json:"posting_id"`
+	PostingId   string   `json:"postingId"`
 	Title       string   `json:"title"`
-	CompanyName string   `json:"company_name"`
+	CompanyName string   `json:"companyName"`
 	Skills      []string `json:"skills"`
-	ImageUrl    string   `json:"image_url"`
+	ImageUrl    string   `json:"imageUrl"`
+	Addresses   []string `json:"addresses"`
+	MinCareer   *int32   `json:"minCareer"`
+	MaxCareer   *int32   `json:"maxCareer"`
 }

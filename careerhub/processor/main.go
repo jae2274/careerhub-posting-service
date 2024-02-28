@@ -11,6 +11,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/logger"
 	providergrpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc"
+	restapi "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api"
 	scannergrpc "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/scanner_grpc"
 	"github.com/jae2274/goutils/llog"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -44,7 +45,12 @@ func main() {
 	}()
 
 	go func() {
-		err = scannergrpc.Run(ctx, envVars.ScannerGrpcPort, collections)
+		err := scannergrpc.Run(ctx, envVars.ScannerGrpcPort, collections)
+		runErr <- err
+	}()
+
+	go func() {
+		err := restapi.Run(ctx, envVars.RestApiPort, collections)
 		runErr <- err
 	}()
 

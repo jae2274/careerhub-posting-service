@@ -63,6 +63,7 @@ func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r 
 
 	// jobPostings를 JSON으로 변환하여 응답
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*") //TODO: 이후 세부적으로 설정 필요
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"job_postings": jobPostings,
