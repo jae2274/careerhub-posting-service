@@ -17,6 +17,7 @@ const (
 	StatusField         = "status"
 	IsScanCompleteField = "isScanComplete"
 	RequiredSkillField  = "requiredSkill"
+	CreatedAtField      = "createdAt"
 )
 
 type StatusValues struct{}
