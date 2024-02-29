@@ -41,6 +41,7 @@ func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *pr
 		CompanyId:   msg.CompanyId,
 		CompanyName: msg.CompanyName,
 		JobCategory: msg.JobCategory,
+		ImageUrl:    msg.ImageUrl,
 		MainContent: jobposting.MainContent{
 			PostUrl:        msg.MainContent.PostUrl,
 			Title:          msg.MainContent.Title,

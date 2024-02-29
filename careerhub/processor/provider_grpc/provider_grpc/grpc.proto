@@ -33,6 +33,7 @@ message JobPostingInfo{
 	optional int64 closedAt			= 10;
 	repeated string address			= 11;
 	int64 createdAt					= 12;
+	optional string imageUrl		= 13;
 }
 
 message MainContent{

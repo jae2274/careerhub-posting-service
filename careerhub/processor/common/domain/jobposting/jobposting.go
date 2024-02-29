@@ -56,6 +56,7 @@ type JobPostingInfo struct {
 	CompanyId      string             `bson:"companyId"`
 	CompanyName    string             `bson:"companyName"`
 	JobCategory    []string           `bson:"jobCategory"`
+	ImageUrl       *string            `bson:"imageUrl"`
 	MainContent    MainContent        `bson:"mainContent"`
 	RequiredSkill  []RequiredSkill    `bson:"requiredSkill"`
 	Tags           []string           `bson:"tags"`

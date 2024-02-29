@@ -43,6 +43,7 @@ func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, page, siz
 			Addresses:   jobPosting.Address,
 			MinCareer:   jobPosting.RequiredCareer.Min,
 			MaxCareer:   jobPosting.RequiredCareer.Max,
+			ImageUrl:    jobPosting.ImageUrl,
 		}
 	}
 
