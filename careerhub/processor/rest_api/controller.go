@@ -21,8 +21,8 @@ func NewRestApiController(service RestApiService, router *mux.Router) *RestApiCo
 	}
 }
 
-func (restApiCtrler *RestApiController) RegisterRoutes() {
-	restApiCtrler.router.HandleFunc("/job_postings", restApiCtrler.GetJobPostings).Methods("GET")
+func (restApiCtrler *RestApiController) RegisterRoutes(rootPath string) {
+	restApiCtrler.router.HandleFunc(rootPath+"/job_postings", restApiCtrler.GetJobPostings).Methods("GET")
 }
 
 func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r *http.Request) {

@@ -12,14 +12,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func Run(ctx context.Context, apiPort int, collections map[string]*mongo.Collection) error {
+func Run(ctx context.Context, apiPort int, rootPath string, collections map[string]*mongo.Collection) error {
 	jobPostingRepo := apirepo.NewJobPostingRepo(collections[(&jobposting.JobPostingInfo{}).Collection()])
 
 	restApiService := NewRestApiService(jobPostingRepo)
 
 	router := mux.NewRouter()
 	controller := NewRestApiController(restApiService, router)
-	controller.RegisterRoutes()
+	controller.RegisterRoutes(rootPath)
 
 	err := http.ListenAndServe(fmt.Sprintf(":%d", apiPort), router)
 	if err != nil {

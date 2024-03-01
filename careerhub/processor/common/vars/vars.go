@@ -18,6 +18,7 @@ type Vars struct {
 	ProviderGrpcPort int
 	ScannerGrpcPort  int
 	RestApiPort      int
+	RootPath         string
 	PostLogUrl       string
 }
 
@@ -97,6 +98,7 @@ func Variables() (*Vars, error) {
 		ProviderGrpcPort: int(grpcPortInt),
 		ScannerGrpcPort:  int(scannerGrpcPortInt),
 		RestApiPort:      int(restApiPortInt),
+		RootPath:         os.Getenv("ROOT_PATH"),
 		PostLogUrl:       postLogUrl,
 	}, nil
 }
