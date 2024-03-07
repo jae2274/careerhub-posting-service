@@ -34,6 +34,7 @@ message JobPostingInfo{
 	repeated string address			= 11;
 	int64 createdAt					= 12;
 	optional string imageUrl		= 13;
+	repeated string companyImages	= 14;
 }
 
 message MainContent{

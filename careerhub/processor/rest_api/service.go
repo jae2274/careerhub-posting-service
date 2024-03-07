@@ -77,7 +77,7 @@ func (service *RestApiServiceImpl) GetJobPostingDetail(ctx context.Context, site
 		Addresses:      jobPosting.Address,
 		CompanyId:      jobPosting.CompanyId,
 		CompanyName:    jobPosting.CompanyName,
-		// CompanyImages:  jobPosting.ImageUrl,
-		Intro: jobPosting.MainContent.Intro,
+		CompanyImages:  jobPosting.CompanyImages,
+		Intro:          jobPosting.MainContent.Intro,
 	}, nil
 }
