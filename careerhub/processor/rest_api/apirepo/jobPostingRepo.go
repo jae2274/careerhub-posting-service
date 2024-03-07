@@ -12,6 +12,7 @@ import (
 
 type JobPostingRepo interface {
 	GetJobPostings(ctx context.Context, page, size int) ([]jobposting.JobPostingInfo, error)
+	GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error)
 }
 
 type JobPostingRepoImpl struct {
@@ -40,4 +41,18 @@ func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size i
 	}
 
 	return jobPostings, nil
+}
+
+func (repo *JobPostingRepoImpl) GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error) {
+	var jobPosting jobposting.JobPostingInfo
+	err := repo.col.FindOne(ctx, bson.M{jobposting.SiteField: site, jobposting.PostingIdField: postingId}).Decode(&jobPosting)
+
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return nil, nil
+		}
+		return nil, terr.Wrap(err)
+	}
+
+	return &jobPosting, nil
 }

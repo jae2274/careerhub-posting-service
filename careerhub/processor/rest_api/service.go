@@ -9,6 +9,7 @@ import (
 
 type RestApiService interface {
 	GetJobPostings(ctx context.Context, page, size int) ([]*dto.JobPostingRes, error)
+	GetJobPostingDetail(ctx context.Context, site, postingId string) (*dto.JobPostingDetailRes, error)
 }
 
 type RestApiServiceImpl struct {
@@ -48,4 +49,35 @@ func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, page, siz
 	}
 
 	return jobPostingRes, nil
+}
+
+func (service *RestApiServiceImpl) GetJobPostingDetail(ctx context.Context, site, postingId string) (*dto.JobPostingDetailRes, error) {
+	jobPosting, err := service.jobPostingRepo.GetJobPostingDetail(ctx, site, postingId)
+	if err != nil {
+		return nil, err
+	}
+
+	skills := make([]string, len(jobPosting.RequiredSkill))
+	for i, skill := range jobPosting.RequiredSkill {
+		skills[i] = skill.SkillName
+	}
+
+	return &dto.JobPostingDetailRes{
+		Site:           jobPosting.JobPostingId.Site,
+		PostingId:      jobPosting.JobPostingId.PostingId,
+		Title:          jobPosting.MainContent.Title,
+		Skills:         skills,
+		MainTask:       jobPosting.MainContent.MainTask,
+		Qualifications: jobPosting.MainContent.Qualifications,
+		Preferred:      jobPosting.MainContent.Preferred,
+		Benefits:       jobPosting.MainContent.Benefits,
+		RecruitProcess: jobPosting.MainContent.RecruitProcess,
+		CareerMin:      jobPosting.RequiredCareer.Min,
+		CareerMax:      jobPosting.RequiredCareer.Max,
+		Addresses:      jobPosting.Address,
+		CompanyId:      jobPosting.CompanyId,
+		CompanyName:    jobPosting.CompanyName,
+		// CompanyImages:  jobPosting.ImageUrl,
+		Intro: jobPosting.MainContent.Intro,
+	}, nil
 }

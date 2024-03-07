@@ -23,6 +23,7 @@ func NewRestApiController(service RestApiService, router *mux.Router) *RestApiCo
 
 func (restApiCtrler *RestApiController) RegisterRoutes(rootPath string) {
 	restApiCtrler.router.HandleFunc(rootPath+"/job_postings", restApiCtrler.GetJobPostings).Methods("GET")
+	restApiCtrler.router.HandleFunc(rootPath+"/job_postings/{site}/{postingId}", restApiCtrler.GetJobPostingDetail).Methods("GET")
 }
 
 func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r *http.Request) {
@@ -57,6 +58,7 @@ func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r 
 
 	jobPostings, err := restApiCtrler.service.GetJobPostings(reqCtx, page, size)
 	if err != nil {
+		llog.LogErr(reqCtx, err)
 		http.Error(w, "Failed to get job postings", http.StatusInternalServerError)
 		return
 	}
@@ -68,4 +70,37 @@ func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r 
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"job_postings": jobPostings,
 	})
+}
+
+func (restApiCtrler *RestApiController) GetJobPostingDetail(w http.ResponseWriter, r *http.Request) {
+	reqCtx := r.Context()
+
+	vars := mux.Vars(r)
+	site, ok := vars["site"]
+	if !ok {
+		llog.Msg("Invalid site value").Level(llog.ERROR).Data("site", site).Log(reqCtx)
+		http.Error(w, "Invalid site value", http.StatusBadRequest)
+		return
+	}
+
+	postingId, ok := vars["postingId"]
+	if !ok {
+		llog.Msg("Invalid postingId value").Level(llog.ERROR).Data("postingId", postingId).Log(reqCtx)
+		http.Error(w, "Invalid postingId value", http.StatusBadRequest)
+		return
+	}
+
+	jobPostingDetail, err := restApiCtrler.service.GetJobPostingDetail(reqCtx, site, postingId)
+
+	if err != nil {
+		llog.LogErr(reqCtx, err)
+		http.Error(w, "Failed to get job posting detail", http.StatusInternalServerError)
+		return
+	}
+
+	// jobPostingDetail을 JSON으로 변환하여 응답
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*") //TODO: 이후 세부적으로 설정 필요
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(jobPostingDetail)
 }
