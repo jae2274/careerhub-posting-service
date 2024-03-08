@@ -6,6 +6,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type CategoryRepo interface {
@@ -23,7 +24,8 @@ func NewCategoryRepo(categoryCollection *mongo.Collection) CategoryRepo {
 }
 
 func (repo *CategoryRepoImpl) GetAllCategories(ctx context.Context) ([]*category.Category, error) {
-	cursor, err := repo.col.Find(ctx, bson.M{})
+	options := options.Find().SetSort(bson.M{category.PriorityField: -1})
+	cursor, err := repo.col.Find(ctx, bson.M{}, options)
 	if err != nil {
 		return nil, err
 	}

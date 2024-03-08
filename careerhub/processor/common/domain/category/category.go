@@ -11,15 +11,17 @@ import (
 )
 
 const (
-	IdField   = "_id"
-	SiteField = "site"
-	NameField = "name"
+	IdField       = "_id"
+	SiteField     = "site"
+	NameField     = "name"
+	PriorityField = "priority"
 )
 
 type Category struct {
 	ID         primitive.ObjectID `bson:"_id,omitempty"`
-	Site       string             `json:"site"`
-	Name       string             `json:"name"`
+	Site       string             `bson:"site"`
+	Name       string             `bson:"name"`
+	Priority   int                `bson:"priority"` //값이 클수록 노출 우선순위가 높음
 	InsertedAt time.Time          `bson:"insertedAt"`
 	UpdatedAt  time.Time          `bson:"updatedAt"`
 }
