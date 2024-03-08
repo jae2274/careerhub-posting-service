@@ -17,4 +17,5 @@ type JobPostingDetailRes struct {
 	CompanyId      string   `json:"companyId"`
 	CompanyName    string   `json:"companyName"`
 	CompanyImages  []string `json:"companyImages"`
+	Tags           []string `json:"tags"`
 }
