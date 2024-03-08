@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"testing"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
@@ -45,6 +46,15 @@ func InitProviderSkillNameRepo(t *testing.T) *rpcRepo.SkillNameRepo {
 	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
 
 	return skillNameRepo
+}
+
+func InitProviderCategoryRepo(t *testing.T) *rpcRepo.CategoryRepo {
+	db := InitDB(t)
+
+	categoryCollection := db.Collection((&category.Category{}).Collection())
+	categoryRepo := rpcRepo.NewCategoryRepo(categoryCollection)
+
+	return categoryRepo
 }
 
 func checkError(t *testing.T, err error) {

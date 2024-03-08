@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
@@ -43,6 +44,12 @@ func InitDB(t *testing.T) *mongo.Database {
 	err = skillNameCol.Drop(context.TODO())
 	checkError(t, err)
 	createIndexes(t, skillNameCol, skillNameModel.IndexModels())
+
+	categoryModel := &category.Category{}
+	categoryCol := db.Collection(categoryModel.Collection())
+	err = categoryCol.Drop(context.TODO())
+	checkError(t, err)
+	createIndexes(t, categoryCol, categoryModel.IndexModels())
 
 	return db
 }
