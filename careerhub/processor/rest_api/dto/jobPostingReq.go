@@ -19,7 +19,7 @@ type GetJobPostingsRequest struct {
 
 type QueryReq struct {
 	Categories []cateogoryQuery `json:"categories"`
-	// skillNames: []
+	SkillNames []string         `json:"skillNames"`
 	// tagIds: []
 	// minCareer: null
 	// maxCareer: null

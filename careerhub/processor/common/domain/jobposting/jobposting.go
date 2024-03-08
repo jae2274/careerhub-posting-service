@@ -12,13 +12,14 @@ import (
 )
 
 const (
-	SiteField           = "jobPostingId.site"
-	PostingIdField      = "jobPostingId.postingId"
-	StatusField         = "status"
-	JobCategoryField    = "jobCategory"
-	IsScanCompleteField = "isScanComplete"
-	RequiredSkillField  = "requiredSkill"
-	CreatedAtField      = "createdAt"
+	SiteField                    = "jobPostingId.site"
+	PostingIdField               = "jobPostingId.postingId"
+	StatusField                  = "status"
+	JobCategoryField             = "jobCategory"
+	IsScanCompleteField          = "isScanComplete"
+	RequiredSkillField           = "requiredSkill"
+	RequiresSkill_SkillNameField = "requiredSkill.skillName"
+	CreatedAtField               = "createdAt"
 )
 
 type StatusValues struct{}

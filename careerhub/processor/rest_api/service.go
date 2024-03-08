@@ -11,17 +11,20 @@ type RestApiService interface {
 	GetJobPostings(ctx context.Context, req *dto.GetJobPostingsRequest) ([]*dto.JobPostingRes, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*dto.JobPostingDetailRes, error)
 	GetAllCategories(ctx context.Context) (*dto.CategoriesRes, error)
+	GetAllSkills(ctx context.Context) ([]string, error)
 }
 
 type RestApiServiceImpl struct {
 	jobPostingRepo apirepo.JobPostingRepo
 	categoryRepo   apirepo.CategoryRepo
+	skillRepo      apirepo.SkillNameRepo
 }
 
-func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo) RestApiService {
+func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillNameRepo) RestApiService {
 	return &RestApiServiceImpl{
 		jobPostingRepo: jobPostingRepo,
 		categoryRepo:   categoryRepo,
+		skillRepo:      skillRepo,
 	}
 }
 
@@ -114,4 +117,8 @@ func (service *RestApiServiceImpl) GetAllCategories(ctx context.Context) (*dto.C
 	return &dto.CategoriesRes{
 		CategoriesBySite: categoriesBySite,
 	}, nil
+}
+
+func (service *RestApiServiceImpl) GetAllSkills(ctx context.Context) ([]string, error) {
+	return service.skillRepo.GetAllSkills(ctx)
 }

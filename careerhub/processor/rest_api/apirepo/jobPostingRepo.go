@@ -56,6 +56,10 @@ func createFilter(query dto.QueryReq) bson.M {
 		filter["$or"] = categories
 	}
 
+	if len(query.SkillNames) > 0 {
+		filter[jobposting.RequiresSkill_SkillNameField] = bson.M{"$all": query.SkillNames}
+	}
+
 	return filter
 }
 

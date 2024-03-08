@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api/apirepo"
 	"github.com/jae2274/goutils/llog"
 	"github.com/jae2274/goutils/terr"
@@ -17,8 +18,9 @@ import (
 func Run(ctx context.Context, apiPort int, rootPath string, collections map[string]*mongo.Collection) error {
 	jobPostingRepo := apirepo.NewJobPostingRepo(collections[(&jobposting.JobPostingInfo{}).Collection()])
 	categoryRepo := apirepo.NewCategoryRepo(collections[(&category.Category{}).Collection()])
+	skillNameRepo := apirepo.NewSkillNameRepo(collections[(&skill.SkillName{}).Collection()])
 
-	restApiService := NewRestApiService(jobPostingRepo, categoryRepo)
+	restApiService := NewRestApiService(jobPostingRepo, categoryRepo, skillNameRepo)
 
 	router := mux.NewRouter()
 	controller := NewRestApiController(restApiService, router)

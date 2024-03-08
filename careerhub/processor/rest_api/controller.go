@@ -25,6 +25,7 @@ func (restApiCtrler *RestApiController) RegisterRoutes(rootPath string) {
 	restApiCtrler.router.HandleFunc(rootPath+"/job_postings", restApiCtrler.GetJobPostings).Methods("GET")
 	restApiCtrler.router.HandleFunc(rootPath+"/job_postings/{site}/{postingId}", restApiCtrler.GetJobPostingDetail).Methods("GET")
 	restApiCtrler.router.HandleFunc(rootPath+"/categories", restApiCtrler.GetCategories).Methods("GET")
+	restApiCtrler.router.HandleFunc(rootPath+"/skills", restApiCtrler.GetSkills).Methods("GET")
 }
 
 func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r *http.Request) {
@@ -103,4 +104,23 @@ func (restApiCtrler *RestApiController) GetCategories(w http.ResponseWriter, r *
 	w.Header().Set("Access-Control-Allow-Origin", "*") //TODO: 이후 세부적으로 설정 필요
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(categories)
+}
+
+func (restApiCtrler *RestApiController) GetSkills(w http.ResponseWriter, r *http.Request) {
+	reqCtx := r.Context()
+
+	skills, err := restApiCtrler.service.GetAllSkills(reqCtx)
+	if err != nil {
+		llog.LogErr(reqCtx, err)
+		http.Error(w, "Failed to get skills", http.StatusInternalServerError)
+		return
+	}
+
+	// skills를 JSON으로 변환하여 응답
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*") //TODO: 이후 세부적으로 설정 필요
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"skills": skills,
+	})
 }
