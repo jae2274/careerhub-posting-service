@@ -47,6 +47,7 @@ func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, req *dto.
 			Title:       jobPosting.MainContent.Title,
 			CompanyName: jobPosting.CompanyName,
 			Skills:      skills,
+			Categories:  jobPosting.JobCategory,
 			Addresses:   jobPosting.Address,
 			MinCareer:   jobPosting.RequiredCareer.Min,
 			MaxCareer:   jobPosting.RequiredCareer.Max,

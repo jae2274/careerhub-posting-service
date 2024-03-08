@@ -6,6 +6,7 @@ type JobPostingRes struct {
 	Title       string   `json:"title"`
 	CompanyName string   `json:"companyName"`
 	Skills      []string `json:"skills"`
+	Categories  []string `json:"categories"`
 	ImageUrl    *string  `json:"imageUrl"`
 	Addresses   []string `json:"addresses"`
 	MinCareer   *int32   `json:"minCareer"`
