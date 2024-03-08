@@ -15,6 +15,7 @@ const (
 	SiteField           = "jobPostingId.site"
 	PostingIdField      = "jobPostingId.postingId"
 	StatusField         = "status"
+	JobCategoryField    = "jobCategory"
 	IsScanCompleteField = "isScanComplete"
 	RequiredSkillField  = "requiredSkill"
 	CreatedAtField      = "createdAt"

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api/dto"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -11,7 +12,7 @@ import (
 )
 
 type JobPostingRepo interface {
-	GetJobPostings(ctx context.Context, page, size int) ([]jobposting.JobPostingInfo, error)
+	GetJobPostings(ctx context.Context, page, size int, query dto.QueryReq) ([]jobposting.JobPostingInfo, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error)
 }
 
@@ -25,11 +26,12 @@ func NewJobPostingRepo(jobPostingCollection *mongo.Collection) JobPostingRepo {
 	}
 }
 
-func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size int) ([]jobposting.JobPostingInfo, error) {
+func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size int, query dto.QueryReq) ([]jobposting.JobPostingInfo, error) {
 
 	opt := options.Find().SetSkip(int64(page * size)).SetLimit(int64(size)).SetSort(bson.M{jobposting.CreatedAtField: -1})
 
-	cursor, err := repo.col.Find(ctx, bson.D{}, opt)
+	filter := createFilter(query)
+	cursor, err := repo.col.Find(ctx, filter, opt)
 	if err != nil {
 		return nil, terr.Wrap(err)
 	}
@@ -41,6 +43,20 @@ func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size i
 	}
 
 	return jobPostings, nil
+}
+
+func createFilter(query dto.QueryReq) bson.M {
+	filter := bson.M{}
+
+	if len(query.Categories) > 0 {
+		categories := make([]bson.M, len(query.Categories))
+		for i, category := range query.Categories {
+			categories[i] = bson.M{jobposting.SiteField: category.Site, jobposting.JobCategoryField: category.CategoryName}
+		}
+		filter["$or"] = categories
+	}
+
+	return filter
 }
 
 func (repo *JobPostingRepoImpl) GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error) {

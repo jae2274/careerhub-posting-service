@@ -3,9 +3,9 @@ package restapi
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api/dto"
 	"github.com/jae2274/goutils/llog"
 )
 
@@ -24,39 +24,22 @@ func NewRestApiController(service RestApiService, router *mux.Router) *RestApiCo
 func (restApiCtrler *RestApiController) RegisterRoutes(rootPath string) {
 	restApiCtrler.router.HandleFunc(rootPath+"/job_postings", restApiCtrler.GetJobPostings).Methods("GET")
 	restApiCtrler.router.HandleFunc(rootPath+"/job_postings/{site}/{postingId}", restApiCtrler.GetJobPostingDetail).Methods("GET")
+	restApiCtrler.router.HandleFunc(rootPath+"/categories", restApiCtrler.GetCategories).Methods("GET")
 }
 
 func (restApiCtrler *RestApiController) GetJobPostings(w http.ResponseWriter, r *http.Request) {
-	queryValues := r.URL.Query()
 
 	reqCtx := r.Context()
-	// "page" 값 추출
-	pageStr := queryValues.Get("page")
-	page, err := strconv.Atoi(pageStr)
+
+	var req dto.GetJobPostingsRequest
+	err := req.Set(r)
 	if err != nil {
 		llog.LogErr(reqCtx, err)
-		http.Error(w, "Invalid page value", http.StatusBadRequest)
-		return
-	} else if page < 1 {
-		llog.Msg("Invalid page value").Level(llog.ERROR).Data("page", page).Log(reqCtx)
-		http.Error(w, "Invalid page value", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// "size" 값 추출
-	sizeStr := queryValues.Get("size")
-	size, err := strconv.Atoi(sizeStr)
-	if err != nil {
-		llog.LogErr(reqCtx, err)
-		http.Error(w, "Invalid size value", http.StatusBadRequest)
-		return
-	} else if size < 1 || size > 100 {
-		llog.Msg("Invalid size value").Level(llog.ERROR).Data("size", size).Log(reqCtx)
-		http.Error(w, "Invalid size value", http.StatusBadRequest)
-		return
-	}
-
-	jobPostings, err := restApiCtrler.service.GetJobPostings(reqCtx, page, size)
+	jobPostings, err := restApiCtrler.service.GetJobPostings(reqCtx, &req)
 	if err != nil {
 		llog.LogErr(reqCtx, err)
 		http.Error(w, "Failed to get job postings", http.StatusInternalServerError)
@@ -103,4 +86,21 @@ func (restApiCtrler *RestApiController) GetJobPostingDetail(w http.ResponseWrite
 	w.Header().Set("Access-Control-Allow-Origin", "*") //TODO: 이후 세부적으로 설정 필요
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(jobPostingDetail)
+}
+
+func (restApiCtrler *RestApiController) GetCategories(w http.ResponseWriter, r *http.Request) {
+	reqCtx := r.Context()
+
+	categories, err := restApiCtrler.service.GetAllCategories(reqCtx)
+	if err != nil {
+		llog.LogErr(reqCtx, err)
+		http.Error(w, "Failed to get categories", http.StatusInternalServerError)
+		return
+	}
+
+	// categories를 JSON으로 변환하여 응답
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*") //TODO: 이후 세부적으로 설정 필요
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(categories)
 }

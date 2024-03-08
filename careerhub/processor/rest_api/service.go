@@ -8,22 +8,25 @@ import (
 )
 
 type RestApiService interface {
-	GetJobPostings(ctx context.Context, page, size int) ([]*dto.JobPostingRes, error)
+	GetJobPostings(ctx context.Context, req *dto.GetJobPostingsRequest) ([]*dto.JobPostingRes, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*dto.JobPostingDetailRes, error)
+	GetAllCategories(ctx context.Context) (*dto.CategoriesRes, error)
 }
 
 type RestApiServiceImpl struct {
 	jobPostingRepo apirepo.JobPostingRepo
+	categoryRepo   apirepo.CategoryRepo
 }
 
-func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo) RestApiService {
+func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo) RestApiService {
 	return &RestApiServiceImpl{
 		jobPostingRepo: jobPostingRepo,
+		categoryRepo:   categoryRepo,
 	}
 }
 
-func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, page, size int) ([]*dto.JobPostingRes, error) {
-	jobPostings, err := service.jobPostingRepo.GetJobPostings(ctx, page, size)
+func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, req *dto.GetJobPostingsRequest) ([]*dto.JobPostingRes, error) {
+	jobPostings, err := service.jobPostingRepo.GetJobPostings(ctx, req.Page, req.Size, req.QueryReq)
 	if err != nil {
 		return nil, err
 	}
@@ -80,5 +83,35 @@ func (service *RestApiServiceImpl) GetJobPostingDetail(ctx context.Context, site
 		CompanyImages:  jobPosting.CompanyImages,
 		Intro:          jobPosting.MainContent.Intro,
 		Tags:           jobPosting.Tags,
+	}, nil
+}
+
+func (service *RestApiServiceImpl) GetAllCategories(ctx context.Context) (*dto.CategoriesRes, error) {
+	categories, err := service.categoryRepo.GetAllCategories(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	categoryMap := make(map[string][]string)
+	for _, category := range categories {
+		if _, ok := categoryMap[category.Site]; !ok {
+			categoryMap[category.Site] = make([]string, 0)
+		}
+
+		categoryMap[category.Site] = append(categoryMap[category.Site], category.Name)
+	}
+
+	categoriesBySite := make([]dto.CategoryRes, len(categoryMap))
+	i := 0
+	for site, categories := range categoryMap {
+		categoriesBySite[i] = dto.CategoryRes{
+			Site:       site,
+			Categories: categories,
+		}
+		i++
+	}
+
+	return &dto.CategoriesRes{
+		CategoriesBySite: categoriesBySite,
 	}, nil
 }
