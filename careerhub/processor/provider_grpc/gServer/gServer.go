@@ -13,11 +13,12 @@ type DataProcessorServer struct {
 	jobPostingService *rpcService.JobPostingService
 	companyService    *rpcService.CompanyService
 	skillService      *rpcService.SkillService
+	categoryService   *rpcService.CategoryService
 	provider_grpc.UnimplementedProviderGrpcServer
 }
 
-func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService) *DataProcessorServer {
-	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService}
+func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService, categoryService *rpcService.CategoryService) *DataProcessorServer {
+	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService, categoryService: categoryService}
 }
 
 func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) (*provider_grpc.BoolResponse, error) {
@@ -27,6 +28,11 @@ func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *prov
 }
 
 func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, jobPostingInfo *provider_grpc.JobPostingInfo) (*provider_grpc.BoolResponse, error) {
+	err := sv.categoryService.RegisterCategories(ctx, jobPostingInfo.JobPostingId.Site, jobPostingInfo.JobCategory)
+	if err != nil {
+		return &provider_grpc.BoolResponse{Success: false}, err
+	}
+
 	preprocessedSkillNames, err := sv.skillService.RegisterSkill(ctx, jobPostingInfo.RequiredSkill)
 	if err != nil {
 		return &provider_grpc.BoolResponse{Success: false}, err

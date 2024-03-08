@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
@@ -24,16 +25,19 @@ func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collec
 	companyCollection := collections[(&company.Company{}).Collection()]
 	skillCollection := collections[(&skill.Skill{}).Collection()]
 	skillNameCollection := collections[(&skill.SkillName{}).Collection()]
+	categoryCollection := collections[(&category.Category{}).Collection()]
 
 	jobPostingRepo := rpcRepo.NewJobPostingRepo(jobPostingCollection)
 	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
 	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
 	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
+	categoryRepo := rpcRepo.NewCategoryRepo(categoryCollection)
 
 	providerGrpcServer := gServer.NewDataProcessorServer(
 		rpcService.NewJobPostingService(jobPostingRepo),
 		rpcService.NewCompanyService(companyRepo),
 		rpcService.NewSkillService(skillRepo, skillNameRepo),
+		rpcService.NewCategoryService(categoryRepo),
 	)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", grpcPort))

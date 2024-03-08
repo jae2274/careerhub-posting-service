@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
@@ -114,6 +115,14 @@ func initCollections(db *mongo.Database) (map[string]*mongo.Collection, error) {
 		return nil, err
 	}
 	collections[skillNameModel.Collection()] = skillNameCollection
+
+	categoryModel := &category.Category{}
+	categoryCollection := db.Collection(categoryModel.Collection())
+	err = mongocfg.CheckIndexViaCollection(categoryCollection, categoryModel.IndexModels())
+	if err != nil {
+		return nil, err
+	}
+	collections[categoryModel.Collection()] = categoryCollection
 
 	return collections, nil
 }
