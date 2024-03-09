@@ -60,6 +60,14 @@ func createFilter(query dto.QueryReq) bson.M {
 		filter[jobposting.RequiresSkill_SkillNameField] = bson.M{"$all": query.SkillNames}
 	}
 
+	if query.MinCareer != nil {
+		filter[jobposting.MinCareerField] = bson.M{"$gte": *query.MinCareer}
+	}
+
+	if query.MaxCareer != nil {
+		filter[jobposting.MaxCareerField] = bson.M{"$lte": *query.MaxCareer}
+	}
+
 	return filter
 }
 

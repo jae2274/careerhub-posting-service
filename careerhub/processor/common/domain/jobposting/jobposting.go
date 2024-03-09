@@ -19,6 +19,8 @@ const (
 	IsScanCompleteField          = "isScanComplete"
 	RequiredSkillField           = "requiredSkill"
 	RequiresSkill_SkillNameField = "requiredSkill.skillName"
+	MinCareerField               = "requiredCareer.min"
+	MaxCareerField               = "requiredCareer.max"
 	CreatedAtField               = "createdAt"
 )
 

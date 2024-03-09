@@ -21,8 +21,8 @@ type QueryReq struct {
 	Categories []cateogoryQuery `json:"categories"`
 	SkillNames []string         `json:"skillNames"`
 	// tagIds: []
-	// minCareer: null
-	// maxCareer: null
+	MinCareer *int `json:"minCareer"`
+	MaxCareer *int `json:"maxCareer"`
 }
 
 type cateogoryQuery struct {
@@ -82,6 +82,18 @@ func GetQuery(encodedQuery string) (QueryReq, error) {
 	err = json.Unmarshal(bytes, &queryReq)
 	if err != nil {
 		return QueryReq{}, fmt.Errorf("invalid encoded_query value. failed to unmarshal. %s", string(bytes))
+	}
+
+	if queryReq.MinCareer != nil && *queryReq.MinCareer < 0 {
+		return QueryReq{}, fmt.Errorf("invalid minCareer value. %d", *queryReq.MinCareer)
+	}
+
+	if queryReq.MaxCareer != nil && *queryReq.MaxCareer < 0 {
+		return QueryReq{}, fmt.Errorf("invalid maxCareer value. %d", *queryReq.MaxCareer)
+	}
+
+	if queryReq.MinCareer != nil && queryReq.MaxCareer != nil && *queryReq.MinCareer > *queryReq.MaxCareer {
+		return QueryReq{}, fmt.Errorf("invalid minCareer and maxCareer value. minCareer(%d) > maxCareer(%d)", *queryReq.MinCareer, *queryReq.MaxCareer)
 	}
 
 	return queryReq, nil // TODO
