@@ -24,7 +24,14 @@ func SetIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
 	}
 }
 
-func JobPosting(site string, postingId string, categories []string, requiredSkills []jobposting.RequiredSkill) *jobposting.JobPostingInfo {
+func JobPosting(site string, postingId string, categories []string, minCareer *int, maxCareer *int, requiredSkills []jobposting.RequiredSkill) *jobposting.JobPostingInfo {
+	var min, max *int32
+	if minCareer != nil {
+		min = ptr.P(int32(*minCareer))
+	}
+	if maxCareer != nil {
+		max = ptr.P(int32(*maxCareer))
+	}
 
 	time.Sleep(1 * time.Millisecond) //createdAt의 차이를 위해
 	return &jobposting.JobPostingInfo{
@@ -49,8 +56,8 @@ func JobPosting(site string, postingId string, categories []string, requiredSkil
 		RequiredSkill: requiredSkills,
 		Tags:          []string{"tags"},
 		RequiredCareer: jobposting.Career{
-			Min: ptr.P(int32(1)),
-			Max: ptr.P(int32(3)),
+			Min: min,
+			Max: max,
 		},
 		PublishedAt:    nil,
 		ClosedAt:       nil,
