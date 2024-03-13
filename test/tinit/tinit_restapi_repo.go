@@ -5,6 +5,7 @@ import (
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api/apirepo"
 )
 
@@ -24,4 +25,13 @@ func InitRestApiCategoryRepo(t *testing.T) apirepo.CategoryRepo {
 	categoryRepo := apirepo.NewCategoryRepo(categoryCollection)
 
 	return categoryRepo
+}
+
+func InitRestApiSkillNameRepo(t *testing.T) apirepo.SkillNameRepo {
+	db := InitDB(t)
+
+	skillNameCollection := db.Collection((&skill.SkillName{}).Collection())
+	skillNameRepo := apirepo.NewSkillNameRepo(skillNameCollection)
+
+	return skillNameRepo
 }

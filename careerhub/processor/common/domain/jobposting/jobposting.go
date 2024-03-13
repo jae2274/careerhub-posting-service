@@ -90,12 +90,15 @@ type SkillFromValues struct{}
 type SkillFrom = enum.Enum[SkillFromValues]
 
 const (
-	Scanned = SkillFrom("SCANNED")
-	Origin  = SkillFrom("ORIGIN")
+	Origin             = SkillFrom("ORIGIN")
+	FromTitle          = SkillFrom("FROM_TITLE")
+	FromMainTask       = SkillFrom("FROM_MAIN_TASK")
+	FromQualifications = SkillFrom("FROM_QUALIFICATIONS")
+	FromPreferred      = SkillFrom("FROM_PREFERRED")
 )
 
 func (SkillFromValues) Values() []string {
-	return []string{string(Scanned), string(Origin)}
+	return []string{string(Origin), string(FromTitle), string(FromMainTask), string(FromQualifications), string(FromPreferred)}
 }
 
 type RequiredSkill struct {

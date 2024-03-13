@@ -7,6 +7,7 @@ import (
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/scanner_grpc/repo"
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/scanner_grpc/scanner_grpc"
+	"github.com/jae2274/goutils/enum"
 )
 
 type ScannerServer struct {
@@ -65,7 +66,18 @@ func (scanner *ScannerServer) SetRequiredSkills(recvStream scanner_grpc.ScannerG
 			return err
 		}
 
-		err = scanner.jobPostingRepo.AddRequiredSkills(ctx, jobposting.JobPostingId{Site: jobPosting.Site, PostingId: jobPosting.PostingId}, jobPosting.RequiredSkill)
+		requiredSkills := make([]jobposting.RequiredSkill, len(jobPosting.RequiredSkill))
+		for i, skill := range jobPosting.RequiredSkill {
+			skillFrom := enum.Enum[jobposting.SkillFromValues]("")
+			err := skillFrom.UnmarshalText([]byte(skill.SkillFrom))
+			if err != nil {
+				return err
+			}
+
+			requiredSkills[i] = jobposting.RequiredSkill{SkillName: skill.SkillName, SkillFrom: skillFrom}
+		}
+
+		err = scanner.jobPostingRepo.AddRequiredSkills(ctx, jobposting.JobPostingId{Site: jobPosting.Site, PostingId: jobPosting.PostingId}, requiredSkills)
 		if err != nil {
 			return err
 		}

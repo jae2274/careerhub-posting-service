@@ -27,11 +27,17 @@ message JobPostingInfo{
 message SetRequiredSkillsRequest{
 	string site = 1;
 	string postingId = 2;
-	repeated string requiredSkill = 3;
+	repeated RequiredSkill requiredSkill = 3;
 }
 
 message Skills{
 	repeated string skillNames = 1;
+}
+
+
+message RequiredSkill {
+	string skillName = 1;
+	string skillFrom = 2;
 }
 
 message BoolResponse{

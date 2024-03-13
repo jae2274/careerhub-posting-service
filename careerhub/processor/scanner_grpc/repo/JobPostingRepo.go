@@ -10,7 +10,7 @@ import (
 
 type JobPostingRepo interface {
 	GetJobPostings(ctx context.Context, isScanComplete bool) (<-chan *jobposting.JobPostingInfo, error)
-	AddRequiredSkills(ctx context.Context, jobPostingId jobposting.JobPostingId, requiredSkills []string) error
+	AddRequiredSkills(ctx context.Context, jobPostingId jobposting.JobPostingId, requiredSkills []jobposting.RequiredSkill) error
 }
 
 type JobPostingRepoImpl struct {
@@ -43,13 +43,7 @@ func (r *JobPostingRepoImpl) GetJobPostings(ctx context.Context, isScanComplete 
 	return jobPostingInfoChan, nil
 }
 
-func (r *JobPostingRepoImpl) AddRequiredSkills(ctx context.Context, jobPostingId jobposting.JobPostingId, requiredSkills []string) error {
-
-	requiredSkillStructs := make([]jobposting.RequiredSkill, len(requiredSkills))
-	for i, skill := range requiredSkills {
-		requiredSkillStructs[i] = jobposting.RequiredSkill{SkillName: skill, SkillFrom: jobposting.Scanned}
-	}
-
-	_, err := r.col.UpdateOne(ctx, bson.M{jobposting.SiteField: jobPostingId.Site, jobposting.PostingIdField: jobPostingId.PostingId}, bson.M{"$set": bson.M{jobposting.IsScanCompleteField: true}, "$addToSet": bson.M{jobposting.RequiredSkillField: bson.M{"$each": requiredSkillStructs}}})
+func (r *JobPostingRepoImpl) AddRequiredSkills(ctx context.Context, jobPostingId jobposting.JobPostingId, requiredSkills []jobposting.RequiredSkill) error {
+	_, err := r.col.UpdateOne(ctx, bson.M{jobposting.SiteField: jobPostingId.Site, jobposting.PostingIdField: jobPostingId.PostingId}, bson.M{"$set": bson.M{jobposting.IsScanCompleteField: true}, "$addToSet": bson.M{jobposting.RequiredSkillField: bson.M{"$each": requiredSkills}}})
 	return err
 }

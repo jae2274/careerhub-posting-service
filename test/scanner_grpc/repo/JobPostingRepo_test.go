@@ -39,7 +39,7 @@ func TestJobPostingRepo(t *testing.T) {
 	_, ok := <-jobPostingChan
 	require.False(t, ok)
 
-	err = scannerRepo.AddRequiredSkills(context.Background(), savedJobPosting1.JobPostingId, []string{"kotlin", "swift"})
+	err = scannerRepo.AddRequiredSkills(context.Background(), savedJobPosting1.JobPostingId, []jobposting.RequiredSkill{{SkillFrom: jobposting.Origin, SkillName: "kotlin"}, {SkillFrom: jobposting.Origin, SkillName: "swift"}})
 	require.NoError(t, err)
 
 	jobPostingChan, err = scannerRepo.GetJobPostings(context.Background(), false)
@@ -58,7 +58,7 @@ func TestJobPostingRepo(t *testing.T) {
 	require.Equal(t, savedJobPosting1.JobPostingId, jobPosting.JobPostingId)
 	require.True(t, jobPosting.IsScanComplete)
 	require.Equal(t, savedJobPosting1.RequiredSkill, jobPosting.RequiredSkill[0:3])
-	require.Equal(t, jobposting.RequiredSkill{SkillFrom: jobposting.Scanned, SkillName: "kotlin"}, jobPosting.RequiredSkill[3])
-	require.Equal(t, jobposting.RequiredSkill{SkillFrom: jobposting.Scanned, SkillName: "swift"}, jobPosting.RequiredSkill[4])
+	require.Equal(t, jobposting.RequiredSkill{SkillFrom: jobposting.Origin, SkillName: "kotlin"}, jobPosting.RequiredSkill[3])
+	require.Equal(t, jobposting.RequiredSkill{SkillFrom: jobposting.Origin, SkillName: "swift"}, jobPosting.RequiredSkill[4])
 
 }
