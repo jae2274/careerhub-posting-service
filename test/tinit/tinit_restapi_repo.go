@@ -35,3 +35,12 @@ func InitRestApiSkillNameRepo(t *testing.T) apirepo.SkillNameRepo {
 
 	return skillNameRepo
 }
+
+func InitRestApiSkillRepo(t *testing.T) apirepo.SkillRepo {
+	db := InitDB(t)
+
+	skillCollection := db.Collection((&skill.Skill{}).Collection())
+	skillRepo := apirepo.NewSkillRepo(skillCollection)
+
+	return skillRepo
+}

@@ -19,8 +19,9 @@ func Run(ctx context.Context, apiPort int, rootPath string, collections map[stri
 	jobPostingRepo := apirepo.NewJobPostingRepo(collections[(&jobposting.JobPostingInfo{}).Collection()])
 	categoryRepo := apirepo.NewCategoryRepo(collections[(&category.Category{}).Collection()])
 	skillNameRepo := apirepo.NewSkillNameRepo(collections[(&skill.SkillName{}).Collection()])
+	skillRepo := apirepo.NewSkillRepo(collections[(&skill.Skill{}).Collection()])
 
-	restApiService := NewRestApiService(jobPostingRepo, categoryRepo, skillNameRepo)
+	restApiService := NewRestApiService(jobPostingRepo, categoryRepo, skillNameRepo, skillRepo)
 
 	router := mux.NewRouter()
 	controller := NewRestApiController(restApiService, router)

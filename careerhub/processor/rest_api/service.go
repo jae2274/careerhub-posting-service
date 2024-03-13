@@ -17,18 +17,50 @@ type RestApiService interface {
 type RestApiServiceImpl struct {
 	jobPostingRepo apirepo.JobPostingRepo
 	categoryRepo   apirepo.CategoryRepo
-	skillRepo      apirepo.SkillNameRepo
+	skillNameRepo  apirepo.SkillNameRepo
+	skillRepo      apirepo.SkillRepo
 }
 
-func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillNameRepo) RestApiService {
+func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillNameRepo apirepo.SkillNameRepo, skillRepo apirepo.SkillRepo) RestApiService {
 	return &RestApiServiceImpl{
 		jobPostingRepo: jobPostingRepo,
 		categoryRepo:   categoryRepo,
+		skillNameRepo:  skillNameRepo,
 		skillRepo:      skillRepo,
 	}
 }
 
+func (service *RestApiServiceImpl) getOtherSkillNames(ctx context.Context, skillNames []string) ([]string, error) {
+	skills, err := service.skillRepo.GetAllSkill(ctx, skillNames)
+	if err != nil {
+		return []string{}, err
+	}
+
+	skillNameMap := make(map[string]bool)
+
+	for _, skill := range skills {
+		for _, skillName := range skill.SkillNames {
+			skillNameMap[skillName] = true
+		}
+	}
+
+	skillNames = make([]string, len(skillNameMap))
+	i := 0
+	for skillName := range skillNameMap {
+		skillNames[i] = skillName
+		i++
+	}
+
+	return skillNames, nil
+}
+
 func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, req *dto.GetJobPostingsRequest) ([]*dto.JobPostingRes, error) {
+	otherSkillNames, err := service.getOtherSkillNames(ctx, req.QueryReq.SkillNames)
+	if err != nil {
+		return nil, err
+	}
+	req.QueryReq.SkillNames = otherSkillNames
+
 	jobPostings, err := service.jobPostingRepo.GetJobPostings(ctx, req.Page, req.Size, req.QueryReq)
 	if err != nil {
 		return nil, err
@@ -121,5 +153,5 @@ func (service *RestApiServiceImpl) GetAllCategories(ctx context.Context) (*dto.C
 }
 
 func (service *RestApiServiceImpl) GetAllSkills(ctx context.Context) ([]string, error) {
-	return service.skillRepo.GetAllSkills(ctx)
+	return service.skillNameRepo.GetAllSkills(ctx)
 }

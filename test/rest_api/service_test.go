@@ -13,9 +13,12 @@ func TestRestApiService(t *testing.T) {
 
 	t.Run("GetAllCategories", func(t *testing.T) {
 		provCategoryRepo := tinit.InitProviderCategoryRepo(t)
+		jobPostingRepo := tinit.InitRestApiJobPostingRepo(t)
 		restApiCategoryRepo := tinit.InitRestApiCategoryRepo(t)
-		// skillNameRepo := tinit.InitRestApiSkillNameRepo(t)
-		restApiService := restapi.NewRestApiService(nil, restApiCategoryRepo, nil)
+		skillNameRepo := tinit.InitRestApiSkillNameRepo(t)
+		skillRepo := tinit.InitRestApiSkillRepo(t)
+
+		restApiService := restapi.NewRestApiService(jobPostingRepo, restApiCategoryRepo, skillNameRepo, skillRepo)
 
 		mainCtx := context.Background()
 
