@@ -21,6 +21,7 @@ message JobPostingInfo{
 	string qualifications = 4;
 	string preferred = 5;
 	repeated string requiredSkill = 6;
+	string mainTask = 7;
 }
 
 
