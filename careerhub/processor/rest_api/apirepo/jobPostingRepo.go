@@ -74,6 +74,8 @@ func createFilter(query dto.QueryReq) bson.M {
 		filter[jobposting.MaxCareerField] = bson.M{"$lte": *query.MaxCareer}
 	}
 
+	filter[jobposting.StatusField] = jobposting.HIRING
+
 	return filter
 }
 
