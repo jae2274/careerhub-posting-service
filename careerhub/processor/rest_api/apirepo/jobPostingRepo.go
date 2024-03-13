@@ -57,6 +57,12 @@ func createFilter(query dto.QueryReq) bson.M {
 	}
 
 	if len(query.SkillNames) > 0 {
+		fromPrefferedSkills := make([]bson.M, len(query.SkillNames))
+		for i, skillName := range query.SkillNames {
+			fromPrefferedSkills[i] = bson.M{jobposting.RequiresSkill_SkillNameField: skillName, jobposting.RequiredSkill_SkillFromField: jobposting.FromPreferred}
+		}
+		filter["$nor"] = fromPrefferedSkills
+
 		filter[jobposting.RequiresSkill_SkillNameField] = bson.M{"$all": query.SkillNames}
 	}
 

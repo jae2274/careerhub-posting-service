@@ -24,14 +24,7 @@ func SetIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
 	}
 }
 
-func CreateJobPosting(site string, postingId string, requiredSkill []string) *jobposting.JobPostingInfo {
-	requiredSkillStruct := make([]jobposting.RequiredSkill, len(requiredSkill))
-	for i, skill := range requiredSkill {
-		requiredSkillStruct[i] = jobposting.RequiredSkill{
-			SkillFrom: jobposting.Origin,
-			SkillName: skill,
-		}
-	}
+func JobPosting(site string, postingId string, requiredSkills []jobposting.RequiredSkill) *jobposting.JobPostingInfo {
 
 	time.Sleep(1 * time.Millisecond) //createdAt의 차이를 위해
 	return &jobposting.JobPostingInfo{
@@ -53,7 +46,7 @@ func CreateJobPosting(site string, postingId string, requiredSkill []string) *jo
 			Benefits:       "benefits",
 			RecruitProcess: nil,
 		},
-		RequiredSkill: requiredSkillStruct,
+		RequiredSkill: requiredSkills,
 		Tags:          []string{"tags"},
 		RequiredCareer: jobposting.Career{
 			Min: ptr.P(int32(1)),
@@ -65,4 +58,15 @@ func CreateJobPosting(site string, postingId string, requiredSkill []string) *jo
 		IsScanComplete: false,
 		CreatedAt:      time.Now(),
 	}
+}
+
+func RequiredSkills(skillFrom jobposting.SkillFrom, skillNames ...string) []jobposting.RequiredSkill {
+	requiredSkills := make([]jobposting.RequiredSkill, len(skillNames))
+	for i, name := range skillNames {
+		requiredSkills[i] = jobposting.RequiredSkill{
+			SkillName: name,
+			SkillFrom: skillFrom,
+		}
+	}
+	return requiredSkills
 }

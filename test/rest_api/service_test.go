@@ -14,6 +14,7 @@ import (
 )
 
 func TestRestApiService(t *testing.T) {
+
 	t.Run("GetJobPostings", func(t *testing.T) {
 		providerRepo := tinit.InitProviderJobPostingRepo(t)
 		jobPostingRepo := tinit.InitRestApiJobPostingRepo(t)
@@ -24,9 +25,9 @@ func TestRestApiService(t *testing.T) {
 
 		mainCtx := context.Background()
 		savedJobPostings := []*jobposting.JobPostingInfo{
-			testutils.CreateJobPosting("jumpit", "1", []string{"java", "python", "go"}),
-			testutils.CreateJobPosting("jumpit", "2", []string{"javascript", "react"}),
-			testutils.CreateJobPosting("jumpit", "3", []string{"aws", "gcp", "azure"}),
+			testutils.JobPosting("jumpit", "1", testutils.RequiredSkills(jobposting.Origin, "java", "python", "go")),
+			testutils.JobPosting("jumpit", "2", testutils.RequiredSkills(jobposting.Origin, "javascript", "react")),
+			testutils.JobPosting("jumpit", "3", testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure")),
 		}
 
 		for _, jobPosting := range savedJobPostings {
