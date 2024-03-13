@@ -22,42 +22,49 @@ func TestJobPostingRepo(t *testing.T) {
 			{
 				Site:           "jumpit",
 				PostingId:      "1",
+				Categories:     []string{"backend", "frontend", "devops"},
 				RequiredSkills: testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"),
 			},
 			{
 				Site:           "jumpit",
 				PostingId:      "2",
+				Categories:     []string{"backend"},
 				RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromTitle, "go")...),
 			},
 			{
 				Site:           "jumpit",
 				PostingId:      "3",
+				Categories:     []string{"frontend"},
 				RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromMainTask, "go")...),
 			},
 			{
 				Site:           "jumpit",
 				PostingId:      "4",
+				Categories:     []string{"devops"},
 				RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromQualifications, "go")...),
 			},
 			{
 				Site:           "jumpit",
 				PostingId:      "5",
+				Categories:     []string{"pm", "cto"},
 				RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromPreferred, "go")...),
 			},
 			{
 				Site:           "jumpit",
 				PostingId:      "6",
+				Categories:     []string{"pm"},
 				RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java"), testutils.RequiredSkills(jobposting.FromPreferred, "python", "go")...),
 			},
 			{
-				Site:           "jumpit",
+				Site:           "wanted",
 				PostingId:      "7",
+				Categories:     []string{"pm"},
 				RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "python", "gcp"), testutils.RequiredSkills(jobposting.FromQualifications, "k8s")...),
 			},
 		}
 
 		for _, sample := range testSamples {
-			success, err := forSaveRepo.Save(ctx, testutils.JobPosting(sample.Site, sample.PostingId, sample.RequiredSkills))
+			success, err := forSaveRepo.Save(ctx, testutils.JobPosting(sample.Site, sample.PostingId, sample.Categories, sample.RequiredSkills))
 			require.NoError(t, err)
 			require.True(t, success)
 		}
@@ -65,6 +72,8 @@ func TestJobPostingRepo(t *testing.T) {
 		testCases := []TestCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
 			{"Exclude FromPreferred", dto.QueryReq{SkillNames: []string{"go"}}, []TestResult{{"jumpit", "4"}, {"jumpit", "3"}, {"jumpit", "2"}, {"jumpit", "1"}}},
 			{"Skill has \"AND\" conditions", dto.QueryReq{SkillNames: []string{"python", "go"}}, []TestResult{{"jumpit", "4"}, {"jumpit", "3"}, {"jumpit", "2"}, {"jumpit", "1"}}},
+			{"Category has \"OR\" conditions", dto.QueryReq{Categories: []dto.CateogoryQuery{{"jumpit", "backend"}, {"jumpit", "frontend"}, {"jumpit", "devops"}}}, []TestResult{{"jumpit", "4"}, {"jumpit", "3"}, {"jumpit", "2"}, {"jumpit", "1"}}},
+			{"Category: same name, different site", dto.QueryReq{Categories: []dto.CateogoryQuery{{"jumpit", "pm"}}}, []TestResult{{"jumpit", "6"}, {"jumpit", "5"}}},
 		}
 
 		for _, testCase := range testCases {
@@ -87,6 +96,7 @@ type TestSample struct {
 	Site           string
 	PostingId      string
 	RequiredSkills []jobposting.RequiredSkill
+	Categories     []string
 }
 
 type TestResult struct {

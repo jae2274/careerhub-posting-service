@@ -14,9 +14,9 @@ func TestJobPostingRepo(t *testing.T) {
 	providerRepo := tinit.InitProviderJobPostingRepo(t)
 	scannerRepo := tinit.InitScannerJobPostingRepo(t)
 
-	savedJobPosting1 := testutils.JobPosting("jumpit", "1", testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"))
-	savedJobPosting2 := testutils.JobPosting("jumpit", "2", testutils.RequiredSkills(jobposting.Origin, "javascript", "react"))
-	savedJobPosting3 := testutils.JobPosting("jumpit", "3", testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure"))
+	savedJobPosting1 := testutils.JobPosting("jumpit", "1", []string{}, testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"))
+	savedJobPosting2 := testutils.JobPosting("jumpit", "2", []string{}, testutils.RequiredSkills(jobposting.Origin, "javascript", "react"))
+	savedJobPosting3 := testutils.JobPosting("jumpit", "3", []string{}, testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure"))
 	savedJobPostings := []*jobposting.JobPostingInfo{savedJobPosting1, savedJobPosting2, savedJobPosting3}
 
 	for _, jobPosting := range savedJobPostings {

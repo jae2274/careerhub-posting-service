@@ -18,14 +18,14 @@ type GetJobPostingsRequest struct {
 }
 
 type QueryReq struct {
-	Categories []cateogoryQuery `json:"categories"`
+	Categories []CateogoryQuery `json:"categories"`
 	SkillNames []string         `json:"skillNames"`
 	// tagIds: []
 	MinCareer *int `json:"minCareer"`
 	MaxCareer *int `json:"maxCareer"`
 }
 
-type cateogoryQuery struct {
+type CateogoryQuery struct {
 	Site         string
 	CategoryName string
 }

@@ -24,7 +24,7 @@ func SetIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
 	}
 }
 
-func JobPosting(site string, postingId string, requiredSkills []jobposting.RequiredSkill) *jobposting.JobPostingInfo {
+func JobPosting(site string, postingId string, categories []string, requiredSkills []jobposting.RequiredSkill) *jobposting.JobPostingInfo {
 
 	time.Sleep(1 * time.Millisecond) //createdAt의 차이를 위해
 	return &jobposting.JobPostingInfo{
@@ -35,7 +35,7 @@ func JobPosting(site string, postingId string, requiredSkills []jobposting.Requi
 		Status:      jobposting.HIRING,
 		CompanyId:   "companyId",
 		CompanyName: "companyName",
-		JobCategory: []string{"jobCategory"},
+		JobCategory: categories,
 		MainContent: jobposting.MainContent{
 			PostUrl:        "postUrl",
 			Title:          "title",
