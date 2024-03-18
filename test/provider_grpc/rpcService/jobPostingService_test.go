@@ -15,13 +15,14 @@ import (
 
 func TestRegisterNCloseJobPostings(t *testing.T) {
 	t.Run("RegisterNCloseJobPostings", func(t *testing.T) {
+		ctx := context.TODO()
 		jobPostingRepo := tinit.InitProviderJobPostingRepo(t)
 		jobPostingService := rpcService.NewJobPostingService(jobPostingRepo)
 
 		pbJobPostings := samplePbJobPostings()
 
 		for _, pbJobPosting := range pbJobPostings {
-			jobPostingService.RegisterJobPostingInfo(context.TODO(), pbJobPosting)
+			jobPostingService.RegisterJobPostingInfo(ctx, pbJobPosting)
 		}
 
 		savedJobPostings, err := jobPostingRepo.FindAll()
@@ -34,7 +35,7 @@ func TestRegisterNCloseJobPostings(t *testing.T) {
 		}
 
 		// CloseJobPostings
-		jobPostingService.CloseJobPostings(context.TODO(), &provider_grpc.JobPostings{
+		jobPostingService.CloseJobPostings(ctx, &provider_grpc.JobPostings{
 			JobPostingIds: []*provider_grpc.JobPostingId{
 				pbJobPostings[0].JobPostingId,
 				pbJobPostings[2].JobPostingId,
@@ -49,6 +50,16 @@ func TestRegisterNCloseJobPostings(t *testing.T) {
 		require.Equal(t, jobposting.HIRING, savedJobPostings[1].Status)
 		require.Equal(t, jobposting.CLOSED, savedJobPostings[2].Status)
 		require.Equal(t, jobposting.HIRING, savedJobPostings[3].Status)
+
+		jobpostingIds, err := jobPostingService.GetAllHiring(ctx, "jumpit")
+		require.NoError(t, err)
+		require.Equal(t, 1, len(jobpostingIds.JobPostingIds))
+		require.Equal(t, pbJobPostings[1].JobPostingId, jobpostingIds.JobPostingIds[0])
+
+		jobpostingIds, err = jobPostingService.GetAllHiring(ctx, "wanted")
+		require.NoError(t, err)
+		require.Equal(t, 1, len(jobpostingIds.JobPostingIds))
+		require.Equal(t, pbJobPostings[3].JobPostingId, jobpostingIds.JobPostingIds[0])
 	})
 }
 

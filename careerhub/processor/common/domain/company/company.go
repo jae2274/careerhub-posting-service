@@ -15,7 +15,9 @@ const (
 	DefaultNameField             = "defaultName"
 	SiteCompaniesField           = "siteCompanies"
 	SiteCompanies_SiteField      = "siteCompanies.site"
+	SiteField                    = "site"
 	SiteCompanies_CompanyIdField = "siteCompanies.companyId"
+	CompanyIdField               = "companyId"
 )
 
 type Company struct {

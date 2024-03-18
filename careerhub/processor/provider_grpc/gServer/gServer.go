@@ -21,6 +21,18 @@ func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, com
 	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService, categoryService: categoryService}
 }
 
+func (sv *DataProcessorServer) IsCompanyRegistered(ctx context.Context, in *provider_grpc.CompanyId) (*provider_grpc.BoolResponse, error) {
+	result, err := sv.companyService.IsCompanyRegistered(ctx, in)
+
+	return &provider_grpc.BoolResponse{Success: result}, err
+}
+
+func (sv *DataProcessorServer) GetAllHiring(ctx context.Context, in *provider_grpc.Site) (*provider_grpc.JobPostings, error) {
+	result, err := sv.jobPostingService.GetAllHiring(ctx, in.Site)
+
+	return result, err
+}
+
 func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) (*provider_grpc.BoolResponse, error) {
 	err := sv.jobPostingService.CloseJobPostings(ctx, gJpId)
 

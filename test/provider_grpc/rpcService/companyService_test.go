@@ -15,13 +15,14 @@ import (
 
 func TestRegisterCompany(t *testing.T) {
 	t.Run("RegisterCompany", func(t *testing.T) {
+		mainCtx := context.TODO()
 		companyRepo := tinit.InitProviderCompanyRepo(t)
 		companyService := rpcService.NewCompanyService(companyRepo)
 
 		pbCompanies := samplePbCompany()
 
 		for _, pbCompany := range pbCompanies {
-			companyService.RegisterCompany(context.TODO(), pbCompany)
+			companyService.RegisterCompany(mainCtx, pbCompany)
 		}
 
 		savedCompanies, err := companyRepo.FindAll()
@@ -38,16 +39,28 @@ func TestRegisterCompany(t *testing.T) {
 		require.Len(t, findedGogule.SiteCompanies, 2)
 		require.Equal(t, pbCompanies[0].Description, findedGogule.SiteCompanies[0].Description)
 		require.Equal(t, pbCompanies[2].Description, findedGogule.SiteCompanies[1].Description)
+		isRegistered, err := companyService.IsCompanyRegistered(mainCtx, &provider_grpc.CompanyId{Site: pbCompanies[0].Site, CompanyId: pbCompanies[0].CompanyId})
+		require.NoError(t, err)
+		require.True(t, isRegistered)
+		isRegistered, err = companyService.IsCompanyRegistered(mainCtx, &provider_grpc.CompanyId{Site: pbCompanies[2].Site, CompanyId: pbCompanies[2].CompanyId})
+		require.NoError(t, err)
+		require.True(t, isRegistered)
 
 		findedApplepie, ok := savedCompaniesMap["applepie"]
 		require.True(t, ok)
 		require.Len(t, findedApplepie.SiteCompanies, 1)
 		require.Equal(t, pbCompanies[1].Description, findedApplepie.SiteCompanies[0].Description)
+		isRegistered, err = companyService.IsCompanyRegistered(mainCtx, &provider_grpc.CompanyId{Site: pbCompanies[1].Site, CompanyId: pbCompanies[1].CompanyId})
+		require.NoError(t, err)
+		require.True(t, isRegistered)
 
 		findedFaceboot, ok := savedCompaniesMap["faceboot"]
 		require.True(t, ok)
 		require.Len(t, findedFaceboot.SiteCompanies, 1)
 		require.Equal(t, pbCompanies[3].Description, findedFaceboot.SiteCompanies[0].Description)
+		isRegistered, err = companyService.IsCompanyRegistered(mainCtx, &provider_grpc.CompanyId{Site: pbCompanies[3].Site, CompanyId: pbCompanies[3].CompanyId})
+		require.NoError(t, err)
+		require.True(t, isRegistered)
 	})
 }
 

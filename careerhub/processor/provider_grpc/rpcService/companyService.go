@@ -17,6 +17,10 @@ func NewCompanyService(companyRepo *rpcRepo.CompanyRepo) *CompanyService {
 	return &CompanyService{companyRepo: companyRepo}
 }
 
+func (sv *CompanyService) IsCompanyRegistered(ctx context.Context, gCompanyId *provider_grpc.CompanyId) (bool, error) {
+	return sv.companyRepo.IsExisted(ctx, gCompanyId.Site, gCompanyId.CompanyId)
+}
+
 func (sv *CompanyService) RegisterCompany(ctx context.Context, gCompany *provider_grpc.Company) (bool, error) {
 	siteCompany := &company.SiteCompany{
 		Site:          gCompany.Site,

@@ -3,9 +3,11 @@ package rpcRepo
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
+	"github.com/jae2274/goutils/llog"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -61,6 +63,20 @@ func (cRepo *CompanyRepo) InsertCompany(ctx context.Context, company *company.Co
 	}
 
 	return true, nil
+}
+
+func (cRepo *CompanyRepo) IsExisted(ctx context.Context, site, companyId string) (bool, error) {
+	count, err := cRepo.col.CountDocuments(ctx, bson.M{company.SiteCompaniesField: bson.M{"$elemMatch": bson.M{company.SiteField: site, company.CompanyIdField: companyId}}})
+	if err != nil {
+		return false, err
+	}
+
+	if count > 1 {
+		llog.Level(llog.ERROR).Data("site", site).Data("companyId", companyId).Log(ctx)
+		log.Fatal("company count is greater than 1")
+	}
+
+	return count > 0, nil
 }
 
 func (cRepo *CompanyRepo) AppendSiteCompany(ctx context.Context, companyId primitive.ObjectID, siteCompany *company.SiteCompany) (bool, error) {

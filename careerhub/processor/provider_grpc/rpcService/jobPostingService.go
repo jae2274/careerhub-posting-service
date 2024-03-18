@@ -19,6 +19,23 @@ func NewJobPostingService(jobPostingRepo *rpcRepo.JobPostingRepo) *JobPostingSer
 	}
 }
 
+func (sv *JobPostingService) GetAllHiring(ctx context.Context, site string) (*provider_grpc.JobPostings, error) {
+	domainJpIds, err := sv.jpRepo.GetAllHiring(ctx, site)
+	if err != nil {
+		return nil, err
+	}
+
+	gJpIds := make([]*provider_grpc.JobPostingId, len(domainJpIds))
+	for i, domainJpId := range domainJpIds {
+		gJpIds[i] = &provider_grpc.JobPostingId{
+			Site:      domainJpId.Site,
+			PostingId: domainJpId.PostingId,
+		}
+	}
+
+	return &provider_grpc.JobPostings{JobPostingIds: gJpIds}, nil
+}
+
 func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *provider_grpc.JobPostingInfo) (bool, error) {
 	publishedAt := utils.UnixMilliToTimePtr(msg.PublishedAt)
 	closedAt := utils.UnixMilliToTimePtr(msg.ClosedAt)
