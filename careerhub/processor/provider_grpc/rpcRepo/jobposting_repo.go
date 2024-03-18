@@ -5,9 +5,11 @@ import (
 	"time"
 
 	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/goutils/ptr"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type JobPostingRepo struct {
@@ -28,12 +30,9 @@ func (jpRepo *JobPostingRepo) Save(ctx context.Context, jobPosting *jobposting.J
 	jobPosting.UpdatedAt = now
 	jobPosting.IsScanComplete = false
 
-	_, err := jpRepo.col.InsertOne(ctx, jobPosting)
+	_, err := jpRepo.col.UpdateOne(ctx, bson.M{jobposting.SiteField: jobPosting.JobPostingId.Site, jobposting.PostingIdField: jobPosting.JobPostingId.PostingId}, bson.M{"$set": jobPosting}, &options.UpdateOptions{Upsert: ptr.P(true)})
 
 	if err != nil {
-		if mongo.IsDuplicateKeyError(err) { // Ignore duplicate key error
-			return false, nil
-		}
 		return false, err
 	}
 
