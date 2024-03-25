@@ -3,7 +3,7 @@ package testutils
 import (
 	"time"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
 	"github.com/jae2274/goutils/ptr"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

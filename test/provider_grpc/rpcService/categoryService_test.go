@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcService"
-	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/category"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
+	"github.com/jae2274/Careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 

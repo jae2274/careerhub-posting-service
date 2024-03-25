@@ -3,8 +3,8 @@ package reset
 import (
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/vars"
-	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/vars"
+	"github.com/jae2274/Careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 

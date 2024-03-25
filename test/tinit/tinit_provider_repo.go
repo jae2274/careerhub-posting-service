@@ -5,11 +5,11 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/company"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/provider_grpc/rpcRepo"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/category"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/company"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/skill"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 )
 
 func InitProviderJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {

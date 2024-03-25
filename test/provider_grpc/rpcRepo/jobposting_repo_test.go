@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-dataProcessor/test/testutils"
-	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-posting-service/test/testutils"
+	"github.com/jae2274/Careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/stretchr/testify/require"
 )

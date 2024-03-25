@@ -3,10 +3,10 @@ package tinit
 import (
 	"testing"
 
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/category"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/common/domain/skill"
-	"github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api/apirepo"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/category"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/skill"
+	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 )
 
 func InitRestApiJobPostingRepo(t *testing.T) apirepo.JobPostingRepo {

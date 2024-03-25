@@ -1,4 +1,4 @@
-module github.com/jae2274/Careerhub-dataProcessor
+module github.com/jae2274/Careerhub-posting-service
 
 go 1.21.4
 

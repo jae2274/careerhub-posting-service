@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	restapi "github.com/jae2274/Careerhub-dataProcessor/careerhub/processor/rest_api"
-	"github.com/jae2274/Careerhub-dataProcessor/test/tinit"
+	restapi "github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/rest_api"
+	"github.com/jae2274/Careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 
