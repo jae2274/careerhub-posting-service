@@ -33,7 +33,7 @@ func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collec
 	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
 	categoryRepo := rpcRepo.NewCategoryRepo(categoryCollection)
 
-	providerGrpcServer := gServer.NewDataProcessorServer(
+	providerGrpcServer := gServer.NewProviderGrpcServer(
 		rpcService.NewJobPostingService(jobPostingRepo),
 		rpcService.NewCompanyService(companyRepo),
 		rpcService.NewSkillService(skillRepo, skillNameRepo),

@@ -20,7 +20,7 @@ import (
 )
 
 const (
-	app     = "data-processor"
+	app     = "posting-service"
 	service = "careerhub"
 
 	ctxKeyTraceID = "trace_id"

@@ -1,6 +1,6 @@
 BINARY_NAME=myapp
-CODE_DIR=./careerhub/processor
-CONTAINER_IMAGE_NAME=careerhub-dataprocessor
+CODE_DIR=./careerhub/posting_service
+CONTAINER_IMAGE_NAME=careerhub-posting-service
 
 include test.env
 
@@ -41,8 +41,8 @@ stop:
 restart: stop start
 
 proto:
-	@protoc careerhub/processor/provider_grpc/provider_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
-	@protoc careerhub/processor/scanner_grpc/scanner_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
+	@protoc careerhub/posting_service/provider_grpc/provider_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
+	@protoc careerhub/posting_service/scanner_grpc/scanner_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 
 ## test: runs all tests
 test:	

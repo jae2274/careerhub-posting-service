@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v4.25.1
-// source: careerhub/processor/provider_grpc/provider_grpc/grpc.proto
+// source: careerhub/posting_service/provider_grpc/provider_grpc/grpc.proto
 
 package provider_grpc
 
@@ -39,7 +39,7 @@ func NewProviderGrpcClient(cc grpc.ClientConnInterface) ProviderGrpcClient {
 
 func (c *providerGrpcClient) IsCompanyRegistered(ctx context.Context, in *CompanyId, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/IsCompanyRegistered", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.posting_service.provider_grpc.ProviderGrpc/IsCompanyRegistered", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *providerGrpcClient) IsCompanyRegistered(ctx context.Context, in *Compan
 
 func (c *providerGrpcClient) GetAllHiring(ctx context.Context, in *Site, opts ...grpc.CallOption) (*JobPostings, error) {
 	out := new(JobPostings)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/GetAllHiring", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.posting_service.provider_grpc.ProviderGrpc/GetAllHiring", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *providerGrpcClient) GetAllHiring(ctx context.Context, in *Site, opts ..
 
 func (c *providerGrpcClient) CloseJobPostings(ctx context.Context, in *JobPostings, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/CloseJobPostings", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.posting_service.provider_grpc.ProviderGrpc/CloseJobPostings", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *providerGrpcClient) CloseJobPostings(ctx context.Context, in *JobPostin
 
 func (c *providerGrpcClient) RegisterJobPostingInfo(ctx context.Context, in *JobPostingInfo, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterJobPostingInfo", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.posting_service.provider_grpc.ProviderGrpc/RegisterJobPostingInfo", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *providerGrpcClient) RegisterJobPostingInfo(ctx context.Context, in *Job
 
 func (c *providerGrpcClient) RegisterCompany(ctx context.Context, in *Company, opts ...grpc.CallOption) (*BoolResponse, error) {
 	out := new(BoolResponse)
-	err := c.cc.Invoke(ctx, "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterCompany", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/careerhub.posting_service.provider_grpc.ProviderGrpc/RegisterCompany", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -136,7 +136,7 @@ func _ProviderGrpc_IsCompanyRegistered_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/IsCompanyRegistered",
+		FullMethod: "/careerhub.posting_service.provider_grpc.ProviderGrpc/IsCompanyRegistered",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProviderGrpcServer).IsCompanyRegistered(ctx, req.(*CompanyId))
@@ -154,7 +154,7 @@ func _ProviderGrpc_GetAllHiring_Handler(srv interface{}, ctx context.Context, de
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/GetAllHiring",
+		FullMethod: "/careerhub.posting_service.provider_grpc.ProviderGrpc/GetAllHiring",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProviderGrpcServer).GetAllHiring(ctx, req.(*Site))
@@ -172,7 +172,7 @@ func _ProviderGrpc_CloseJobPostings_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/CloseJobPostings",
+		FullMethod: "/careerhub.posting_service.provider_grpc.ProviderGrpc/CloseJobPostings",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProviderGrpcServer).CloseJobPostings(ctx, req.(*JobPostings))
@@ -190,7 +190,7 @@ func _ProviderGrpc_RegisterJobPostingInfo_Handler(srv interface{}, ctx context.C
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterJobPostingInfo",
+		FullMethod: "/careerhub.posting_service.provider_grpc.ProviderGrpc/RegisterJobPostingInfo",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProviderGrpcServer).RegisterJobPostingInfo(ctx, req.(*JobPostingInfo))
@@ -208,7 +208,7 @@ func _ProviderGrpc_RegisterCompany_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/careerhub.processor.provider_grpc.ProviderGrpc/RegisterCompany",
+		FullMethod: "/careerhub.posting_service.provider_grpc.ProviderGrpc/RegisterCompany",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProviderGrpcServer).RegisterCompany(ctx, req.(*Company))
@@ -220,7 +220,7 @@ func _ProviderGrpc_RegisterCompany_Handler(srv interface{}, ctx context.Context,
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var ProviderGrpc_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "careerhub.processor.provider_grpc.ProviderGrpc",
+	ServiceName: "careerhub.posting_service.provider_grpc.ProviderGrpc",
 	HandlerType: (*ProviderGrpcServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -245,5 +245,5 @@ var ProviderGrpc_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "careerhub/processor/provider_grpc/provider_grpc/grpc.proto",
+	Metadata: "careerhub/posting_service/provider_grpc/provider_grpc/grpc.proto",
 }

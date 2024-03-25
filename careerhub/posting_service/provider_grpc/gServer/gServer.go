@@ -9,7 +9,7 @@ import (
 )
 
 // server is used to implement helloworld.GreeterServer.
-type DataProcessorServer struct {
+type ProviderGrpcServer struct {
 	jobPostingService *rpcService.JobPostingService
 	companyService    *rpcService.CompanyService
 	skillService      *rpcService.SkillService
@@ -17,29 +17,29 @@ type DataProcessorServer struct {
 	provider_grpc.UnimplementedProviderGrpcServer
 }
 
-func NewDataProcessorServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService, categoryService *rpcService.CategoryService) *DataProcessorServer {
-	return &DataProcessorServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService, categoryService: categoryService}
+func NewProviderGrpcServer(jobPostingService *rpcService.JobPostingService, companyService *rpcService.CompanyService, skillService *rpcService.SkillService, categoryService *rpcService.CategoryService) *ProviderGrpcServer {
+	return &ProviderGrpcServer{jobPostingService: jobPostingService, companyService: companyService, skillService: skillService, categoryService: categoryService}
 }
 
-func (sv *DataProcessorServer) IsCompanyRegistered(ctx context.Context, in *provider_grpc.CompanyId) (*provider_grpc.BoolResponse, error) {
+func (sv *ProviderGrpcServer) IsCompanyRegistered(ctx context.Context, in *provider_grpc.CompanyId) (*provider_grpc.BoolResponse, error) {
 	result, err := sv.companyService.IsCompanyRegistered(ctx, in)
 
 	return &provider_grpc.BoolResponse{Success: result}, err
 }
 
-func (sv *DataProcessorServer) GetAllHiring(ctx context.Context, in *provider_grpc.Site) (*provider_grpc.JobPostings, error) {
+func (sv *ProviderGrpcServer) GetAllHiring(ctx context.Context, in *provider_grpc.Site) (*provider_grpc.JobPostings, error) {
 	result, err := sv.jobPostingService.GetAllHiring(ctx, in.Site)
 
 	return result, err
 }
 
-func (sv *DataProcessorServer) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) (*provider_grpc.BoolResponse, error) {
+func (sv *ProviderGrpcServer) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) (*provider_grpc.BoolResponse, error) {
 	err := sv.jobPostingService.CloseJobPostings(ctx, gJpId)
 
 	return &provider_grpc.BoolResponse{Success: err == nil}, err
 }
 
-func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, jobPostingInfo *provider_grpc.JobPostingInfo) (*provider_grpc.BoolResponse, error) {
+func (sv *ProviderGrpcServer) RegisterJobPostingInfo(ctx context.Context, jobPostingInfo *provider_grpc.JobPostingInfo) (*provider_grpc.BoolResponse, error) {
 	err := sv.categoryService.RegisterCategories(ctx, jobPostingInfo.JobPostingId.Site, jobPostingInfo.JobCategory)
 	if err != nil {
 		return &provider_grpc.BoolResponse{Success: false}, err
@@ -56,7 +56,7 @@ func (sv *DataProcessorServer) RegisterJobPostingInfo(ctx context.Context, jobPo
 	return &provider_grpc.BoolResponse{Success: result}, err
 }
 
-func (sv *DataProcessorServer) RegisterCompany(ctx context.Context, gCompany *provider_grpc.Company) (*provider_grpc.BoolResponse, error) {
+func (sv *ProviderGrpcServer) RegisterCompany(ctx context.Context, gCompany *provider_grpc.Company) (*provider_grpc.BoolResponse, error) {
 	result, err := sv.companyService.RegisterCompany(ctx, gCompany)
 
 	return &provider_grpc.BoolResponse{Success: result}, err
