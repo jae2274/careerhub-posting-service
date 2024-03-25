@@ -4,9 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-posting-service/test/testutils"
-	"github.com/jae2274/Careerhub-posting-service/test/tinit"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/test/testutils"
+	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 

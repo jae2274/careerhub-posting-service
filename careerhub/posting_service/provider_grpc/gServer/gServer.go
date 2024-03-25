@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
 )
 
 // server is used to implement helloworld.GreeterServer.

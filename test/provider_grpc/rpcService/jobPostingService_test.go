@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
-	"github.com/jae2274/Careerhub-posting-service/test/tinit"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
+	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/stretchr/testify/require"
 )

@@ -3,7 +3,7 @@ package repo
 import (
 	"context"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/skill"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

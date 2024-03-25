@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/bson"

@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/category"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/company"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/skill"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/mongocfg"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/vars"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/mongocfg"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )

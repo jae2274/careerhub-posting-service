@@ -3,11 +3,11 @@ package mongocfg
 import (
 	"testing"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/company"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/domain/skill"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/common/mongocfg"
-	"github.com/jae2274/Careerhub-posting-service/test/tinit"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/mongocfg"
+	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"

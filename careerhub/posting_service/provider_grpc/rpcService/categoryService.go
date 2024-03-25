@@ -3,7 +3,7 @@ package rpcService
 import (
 	"context"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 )
 
 type CategoryService struct {

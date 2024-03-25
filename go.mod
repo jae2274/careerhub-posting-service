@@ -1,4 +1,4 @@
-module github.com/jae2274/Careerhub-posting-service
+module github.com/jae2274/careerhub-posting-service
 
 go 1.21.4
 

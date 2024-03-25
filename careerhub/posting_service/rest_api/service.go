@@ -3,8 +3,8 @@ package restapi
 import (
 	"context"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/rest_api/dto"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/dto"
 )
 
 type RestApiService interface {

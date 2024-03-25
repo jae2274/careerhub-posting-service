@@ -4,8 +4,8 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
-	"github.com/jae2274/Careerhub-posting-service/test/tinit"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
+	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 

@@ -3,7 +3,7 @@ package dto
 import (
 	"testing"
 
-	"github.com/jae2274/Careerhub-posting-service/careerhub/posting_service/rest_api/dto"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/dto"
 	"github.com/stretchr/testify/require"
 )
 
