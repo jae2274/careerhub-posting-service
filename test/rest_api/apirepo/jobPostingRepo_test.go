@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/dto"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
 	"github.com/jae2274/careerhub-posting-service/test/testutils"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
@@ -99,14 +99,14 @@ func TestJobPostingRepo(t *testing.T) {
 		}
 
 		testCases := []TestCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
-			{"Exclude FromPreferred", dto.QueryReq{SkillNames: []string{"go"}}, []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Skill has \"AND\" conditions", dto.QueryReq{SkillNames: []string{"c++", "go"}}, []*TestSample{jumpit4, jumpit3}},
-			{"Category has \"OR\" conditions", dto.QueryReq{Categories: []dto.CateogoryQuery{{"jumpit", "backend"}, {"jumpit", "frontend"}, {"jumpit", "devops"}}}, []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Category: same name, different site", dto.QueryReq{Categories: []dto.CateogoryQuery{{"jumpit", "pm"}}}, []*TestSample{jumpit6, jumpit5}},
-			{"Career range contains posting's career range", dto.QueryReq{MinCareer: ptr.P(4), MaxCareer: ptr.P(8)}, []*TestSample{jumpit2}},
-			{"MinCareer=nil contains posting's maxCareer", dto.QueryReq{MinCareer: nil, MaxCareer: ptr.P(5)}, []*TestSample{jumpit6, jumpit1}},
-			{"MaxCareer=nil contains posting's minCareer", dto.QueryReq{MinCareer: ptr.P(6), MaxCareer: nil}, []*TestSample{jumpit5, jumpit3}},
-			{"All jobpostings except closed", dto.QueryReq{}, reversedTestSamples[1:]},
+			{"Exclude FromPreferred", &restapi_grpc.QueryReq{SkillNames: []string{"go"}}, []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
+			{"Skill has \"AND\" conditions", &restapi_grpc.QueryReq{SkillNames: []string{"c++", "go"}}, []*TestSample{jumpit4, jumpit3}},
+			{"Category has \"OR\" conditions", &restapi_grpc.QueryReq{Categories: []*restapi_grpc.CategoryQueryReq{{Site: "jumpit", CategoryName: "backend"}, {Site: "jumpit", CategoryName: "frontend"}, {Site: "jumpit", CategoryName: "devops"}}}, []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
+			{"Category: same name, different site", &restapi_grpc.QueryReq{Categories: []*restapi_grpc.CategoryQueryReq{{Site: "jumpit", CategoryName: "pm"}}}, []*TestSample{jumpit6, jumpit5}},
+			{"Career range contains posting's career range", &restapi_grpc.QueryReq{MinCareer: ptr.P(int32(4)), MaxCareer: ptr.P(int32(8))}, []*TestSample{jumpit2}},
+			{"MinCareer=nil contains posting's maxCareer", &restapi_grpc.QueryReq{MinCareer: nil, MaxCareer: ptr.P(int32(5))}, []*TestSample{jumpit6, jumpit1}},
+			{"MaxCareer=nil contains posting's minCareer", &restapi_grpc.QueryReq{MinCareer: ptr.P(int32(6)), MaxCareer: nil}, []*TestSample{jumpit5, jumpit3}},
+			{"All jobpostings except closed", &restapi_grpc.QueryReq{}, reversedTestSamples[1:]},
 		}
 
 		for _, testCase := range testCases {
@@ -136,7 +136,7 @@ type TestSample struct {
 
 type TestCase struct {
 	TestName        string
-	Query           dto.QueryReq
+	Query           *restapi_grpc.QueryReq
 	ExpectedResults []*TestSample
 }
 

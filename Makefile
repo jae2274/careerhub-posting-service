@@ -18,7 +18,7 @@ image_build:
 ## run: builds and runs the application
 run: build
 	@echo "Starting..."
-	@env PROVIDER_GRPC_PORT=${PROVIDER_GRPC_PORT} SCANNER_GRPC_PORT=${SCANNER_GRPC_PORT} REST_API_PORT=${REST_API_PORT} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} POST_LOG_URL=${POST_LOG_URL} DB_USERNAME=${DB_USERNAME} DB_PASSWORD=${DB_PASSWORD}  ./${BINARY_NAME} 
+	@env PROVIDER_GRPC_PORT=${PROVIDER_GRPC_PORT} SCANNER_GRPC_PORT=${SCANNER_GRPC_PORT} RESTAPI_GRPC_PORT=${RESTAPI_GRPC_PORT} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} POST_LOG_URL=${POST_LOG_URL} DB_USERNAME=${DB_USERNAME} DB_PASSWORD=${DB_PASSWORD}  ./${BINARY_NAME} 
 	@echo "Started!"
 
 ## clean: runs go clean and deletes binaries
@@ -43,10 +43,11 @@ restart: stop start
 proto:
 	@protoc careerhub/posting_service/provider_grpc/provider_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 	@protoc careerhub/posting_service/scanner_grpc/scanner_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
+	@protoc careerhub/posting_service/rest_api/restapi_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 
 ## test: runs all tests
 test:	
 	@echo "Testing..."
-	@env PROVIDER_GRPC_PORT=${PROVIDER_GRPC_PORT} SCANNER_GRPC_PORT=${SCANNER_GRPC_PORT} REST_API_PORT=${REST_API_PORT} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} POST_LOG_URL=${POST_LOG_URL} DB_USERNAME=${DB_USERNAME} DB_PASSWORD=${DB_PASSWORD}  go test -p 1 -timeout 60s ./test/...
+	@env PROVIDER_GRPC_PORT=${PROVIDER_GRPC_PORT} SCANNER_GRPC_PORT=${SCANNER_GRPC_PORT} RESTAPI_GRPC_PORT=${RESTAPI_GRPC_PORT} MONGO_URI=${MONGO_URI} DB_NAME=${DB_NAME} POST_LOG_URL=${POST_LOG_URL} DB_USERNAME=${DB_USERNAME} DB_PASSWORD=${DB_PASSWORD}  go test -p 1 -timeout 60s ./test/...
 	
 

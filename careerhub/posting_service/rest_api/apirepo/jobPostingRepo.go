@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/dto"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -12,7 +12,7 @@ import (
 )
 
 type JobPostingRepo interface {
-	GetJobPostings(ctx context.Context, page, size int, query dto.QueryReq) ([]jobposting.JobPostingInfo, error)
+	GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]jobposting.JobPostingInfo, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error)
 }
 
@@ -26,7 +26,7 @@ func NewJobPostingRepo(jobPostingCollection *mongo.Collection) JobPostingRepo {
 	}
 }
 
-func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size int, query dto.QueryReq) ([]jobposting.JobPostingInfo, error) {
+func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]jobposting.JobPostingInfo, error) {
 
 	opt := options.Find().SetSkip(int64(page * size)).SetLimit(int64(size)).SetSort(bson.M{jobposting.CreatedAtField: -1})
 
@@ -45,7 +45,7 @@ func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size i
 	return jobPostings, nil
 }
 
-func createFilter(query dto.QueryReq) bson.M {
+func createFilter(query *restapi_grpc.QueryReq) bson.M {
 	filter := bson.M{}
 
 	if len(query.Categories) > 0 {

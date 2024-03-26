@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
-	restapi "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_server"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func TestRestApiService(t *testing.T) {
@@ -15,7 +16,7 @@ func TestRestApiService(t *testing.T) {
 		provCategoryRepo := tinit.InitProviderCategoryRepo(t)
 		restApiCategoryRepo := tinit.InitRestApiCategoryRepo(t)
 		// skillNameRepo := tinit.InitRestApiSkillNameRepo(t)
-		restApiService := restapi.NewRestApiService(nil, restApiCategoryRepo, nil)
+		restApiService := restapi_server.NewRestApiService(nil, restApiCategoryRepo, nil)
 
 		mainCtx := context.Background()
 
@@ -31,7 +32,7 @@ func TestRestApiService(t *testing.T) {
 
 		// Test GetAllCategories
 
-		categories, err := restApiService.GetAllCategories(mainCtx)
+		categories, err := restApiService.Categories(mainCtx, &emptypb.Empty{})
 		require.NoError(t, err)
 
 		require.Len(t, categories.CategoriesBySite, len(willSavedCategories))

@@ -52,7 +52,7 @@ func main() {
 	}()
 
 	go func() {
-		err := restapi.Run(ctx, envVars.RestApiPort, envVars.RootPath, collections)
+		err := restapi.Run(ctx, envVars.RestApiGrpcPort, collections)
 		runErr <- err
 	}()
 

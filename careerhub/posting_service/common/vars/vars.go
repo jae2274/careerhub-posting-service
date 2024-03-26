@@ -17,7 +17,7 @@ type Vars struct {
 	DBUser           *DBUser
 	ProviderGrpcPort int
 	ScannerGrpcPort  int
-	RestApiPort      int
+	RestApiGrpcPort  int
 	RootPath         string
 	PostLogUrl       string
 }
@@ -66,7 +66,7 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
-	restApiPort, err := getFromEnv("REST_API_PORT")
+	restApiGrpcPort, err := getFromEnv("RESTAPI_GRPC_PORT")
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +86,9 @@ func Variables() (*Vars, error) {
 		return nil, fmt.Errorf("SCANNER_GRPC_PORT is not integer.\tSCANNER_GRPC_PORT: %s", scannerGrpcPort)
 	}
 
-	restApiPortInt, err := strconv.ParseInt(restApiPort, 10, 32)
+	restApiGrpcPortInt, err := strconv.ParseInt(restApiGrpcPort, 10, 32)
 	if err != nil {
-		return nil, fmt.Errorf("REST_API_PORT is not integer.\tREST_API_PORT: %s", restApiPort)
+		return nil, fmt.Errorf("RESTAPI_GRPC_PORT is not integer.\tREST_API_PORT: %s", restApiGrpcPort)
 	}
 
 	return &Vars{
@@ -97,7 +97,7 @@ func Variables() (*Vars, error) {
 		DbName:           dbName,
 		ProviderGrpcPort: int(grpcPortInt),
 		ScannerGrpcPort:  int(scannerGrpcPortInt),
-		RestApiPort:      int(restApiPortInt),
+		RestApiGrpcPort:  int(restApiGrpcPortInt),
 		RootPath:         os.Getenv("ROOT_PATH"),
 		PostLogUrl:       postLogUrl,
 	}, nil

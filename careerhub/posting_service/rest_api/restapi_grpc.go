@@ -3,31 +3,38 @@ package restapi
 import (
 	"context"
 	"fmt"
-	"net/http"
+	"net"
 
-	"github.com/gorilla/mux"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_server"
 	"github.com/jae2274/goutils/llog"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/mongo"
+	"google.golang.org/grpc"
 )
 
-func Run(ctx context.Context, apiPort int, rootPath string, collections map[string]*mongo.Collection) error {
+func Run(ctx context.Context, apiGrpcPort int, collections map[string]*mongo.Collection) error {
 	jobPostingRepo := apirepo.NewJobPostingRepo(collections[(&jobposting.JobPostingInfo{}).Collection()])
 	categoryRepo := apirepo.NewCategoryRepo(collections[(&category.Category{}).Collection()])
 	skillNameRepo := apirepo.NewSkillNameRepo(collections[(&skill.SkillName{}).Collection()])
 
-	restApiService := NewRestApiService(jobPostingRepo, categoryRepo, skillNameRepo)
+	restApiService := restapi_server.NewRestApiService(jobPostingRepo, categoryRepo, skillNameRepo)
 
-	router := mux.NewRouter()
-	controller := NewRestApiController(restApiService, router)
-	controller.RegisterRoutes(rootPath)
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", apiGrpcPort))
+	if err != nil {
+		return terr.Wrap(err)
+	}
 
-	llog.Msg("Rest API server is running").Level(llog.INFO).Data("apiPort", apiPort).Data("rootPath", rootPath).Log(ctx)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", apiPort), router)
+	llog.Msg("RestAPI grpc server is running").Level(llog.INFO).Data("apiPort", apiGrpcPort).Log(ctx)
+
+	grpcServer := grpc.NewServer()
+	restapi_grpc.RegisterRestApiGrpcServer(grpcServer, restApiService)
+
+	err = grpcServer.Serve(listener)
 	if err != nil {
 		return terr.Wrap(err)
 	}

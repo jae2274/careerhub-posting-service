@@ -1,47 +1,42 @@
-package restapi
+package restapi_server
 
 import (
 	"context"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/dto"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type RestApiService interface {
-	GetJobPostings(ctx context.Context, req *dto.GetJobPostingsRequest) ([]*dto.JobPostingRes, error)
-	GetJobPostingDetail(ctx context.Context, site, postingId string) (*dto.JobPostingDetailRes, error)
-	GetAllCategories(ctx context.Context) (*dto.CategoriesRes, error)
-	GetAllSkills(ctx context.Context) ([]string, error)
-}
-
-type RestApiServiceImpl struct {
+type RestApiService struct {
 	jobPostingRepo apirepo.JobPostingRepo
 	categoryRepo   apirepo.CategoryRepo
 	skillRepo      apirepo.SkillNameRepo
+	restapi_grpc.UnimplementedRestApiGrpcServer
 }
 
-func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillNameRepo) RestApiService {
-	return &RestApiServiceImpl{
+func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillNameRepo) *RestApiService {
+	return &RestApiService{
 		jobPostingRepo: jobPostingRepo,
 		categoryRepo:   categoryRepo,
 		skillRepo:      skillRepo,
 	}
 }
 
-func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, req *dto.GetJobPostingsRequest) ([]*dto.JobPostingRes, error) {
+func (service *RestApiService) JobPostings(ctx context.Context, req *restapi_grpc.JobPostingsRequest) (*restapi_grpc.JobPostingsResponse, error) {
 	jobPostings, err := service.jobPostingRepo.GetJobPostings(ctx, req.Page, req.Size, req.QueryReq)
 	if err != nil {
 		return nil, err
 	}
 
-	jobPostingRes := make([]*dto.JobPostingRes, len(jobPostings))
+	jobPostingRes := make([]*restapi_grpc.JobPostingRes, len(jobPostings))
 	for i, jobPosting := range jobPostings {
 		skills := make([]string, len(jobPosting.RequiredSkill))
 		for i, skill := range jobPosting.RequiredSkill {
 			skills[i] = skill.SkillName
 		}
 
-		jobPostingRes[i] = &dto.JobPostingRes{
+		jobPostingRes[i] = &restapi_grpc.JobPostingRes{
 			Site:        jobPosting.JobPostingId.Site,
 			PostingId:   jobPosting.JobPostingId.PostingId,
 			Title:       jobPosting.MainContent.Title,
@@ -55,11 +50,13 @@ func (service *RestApiServiceImpl) GetJobPostings(ctx context.Context, req *dto.
 		}
 	}
 
-	return jobPostingRes, nil
+	return &restapi_grpc.JobPostingsResponse{
+		JobPostings: jobPostingRes,
+	}, nil
 }
 
-func (service *RestApiServiceImpl) GetJobPostingDetail(ctx context.Context, site, postingId string) (*dto.JobPostingDetailRes, error) {
-	jobPosting, err := service.jobPostingRepo.GetJobPostingDetail(ctx, site, postingId)
+func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restapi_grpc.JobPostingDetailRequest) (*restapi_grpc.JobPostingDetailResponse, error) {
+	jobPosting, err := service.jobPostingRepo.GetJobPostingDetail(ctx, req.Site, req.PostingId)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +66,7 @@ func (service *RestApiServiceImpl) GetJobPostingDetail(ctx context.Context, site
 		skills[i] = skill.SkillName
 	}
 
-	return &dto.JobPostingDetailRes{
+	return &restapi_grpc.JobPostingDetailResponse{
 		Site:           jobPosting.JobPostingId.Site,
 		PostingId:      jobPosting.JobPostingId.PostingId,
 		Title:          jobPosting.MainContent.Title,
@@ -90,7 +87,7 @@ func (service *RestApiServiceImpl) GetJobPostingDetail(ctx context.Context, site
 	}, nil
 }
 
-func (service *RestApiServiceImpl) GetAllCategories(ctx context.Context) (*dto.CategoriesRes, error) {
+func (service *RestApiService) Categories(ctx context.Context, _ *emptypb.Empty) (*restapi_grpc.CategoriesResponse, error) {
 	categories, err := service.categoryRepo.GetAllCategories(ctx)
 	if err != nil {
 		return nil, err
@@ -105,21 +102,28 @@ func (service *RestApiServiceImpl) GetAllCategories(ctx context.Context) (*dto.C
 		categoryMap[category.Site] = append(categoryMap[category.Site], category.Name)
 	}
 
-	categoriesBySite := make([]dto.CategoryRes, len(categoryMap))
+	categoriesBySite := make([]*restapi_grpc.CategoryRes, len(categoryMap))
 	i := 0
 	for site, categories := range categoryMap {
-		categoriesBySite[i] = dto.CategoryRes{
+		categoriesBySite[i] = &restapi_grpc.CategoryRes{
 			Site:       site,
 			Categories: categories,
 		}
 		i++
 	}
 
-	return &dto.CategoriesRes{
+	return &restapi_grpc.CategoriesResponse{
 		CategoriesBySite: categoriesBySite,
 	}, nil
 }
 
-func (service *RestApiServiceImpl) GetAllSkills(ctx context.Context) ([]string, error) {
-	return service.skillRepo.GetAllSkills(ctx)
+func (service *RestApiService) Skills(ctx context.Context, _ *emptypb.Empty) (*restapi_grpc.SkillsResponse, error) {
+	skills, err := service.skillRepo.GetAllSkills(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &restapi_grpc.SkillsResponse{
+		Skills: skills,
+	}, nil
 }
