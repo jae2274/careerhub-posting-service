@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"os"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
@@ -85,47 +86,40 @@ func initLogger(ctx context.Context, postUrl string) error {
 func initCollections(db *mongo.Database) (map[string]*mongo.Collection, error) {
 	collections := make(map[string]*mongo.Collection)
 
-	jobPostingModel := &jobposting.JobPostingInfo{}
-	jobPostingCollection := db.Collection(jobPostingModel.Collection())
-	err := mongocfg.CheckIndexViaCollection(jobPostingCollection, jobPostingModel.IndexModels())
-	if err != nil {
-		return nil, err
-	}
-	collections[jobPostingModel.Collection()] = jobPostingCollection
+	errs := []error{}
 
-	companyModel := &company.Company{}
-	companyCollection := db.Collection(companyModel.Collection())
-	err = mongocfg.CheckIndexViaCollection(companyCollection, companyModel.IndexModels())
-	if err != nil {
-		return nil, err
+	if err := initCollection(db, collections, &jobposting.JobPostingInfo{}); err != nil {
+		errs = append(errs, err)
 	}
-	collections[companyModel.Collection()] = companyCollection
+	if err := initCollection(db, collections, &company.Company{}); err != nil {
+		errs = append(errs, err)
+	}
+	if err := initCollection(db, collections, &skill.Skill{}); err != nil {
+		errs = append(errs, err)
+	}
+	if err := initCollection(db, collections, &skill.SkillName{}); err != nil {
+		errs = append(errs, err)
+	}
+	if err := initCollection(db, collections, &category.Category{}); err != nil {
+		errs = append(errs, err)
+	}
 
-	skillModel := &skill.Skill{}
-	skillCollection := db.Collection(skillModel.Collection())
-	err = mongocfg.CheckIndexViaCollection(skillCollection, skillModel.IndexModels())
-	if err != nil {
-		return nil, err
+	if len(errs) > 0 {
+		return nil, errors.Join(errs...)
 	}
-	collections[skillModel.Collection()] = skillCollection
-
-	skillNameModel := &skill.SkillName{}
-	skillNameCollection := db.Collection(skillNameModel.Collection())
-	err = mongocfg.CheckIndexViaCollection(skillNameCollection, skillNameModel.IndexModels())
-	if err != nil {
-		return nil, err
-	}
-	collections[skillNameModel.Collection()] = skillNameCollection
-
-	categoryModel := &category.Category{}
-	categoryCollection := db.Collection(categoryModel.Collection())
-	err = mongocfg.CheckIndexViaCollection(categoryCollection, categoryModel.IndexModels())
-	if err != nil {
-		return nil, err
-	}
-	collections[categoryModel.Collection()] = categoryCollection
 
 	return collections, nil
+}
+
+func initCollection(db *mongo.Database, collections map[string]*mongo.Collection, model mongocfg.MongoDBModel) error {
+	col := db.Collection(model.Collection())
+	err := mongocfg.CheckIndexViaCollection(col, model)
+	if err != nil {
+		return err
+	}
+	collections[model.Collection()] = col
+
+	return nil
 }
 
 func checkErr(ctx context.Context, err error) {

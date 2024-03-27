@@ -72,14 +72,14 @@ func TestCheckIndex(t *testing.T) {
 			jobpostingModel := &jobposting.JobPostingInfo{}
 
 			col := db.Collection(jobpostingModel.Collection())
-			err := mongocfg.CheckIndexViaCollection(col, jobpostingModel.IndexModels())
+			err := mongocfg.CheckIndexViaCollection(col, jobpostingModel)
 			require.NoError(t, err)
 		})
 		t.Run("company", func(t *testing.T) {
 			companyModel := &company.Company{}
 
 			col := db.Collection(companyModel.Collection())
-			err := mongocfg.CheckIndexViaCollection(col, companyModel.IndexModels())
+			err := mongocfg.CheckIndexViaCollection(col, companyModel)
 			require.NoError(t, err)
 		})
 
@@ -87,7 +87,7 @@ func TestCheckIndex(t *testing.T) {
 			skillModel := &skill.Skill{}
 
 			col := db.Collection(skillModel.Collection())
-			err := mongocfg.CheckIndexViaCollection(col, skillModel.IndexModels())
+			err := mongocfg.CheckIndexViaCollection(col, skillModel)
 			require.NoError(t, err)
 		})
 	})
