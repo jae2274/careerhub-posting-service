@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"os"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
@@ -84,42 +83,12 @@ func initLogger(ctx context.Context, postUrl string) error {
 }
 
 func initCollections(db *mongo.Database) (map[string]*mongo.Collection, error) {
-	collections := make(map[string]*mongo.Collection)
-
-	errs := []error{}
-
-	if err := initCollection(db, collections, &jobposting.JobPostingInfo{}); err != nil {
-		errs = append(errs, err)
-	}
-	if err := initCollection(db, collections, &company.Company{}); err != nil {
-		errs = append(errs, err)
-	}
-	if err := initCollection(db, collections, &skill.Skill{}); err != nil {
-		errs = append(errs, err)
-	}
-	if err := initCollection(db, collections, &skill.SkillName{}); err != nil {
-		errs = append(errs, err)
-	}
-	if err := initCollection(db, collections, &category.Category{}); err != nil {
-		errs = append(errs, err)
-	}
-
-	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
+	collections, err := mongocfg.InitCollections(db, &jobposting.JobPostingInfo{}, &company.Company{}, &skill.Skill{}, &skill.SkillName{}, &category.Category{})
+	if err != nil {
+		return nil, err
 	}
 
 	return collections, nil
-}
-
-func initCollection(db *mongo.Database, collections map[string]*mongo.Collection, model mongocfg.MongoDBModel) error {
-	col := db.Collection(model.Collection())
-	err := mongocfg.CheckIndexViaCollection(col, model)
-	if err != nil {
-		return err
-	}
-	collections[model.Collection()] = col
-
-	return nil
 }
 
 func checkErr(ctx context.Context, err error) {

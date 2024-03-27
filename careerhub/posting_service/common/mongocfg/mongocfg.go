@@ -2,6 +2,7 @@ package mongocfg
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
@@ -38,4 +39,34 @@ func NewDatabase(uri string, dbName string, dbUser *vars.DBUser) (*mongo.Databas
 	}
 
 	return db, nil
+}
+
+func InitCollections(db *mongo.Database, models ...MongoDBModel) (map[string]*mongo.Collection, error) {
+	collections := make(map[string]*mongo.Collection)
+
+	errs := []error{}
+
+	for _, model := range models {
+		err := initCollection(db, collections, model)
+		if err != nil {
+			errs = append(errs, err)
+		}
+	}
+
+	if len(errs) > 0 {
+		return nil, terr.Wrap(errors.Join(errs...))
+	}
+
+	return collections, nil
+}
+
+func initCollection(db *mongo.Database, collections map[string]*mongo.Collection, model MongoDBModel) error {
+	col := db.Collection(model.Collection())
+	err := CheckIndexViaCollection(col, model)
+	if err != nil {
+		return err
+	}
+	collections[model.Collection()] = col
+
+	return nil
 }
