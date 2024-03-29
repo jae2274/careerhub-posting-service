@@ -19,4 +19,4 @@ COPY --from=build-stage /app/myapp /myapp
 
 USER nonroot:nonroot
 
-ENTRYPOINT ["/myapp"]
+CMD ["/myapp"]
