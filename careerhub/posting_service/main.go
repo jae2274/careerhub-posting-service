@@ -10,7 +10,6 @@ import (
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/mongocfg"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/logger"
 	providergrpc "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc"
 	restapi "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api"
 	scannergrpc "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc"
@@ -31,7 +30,7 @@ func main() {
 	envVars, err := vars.Variables()
 	checkErr(ctx, err)
 
-	err = initLogger(ctx, envVars.PostLogUrl)
+	err = initLogger(ctx)
 	checkErr(ctx, err)
 
 	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
@@ -60,7 +59,7 @@ func main() {
 	checkErr(ctx, err)
 }
 
-func initLogger(ctx context.Context, postUrl string) error {
+func initLogger(ctx context.Context) error {
 	llog.SetMetadata("service", service)
 	llog.SetMetadata("app", app)
 	llog.SetDefaultContextData(ctxKeyTraceID)
@@ -71,13 +70,6 @@ func initLogger(ctx context.Context, postUrl string) error {
 	}
 
 	llog.SetMetadata("hostname", hostname)
-
-	appLogger, err := logger.NewAppLogger(ctx, postUrl)
-	if err != nil {
-		return err
-	}
-
-	llog.SetDefaultLLoger(appLogger)
 
 	return nil
 }

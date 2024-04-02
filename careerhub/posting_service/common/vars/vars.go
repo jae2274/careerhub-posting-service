@@ -18,7 +18,6 @@ type Vars struct {
 	ProviderGrpcPort int
 	ScannerGrpcPort  int
 	RestApiGrpcPort  int
-	PostLogUrl       string
 }
 
 type ErrNotExistedVar struct {
@@ -70,11 +69,6 @@ func Variables() (*Vars, error) {
 		return nil, err
 	}
 
-	postLogUrl, err := getFromEnv("POST_LOG_URL")
-	if err != nil {
-		return nil, err
-	}
-
 	grpcPortInt, err := strconv.ParseInt(providerGrpcPort, 10, 32)
 	if err != nil {
 		return nil, fmt.Errorf("GRPC_PORT is not integer.\tGRPC_PORT: %s", providerGrpcPort)
@@ -97,7 +91,6 @@ func Variables() (*Vars, error) {
 		ProviderGrpcPort: int(grpcPortInt),
 		ScannerGrpcPort:  int(scannerGrpcPortInt),
 		RestApiGrpcPort:  int(restApiGrpcPortInt),
-		PostLogUrl:       postLogUrl,
 	}, nil
 }
 
