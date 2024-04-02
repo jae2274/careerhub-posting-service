@@ -31,7 +31,7 @@ func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collec
 		return terr.Wrap(err)
 	}
 
-	llog.Msg("Starting Scanner server...").Data("port", grpcPort).Log(ctx)
+	llog.Msg("Starting scanner grpc server...").Data("port", grpcPort).Log(ctx)
 
 	grpcServer := grpc.NewServer()
 	scanner_grpc.RegisterScannerGrpcServer(grpcServer, scannerGrpcServer)
