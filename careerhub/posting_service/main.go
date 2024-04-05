@@ -15,6 +15,7 @@ import (
 	scannergrpc "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc"
 
 	"github.com/jae2274/goutils/llog"
+	"github.com/jae2274/goutils/mw"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -22,7 +23,7 @@ const (
 	app     = "posting-service"
 	service = "careerhub"
 
-	ctxKeyTraceID = "trace_id"
+	ctxKeyTraceID = string(mw.CtxKeyTraceID)
 )
 
 func main() {
