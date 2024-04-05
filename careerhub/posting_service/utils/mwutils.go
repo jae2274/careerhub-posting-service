@@ -8,11 +8,11 @@ import (
 func Middlewares() []grpc.ServerOption {
 	return []grpc.ServerOption{
 		grpc.ChainUnaryInterceptor(
-			grpcmw.SetTraceIdUnaryMW(),
+			grpcmw.GetTraceIdUnaryMW(),
 			grpcmw.LogErrUnaryMW(),
 		),
 		grpc.ChainStreamInterceptor(
-			grpcmw.SetTraceIdStreamMW(),
+			grpcmw.GetTraceIdStreamMW(),
 			grpcmw.LogErrStreamMW(),
 		),
 	}
