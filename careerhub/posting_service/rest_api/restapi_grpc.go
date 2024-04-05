@@ -11,6 +11,7 @@ import (
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_server"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/utils"
 	"github.com/jae2274/goutils/llog"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -31,7 +32,7 @@ func Run(ctx context.Context, apiGrpcPort int, collections map[string]*mongo.Col
 
 	llog.Msg("Starting restAPI grpc server").Level(llog.INFO).Data("port", apiGrpcPort).Log(ctx)
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(utils.Middlewares()...)
 	restapi_grpc.RegisterRestApiGrpcServer(grpcServer, restApiService)
 
 	err = grpcServer.Serve(listener)

@@ -10,6 +10,7 @@ import (
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/repo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/scanner_grpc"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/scanner_server"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/utils"
 	"github.com/jae2274/goutils/llog"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -33,7 +34,7 @@ func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collec
 
 	llog.Msg("Starting scanner grpc server...").Data("port", grpcPort).Log(ctx)
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(utils.Middlewares()...)
 	scanner_grpc.RegisterScannerGrpcServer(grpcServer, scannerGrpcServer)
 
 	err = grpcServer.Serve(listener)
