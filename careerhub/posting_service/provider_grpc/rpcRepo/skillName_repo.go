@@ -14,9 +14,9 @@ type SkillNameRepo struct {
 	col *mongo.Collection
 }
 
-func NewSkillNameRepo(col *mongo.Collection) *SkillNameRepo {
+func NewSkillNameRepo(db *mongo.Database) *SkillNameRepo {
 	return &SkillNameRepo{
-		col: col,
+		col: db.Collection((&skill.SkillName{}).Collection()),
 	}
 }
 

@@ -14,9 +14,9 @@ type CategoryRepo struct {
 	col *mongo.Collection
 }
 
-func NewCategoryRepo(col *mongo.Collection) *CategoryRepo {
+func NewCategoryRepo(db *mongo.Database) *CategoryRepo {
 	return &CategoryRepo{
-		col: col,
+		col: db.Collection((&category.Category{}).Collection()),
 	}
 }
 

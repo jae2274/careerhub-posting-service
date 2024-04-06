@@ -5,10 +5,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/gServer"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
@@ -20,19 +16,13 @@ import (
 	"google.golang.org/grpc"
 )
 
-func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collection) error {
+func Run(ctx context.Context, grpcPort int, db *mongo.Database) error {
 
-	jobPostingCollection := collections[(&jobposting.JobPostingInfo{}).Collection()]
-	companyCollection := collections[(&company.Company{}).Collection()]
-	skillCollection := collections[(&skill.Skill{}).Collection()]
-	skillNameCollection := collections[(&skill.SkillName{}).Collection()]
-	categoryCollection := collections[(&category.Category{}).Collection()]
-
-	jobPostingRepo := rpcRepo.NewJobPostingRepo(jobPostingCollection)
-	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
-	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
-	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
-	categoryRepo := rpcRepo.NewCategoryRepo(categoryCollection)
+	jobPostingRepo := rpcRepo.NewJobPostingRepo(db)
+	companyRepo := rpcRepo.NewCompanyRepo(db)
+	skillRepo := rpcRepo.NewSkillRepo(db)
+	skillNameRepo := rpcRepo.NewSkillNameRepo(db)
+	categoryRepo := rpcRepo.NewCategoryRepo(db)
 
 	providerGrpcServer := gServer.NewProviderGrpcServer(
 		rpcService.NewJobPostingService(jobPostingRepo),

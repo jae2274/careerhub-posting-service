@@ -16,9 +16,9 @@ type JobPostingRepo struct {
 	col *mongo.Collection
 }
 
-func NewJobPostingRepo(col *mongo.Collection) *JobPostingRepo {
+func NewJobPostingRepo(db *mongo.Database) *JobPostingRepo {
 	return &JobPostingRepo{
-		col: col,
+		col: db.Collection((&jobposting.JobPostingInfo{}).Collection()),
 	}
 }
 

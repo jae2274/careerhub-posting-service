@@ -17,7 +17,8 @@ type JobPostingRepoImpl struct {
 	col *mongo.Collection
 }
 
-func NewJobPostingRepo(col *mongo.Collection) JobPostingRepo {
+func NewJobPostingRepo(db *mongo.Database) JobPostingRepo {
+	col := db.Collection((&jobposting.JobPostingInfo{}).Collection())
 	return &JobPostingRepoImpl{col: col}
 }
 

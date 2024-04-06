@@ -16,7 +16,6 @@ import (
 
 	"github.com/jae2274/goutils/llog"
 	"github.com/jae2274/goutils/mw"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 const (
@@ -39,22 +38,22 @@ func main() {
 	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
 	checkErr(ctx, err)
 
-	collections, err := initCollections(db)
+	err = mongocfg.InitCollections(db, &jobposting.JobPostingInfo{}, &company.Company{}, &skill.Skill{}, &skill.SkillName{}, &category.Category{})
 	checkErr(ctx, err)
 
 	runErr := make(chan error)
 	go func() {
-		err := providergrpc.Run(ctx, envVars.ProviderGrpcPort, collections)
+		err := providergrpc.Run(ctx, envVars.ProviderGrpcPort, db)
 		runErr <- err
 	}()
 
 	go func() {
-		err := scannergrpc.Run(ctx, envVars.ScannerGrpcPort, collections)
+		err := scannergrpc.Run(ctx, envVars.ScannerGrpcPort, db)
 		runErr <- err
 	}()
 
 	go func() {
-		err := restapi.Run(ctx, envVars.RestApiGrpcPort, collections)
+		err := restapi.Run(ctx, envVars.RestApiGrpcPort, db)
 		runErr <- err
 	}()
 
@@ -75,15 +74,6 @@ func initLogger(ctx context.Context) error {
 	llog.SetMetadata("hostname", hostname)
 
 	return nil
-}
-
-func initCollections(db *mongo.Database) (map[string]*mongo.Collection, error) {
-	collections, err := mongocfg.InitCollections(db, &jobposting.JobPostingInfo{}, &company.Company{}, &skill.Skill{}, &skill.SkillName{}, &category.Category{})
-	if err != nil {
-		return nil, err
-	}
-
-	return collections, nil
 }
 
 func checkErr(ctx context.Context, err error) {

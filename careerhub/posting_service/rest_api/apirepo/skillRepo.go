@@ -17,7 +17,8 @@ type SkillRepoImpl struct {
 	col *mongo.Collection
 }
 
-func NewSkillRepo(col *mongo.Collection) SkillRepo {
+func NewSkillRepo(db *mongo.Database) SkillRepo {
+	col := db.Collection((&skill.Skill{}).Collection())
 	return &SkillRepoImpl{
 		col: col,
 	}

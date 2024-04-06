@@ -18,7 +18,8 @@ type SkillNameRepoImpl struct {
 	col *mongo.Collection
 }
 
-func NewSkillNameRepo(col *mongo.Collection) SkillNameRepo {
+func NewSkillNameRepo(db *mongo.Database) SkillNameRepo {
+	col := db.Collection((&skill.SkillName{}).Collection())
 	return &SkillNameRepoImpl{col: col}
 }
 

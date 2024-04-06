@@ -17,7 +17,8 @@ type CategoryRepoImpl struct {
 	col *mongo.Collection
 }
 
-func NewCategoryRepo(categoryCollection *mongo.Collection) CategoryRepo {
+func NewCategoryRepo(db *mongo.Database) CategoryRepo {
+	categoryCollection := db.Collection((&category.Category{}).Collection())
 	return &CategoryRepoImpl{
 		col: categoryCollection,
 	}

@@ -18,9 +18,9 @@ type CompanyRepo struct {
 	col *mongo.Collection
 }
 
-func NewCompanyRepo(col *mongo.Collection) *CompanyRepo {
+func NewCompanyRepo(db *mongo.Database) *CompanyRepo {
 	return &CompanyRepo{
-		col: col,
+		col: db.Collection((&company.Company{}).Collection()),
 	}
 }
 

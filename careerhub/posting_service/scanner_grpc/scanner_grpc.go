@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/repo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/scanner_grpc"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/scanner_server"
@@ -17,13 +15,9 @@ import (
 	"google.golang.org/grpc"
 )
 
-func Run(ctx context.Context, grpcPort int, collections map[string]*mongo.Collection) error {
-
-	jobPostingCollection := collections[(&jobposting.JobPostingInfo{}).Collection()]
-	skillNameCollection := collections[(&skill.SkillName{}).Collection()]
-
-	jobPostingRepo := repo.NewJobPostingRepo(jobPostingCollection)
-	skillNameRepo := repo.NewSkillNameRepo(skillNameCollection)
+func Run(ctx context.Context, grpcPort int, db *mongo.Database) error {
+	jobPostingRepo := repo.NewJobPostingRepo(db)
+	skillNameRepo := repo.NewSkillNameRepo(db)
 
 	scannerGrpcServer := scanner_server.NewScannerServer(skillNameRepo, jobPostingRepo)
 

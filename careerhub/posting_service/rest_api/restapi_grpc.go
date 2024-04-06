@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"net"
 
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_server"
@@ -18,10 +15,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-func Run(ctx context.Context, apiGrpcPort int, collections map[string]*mongo.Collection) error {
-	jobPostingRepo := apirepo.NewJobPostingRepo(collections[(&jobposting.JobPostingInfo{}).Collection()])
-	categoryRepo := apirepo.NewCategoryRepo(collections[(&category.Category{}).Collection()])
-	skillRepo := apirepo.NewSkillRepo(collections[(&skill.Skill{}).Collection()])
+func Run(ctx context.Context, apiGrpcPort int, db *mongo.Database) error {
+	jobPostingRepo := apirepo.NewJobPostingRepo(db)
+	categoryRepo := apirepo.NewCategoryRepo(db)
+	skillRepo := apirepo.NewSkillRepo(db)
 
 	restApiService := restapi_server.NewRestApiService(jobPostingRepo, categoryRepo, skillRepo)
 

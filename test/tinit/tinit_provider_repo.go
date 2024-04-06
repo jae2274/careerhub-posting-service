@@ -5,18 +5,13 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 )
 
 func InitProviderJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {
 	db := InitDB(t)
 
-	jobpostingCollection := db.Collection((&jobposting.JobPostingInfo{}).Collection())
-	jobpostingRepo := rpcRepo.NewJobPostingRepo(jobpostingCollection)
+	jobpostingRepo := rpcRepo.NewJobPostingRepo(db)
 
 	return jobpostingRepo
 }
@@ -24,8 +19,7 @@ func InitProviderJobPostingRepo(t *testing.T) *rpcRepo.JobPostingRepo {
 func InitProviderCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
 	db := InitDB(t)
 
-	companyCollection := db.Collection((&company.Company{}).Collection())
-	companyRepo := rpcRepo.NewCompanyRepo(companyCollection)
+	companyRepo := rpcRepo.NewCompanyRepo(db)
 
 	return companyRepo
 }
@@ -33,8 +27,7 @@ func InitProviderCompanyRepo(t *testing.T) *rpcRepo.CompanyRepo {
 func InitProviderSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
 	db := InitDB(t)
 
-	skillCollection := db.Collection((&skill.Skill{}).Collection())
-	skillRepo := rpcRepo.NewSkillRepo(skillCollection)
+	skillRepo := rpcRepo.NewSkillRepo(db)
 
 	return skillRepo
 }
@@ -42,8 +35,7 @@ func InitProviderSkillRepo(t *testing.T) *rpcRepo.SkillRepo {
 func InitProviderSkillNameRepo(t *testing.T) *rpcRepo.SkillNameRepo {
 	db := InitDB(t)
 
-	skillNameCollection := db.Collection((&skill.SkillName{}).Collection())
-	skillNameRepo := rpcRepo.NewSkillNameRepo(skillNameCollection)
+	skillNameRepo := rpcRepo.NewSkillNameRepo(db)
 
 	return skillNameRepo
 }
@@ -51,8 +43,7 @@ func InitProviderSkillNameRepo(t *testing.T) *rpcRepo.SkillNameRepo {
 func InitProviderCategoryRepo(t *testing.T) *rpcRepo.CategoryRepo {
 	db := InitDB(t)
 
-	categoryCollection := db.Collection((&category.Category{}).Collection())
-	categoryRepo := rpcRepo.NewCategoryRepo(categoryCollection)
+	categoryRepo := rpcRepo.NewCategoryRepo(db)
 
 	return categoryRepo
 }

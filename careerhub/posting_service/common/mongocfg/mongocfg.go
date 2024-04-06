@@ -41,32 +41,29 @@ func NewDatabase(uri string, dbName string, dbUser *vars.DBUser) (*mongo.Databas
 	return db, nil
 }
 
-func InitCollections(db *mongo.Database, models ...MongoDBModel) (map[string]*mongo.Collection, error) {
-	collections := make(map[string]*mongo.Collection)
-
+func InitCollections(db *mongo.Database, models ...MongoDBModel) error {
 	errs := []error{}
 
 	for _, model := range models {
-		err := initCollection(db, collections, model)
+		err := initCollection(db, model)
 		if err != nil {
 			errs = append(errs, err)
 		}
 	}
 
 	if len(errs) > 0 {
-		return nil, terr.Wrap(errors.Join(errs...))
+		return terr.Wrap(errors.Join(errs...))
 	}
 
-	return collections, nil
+	return nil
 }
 
-func initCollection(db *mongo.Database, collections map[string]*mongo.Collection, model MongoDBModel) error {
+func initCollection(db *mongo.Database, model MongoDBModel) error {
 	col := db.Collection(model.Collection())
 	err := CheckIndexViaCollection(col, model)
 	if err != nil {
 		return err
 	}
-	collections[model.Collection()] = col
 
 	return nil
 }
