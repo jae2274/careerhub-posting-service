@@ -9,36 +9,31 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type SkillNameRepo interface {
-	GetAllSkills(context.Context) ([]string, error)
+type SkillRepo interface {
+	GetAllSkills(context.Context) ([]skill.Skill, error)
 }
 
-type SkillNameRepoImpl struct {
+type SkillRepoImpl struct {
 	col *mongo.Collection
 }
 
-func NewSkillNameRepo(col *mongo.Collection) SkillNameRepo {
-	return &SkillNameRepoImpl{
+func NewSkillRepo(col *mongo.Collection) SkillRepo {
+	return &SkillRepoImpl{
 		col: col,
 	}
 }
 
-func (repo *SkillNameRepoImpl) GetAllSkills(ctx context.Context) ([]string, error) {
-	option := options.Find().SetProjection(bson.M{"_id": 0, skill.SkillName_NameField: 1})
+func (repo *SkillRepoImpl) GetAllSkills(ctx context.Context) ([]skill.Skill, error) {
+	option := options.Find().SetProjection(bson.M{"_id": 0, skill.Skill_DefaultNameField: 1, skill.Skill_SkillNamesField: 1})
 	cursor, err := repo.col.Find(ctx, bson.M{}, option)
 	if err != nil {
 		return nil, err
 	}
 
-	var skills []skill.SkillName
+	var skills []skill.Skill
 	if err := cursor.All(ctx, &skills); err != nil {
 		return nil, err
 	}
 
-	skillNames := make([]string, len(skills))
-	for i, skill := range skills {
-		skillNames[i] = skill.Name
-	}
-
-	return skillNames, nil
+	return skills, nil
 }

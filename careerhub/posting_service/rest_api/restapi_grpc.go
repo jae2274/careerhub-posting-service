@@ -21,9 +21,9 @@ import (
 func Run(ctx context.Context, apiGrpcPort int, collections map[string]*mongo.Collection) error {
 	jobPostingRepo := apirepo.NewJobPostingRepo(collections[(&jobposting.JobPostingInfo{}).Collection()])
 	categoryRepo := apirepo.NewCategoryRepo(collections[(&category.Category{}).Collection()])
-	skillNameRepo := apirepo.NewSkillNameRepo(collections[(&skill.SkillName{}).Collection()])
+	skillRepo := apirepo.NewSkillRepo(collections[(&skill.Skill{}).Collection()])
 
-	restApiService := restapi_server.NewRestApiService(jobPostingRepo, categoryRepo, skillNameRepo)
+	restApiService := restapi_server.NewRestApiService(jobPostingRepo, categoryRepo, skillRepo)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", apiGrpcPort))
 	if err != nil {

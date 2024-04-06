@@ -57,14 +57,34 @@ func createFilter(query *restapi_grpc.QueryReq) bson.M {
 	}
 
 	if len(query.SkillNames) > 0 {
-		fromPrefferedSkills := make([]bson.M, len(query.SkillNames))
+		and := make([]bson.M, len(query.SkillNames))
 		for i, skillName := range query.SkillNames {
-			fromPrefferedSkills[i] = bson.M{jobposting.RequiresSkill_SkillNameField: skillName, jobposting.RequiredSkill_SkillFromField: jobposting.FromPreferred}
+			and[i] = bson.M{
+				jobposting.RequiredSkillField: bson.M{
+					"$elemMatch": bson.M{
+						jobposting.SkillNameField: bson.M{"$in": skillName.Or},
+						jobposting.SkillFromField: bson.M{"$in": []jobposting.SkillFrom{jobposting.Origin, jobposting.FromTitle, jobposting.FromMainTask, jobposting.FromQualifications}},
+					},
+				},
+			}
 		}
-		filter["$nor"] = fromPrefferedSkills
-
-		filter[jobposting.RequiresSkill_SkillNameField] = bson.M{"$all": query.SkillNames}
+		filter["$and"] = and
 	}
+
+	// if len(query.SkillNames) > 0 {
+	// 	fromPrefferedSkills := make([]bson.M, len(query.SkillNames))
+	// 	for i, skillName := range query.SkillNames {
+	// 		fromPrefferedSkills[i] = bson.M{jobposting.RequiresSkill_SkillNameField: skillName.Or[0], jobposting.RequiredSkill_SkillFromField: jobposting.FromPreferred}
+	// 	}
+	// 	filter["$nor"] = fromPrefferedSkills
+
+	// 	var skillNamesStr []string
+	// 	for _, skillName := range query.SkillNames {
+	// 		skillNamesStr = append(skillNamesStr, skillName.Or...)
+	// 	}
+
+	// 	filter[jobposting.RequiresSkill_SkillNameField] = bson.M{"$all": skillNamesStr}
+	// }
 
 	if query.MinCareer != nil {
 		filter[jobposting.MinCareerField] = bson.M{"$gte": *query.MinCareer}

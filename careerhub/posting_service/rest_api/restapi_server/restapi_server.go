@@ -11,11 +11,11 @@ import (
 type RestApiService struct {
 	jobPostingRepo apirepo.JobPostingRepo
 	categoryRepo   apirepo.CategoryRepo
-	skillRepo      apirepo.SkillNameRepo
+	skillRepo      apirepo.SkillRepo
 	restapi_grpc.UnimplementedRestApiGrpcServer
 }
 
-func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillNameRepo) *RestApiService {
+func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillRepo) *RestApiService {
 	return &RestApiService{
 		jobPostingRepo: jobPostingRepo,
 		categoryRepo:   categoryRepo,
@@ -123,7 +123,15 @@ func (service *RestApiService) Skills(ctx context.Context, _ *emptypb.Empty) (*r
 		return nil, err
 	}
 
+	var skillResList []*restapi_grpc.SkillRes
+	for _, skill := range skills {
+		skillResList = append(skillResList, &restapi_grpc.SkillRes{
+			DefaultName: skill.DefaultName,
+			SkillNames:  skill.SkillNames,
+		})
+	}
+
 	return &restapi_grpc.SkillsResponse{
-		Skills: skills,
+		Skills: skillResList,
 	}, nil
 }

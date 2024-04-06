@@ -69,7 +69,7 @@ func TestJobPostingRepo(t *testing.T) {
 			PostingId:      "1",
 			Categories:     []string{"pm"},
 			MaxCareer:      ptr.P(6),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "python", "gcp"), testutils.RequiredSkills(jobposting.FromQualifications, "k8s")...),
+			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "python", "gcp", "golang"), testutils.RequiredSkills(jobposting.FromQualifications, "k8s")...),
 		}
 		wanted2 := &TestSample{
 			Site:      "wanted",
@@ -99,13 +99,14 @@ func TestJobPostingRepo(t *testing.T) {
 		}
 
 		testCases := []TestCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
-			{"Exclude FromPreferred", &restapi_grpc.QueryReq{SkillNames: []string{"go"}}, []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Skill has \"AND\" conditions", &restapi_grpc.QueryReq{SkillNames: []string{"c++", "go"}}, []*TestSample{jumpit4, jumpit3}},
-			{"Category has \"OR\" conditions", &restapi_grpc.QueryReq{Categories: []*restapi_grpc.CategoryQueryReq{{Site: "jumpit", CategoryName: "backend"}, {Site: "jumpit", CategoryName: "frontend"}, {Site: "jumpit", CategoryName: "devops"}}}, []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Category: same name, different site", &restapi_grpc.QueryReq{Categories: []*restapi_grpc.CategoryQueryReq{{Site: "jumpit", CategoryName: "pm"}}}, []*TestSample{jumpit6, jumpit5}},
-			{"Career range contains posting's career range", &restapi_grpc.QueryReq{MinCareer: ptr.P(int32(4)), MaxCareer: ptr.P(int32(8))}, []*TestSample{jumpit2}},
-			{"MinCareer=nil contains posting's maxCareer", &restapi_grpc.QueryReq{MinCareer: nil, MaxCareer: ptr.P(int32(5))}, []*TestSample{jumpit6, jumpit1}},
-			{"MaxCareer=nil contains posting's minCareer", &restapi_grpc.QueryReq{MinCareer: ptr.P(int32(6)), MaxCareer: nil}, []*TestSample{jumpit5, jumpit3}},
+			{"Exclude FromPreferred", NewQueryReqBuilder().AddSkillNames("go").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
+			{"Skill has \"OR\" conditions(For example: Different name, same skill)", NewQueryReqBuilder().AddSkillNames("go", "golang").Build(), []*TestSample{wanted1, jumpit4, jumpit3, jumpit2, jumpit1}},
+			{"Skill has \"AND\" conditions", NewQueryReqBuilder().AddSkillNames("c++").AddSkillNames("go", "golang").Build(), []*TestSample{jumpit4, jumpit3}},
+			{"Category has \"OR\" conditions", NewQueryReqBuilder().AddCategory("jumpit", "backend").AddCategory("jumpit", "frontend").AddCategory("jumpit", "devops").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
+			{"Category: same name, different site", NewQueryReqBuilder().AddCategory("jumpit", "pm").Build(), []*TestSample{jumpit6, jumpit5}},
+			{"Career range contains posting's career range", NewQueryReqBuilder().SetMinCareer(4).SetMaxCareer(8).Build(), []*TestSample{jumpit2}},
+			{"MinCareer=nil contains posting's maxCareer", NewQueryReqBuilder().SetMaxCareer(5).Build(), []*TestSample{jumpit6, jumpit1}},
+			{"MaxCareer=nil contains posting's minCareer", NewQueryReqBuilder().SetMinCareer(6).Build(), []*TestSample{jumpit5, jumpit3}},
 			{"All jobpostings except closed", &restapi_grpc.QueryReq{}, reversedTestSamples[1:]},
 		}
 
@@ -123,6 +124,46 @@ func TestJobPostingRepo(t *testing.T) {
 
 		}
 	})
+}
+
+type QueryReqBuilder struct {
+	categories []*restapi_grpc.CategoryQueryReq
+	skillNames []*restapi_grpc.SkillQueryReq
+	minCareer  *int32
+	maxCareer  *int32
+}
+
+func NewQueryReqBuilder() *QueryReqBuilder {
+	return &QueryReqBuilder{}
+}
+
+func (qb *QueryReqBuilder) AddCategory(site, categoryName string) *QueryReqBuilder {
+	qb.categories = append(qb.categories, &restapi_grpc.CategoryQueryReq{Site: site, CategoryName: categoryName})
+	return qb
+}
+
+func (qb *QueryReqBuilder) AddSkillNames(skillNames ...string) *QueryReqBuilder {
+	qb.skillNames = append(qb.skillNames, &restapi_grpc.SkillQueryReq{Or: skillNames})
+	return qb
+}
+
+func (qb *QueryReqBuilder) SetMinCareer(minCareer int) *QueryReqBuilder {
+	qb.minCareer = ptrInt32(minCareer)
+	return qb
+}
+
+func (qb *QueryReqBuilder) SetMaxCareer(maxCareer int) *QueryReqBuilder {
+	qb.maxCareer = ptrInt32(maxCareer)
+	return qb
+}
+
+func (qb *QueryReqBuilder) Build() *restapi_grpc.QueryReq {
+	return &restapi_grpc.QueryReq{
+		Categories: qb.categories,
+		SkillNames: qb.skillNames,
+		MinCareer:  qb.minCareer,
+		MaxCareer:  qb.maxCareer,
+	}
 }
 
 type TestSample struct {

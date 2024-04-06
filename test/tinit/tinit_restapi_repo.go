@@ -27,11 +27,11 @@ func InitRestApiCategoryRepo(t *testing.T) apirepo.CategoryRepo {
 	return categoryRepo
 }
 
-func InitRestApiSkillNameRepo(t *testing.T) apirepo.SkillNameRepo {
+func InitRestApiSkillNameRepo(t *testing.T) apirepo.SkillRepo {
 	db := InitDB(t)
 
 	skillNameCollection := db.Collection((&skill.SkillName{}).Collection())
-	skillNameRepo := apirepo.NewSkillNameRepo(skillNameCollection)
+	skillNameRepo := apirepo.NewSkillRepo(skillNameCollection)
 
 	return skillNameRepo
 }
