@@ -25,7 +25,7 @@ func TestJobPostingRepo(t *testing.T) {
 		require.True(t, isSuccess)
 	}
 
-	jobPostingChan, err := scannerRepo.GetJobPostings(context.Background(), false)
+	jobPostingChan, errChan, err := scannerRepo.GetJobPostings(context.Background(), false)
 	require.NoError(t, err)
 	index := 0
 	for jobPosting := range jobPostingChan {
@@ -33,16 +33,18 @@ func TestJobPostingRepo(t *testing.T) {
 		require.Equal(t, *jobPosting, *savedJobPostings[index])
 		index++
 	}
+	checkErrChan(t, errChan)
 
-	jobPostingChan, err = scannerRepo.GetJobPostings(context.Background(), true)
+	jobPostingChan, errChan, err = scannerRepo.GetJobPostings(context.Background(), true)
 	require.NoError(t, err)
 	_, ok := <-jobPostingChan
 	require.False(t, ok)
+	checkErrChan(t, errChan)
 
 	err = scannerRepo.AddRequiredSkills(context.Background(), savedJobPosting1.JobPostingId, []jobposting.RequiredSkill{{SkillFrom: jobposting.Origin, SkillName: "kotlin"}, {SkillFrom: jobposting.Origin, SkillName: "swift"}})
 	require.NoError(t, err)
 
-	jobPostingChan, err = scannerRepo.GetJobPostings(context.Background(), false)
+	jobPostingChan, errChan, err = scannerRepo.GetJobPostings(context.Background(), false)
 	require.NoError(t, err)
 	index = 1
 	for jobPosting := range jobPostingChan {
@@ -50,15 +52,28 @@ func TestJobPostingRepo(t *testing.T) {
 		require.Equal(t, *jobPosting, *savedJobPostings[index])
 		index++
 	}
+	checkErrChan(t, errChan)
 
-	jobPostingChan, err = scannerRepo.GetJobPostings(context.Background(), true)
+	jobPostingChan, errChan, err = scannerRepo.GetJobPostings(context.Background(), true)
 	require.NoError(t, err)
 	jobPosting, ok := <-jobPostingChan
 	require.True(t, ok)
+	checkErrChan(t, errChan)
+
 	require.Equal(t, savedJobPosting1.JobPostingId, jobPosting.JobPostingId)
 	require.True(t, jobPosting.IsScanComplete)
 	require.Equal(t, savedJobPosting1.RequiredSkill, jobPosting.RequiredSkill[0:3])
 	require.Equal(t, jobposting.RequiredSkill{SkillFrom: jobposting.Origin, SkillName: "kotlin"}, jobPosting.RequiredSkill[3])
 	require.Equal(t, jobposting.RequiredSkill{SkillFrom: jobposting.Origin, SkillName: "swift"}, jobPosting.RequiredSkill[4])
 
+}
+
+func checkErrChan(t *testing.T, errChan <-chan error) {
+	select {
+	case err, ok := <-errChan:
+		require.NoError(t, err)
+		require.False(t, ok)
+	default:
+		require.Fail(t, "errChan should be closed")
+	}
 }

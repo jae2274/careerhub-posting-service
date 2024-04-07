@@ -22,32 +22,41 @@ func NewScannerServer(skillNameRepo repo.SkillNameRepo, jobPostingRepo repo.JobP
 
 func (ss *ScannerServer) GetJobPostings(request *scanner_grpc.ScanComplete, sendSteam scanner_grpc.ScannerGrpc_GetJobPostingsServer) error {
 	ctx := sendSteam.Context()
-	jobPostingChan, err := ss.jobPostingRepo.GetJobPostings(ctx, request.IsScanComplete)
+	jobPostingChan, errChan, err := ss.jobPostingRepo.GetJobPostings(ctx, request.IsScanComplete)
 	if err != nil {
 		return err
 	}
 
-	for jobPosting := range jobPostingChan {
-		requiredSkills := make([]string, len(jobPosting.RequiredSkill))
-		for i, requiredSkill := range jobPosting.RequiredSkill {
-			requiredSkills[i] = requiredSkill.SkillName
-		}
+	for {
+		select {
+		case jobPosting, ok := <-jobPostingChan:
+			if !ok {
+				return nil
+			}
+			requiredSkills := make([]string, len(jobPosting.RequiredSkill))
+			for i, requiredSkill := range jobPosting.RequiredSkill {
+				requiredSkills[i] = requiredSkill.SkillName
+			}
 
-		err := sendSteam.Send(&scanner_grpc.JobPostingInfo{
-			Site:           jobPosting.JobPostingId.Site,
-			PostingId:      jobPosting.JobPostingId.PostingId,
-			Title:          jobPosting.MainContent.Title,
-			Qualifications: jobPosting.MainContent.Qualifications,
-			Preferred:      jobPosting.MainContent.Preferred,
-			RequiredSkill:  requiredSkills,
-		})
-		if err != nil {
-			return err
+			err := sendSteam.Send(&scanner_grpc.JobPostingInfo{
+				Site:           jobPosting.JobPostingId.Site,
+				PostingId:      jobPosting.JobPostingId.PostingId,
+				Title:          jobPosting.MainContent.Title,
+				Qualifications: jobPosting.MainContent.Qualifications,
+				Preferred:      jobPosting.MainContent.Preferred,
+				RequiredSkill:  requiredSkills,
+			})
+			if err != nil {
+				return err
+			}
+		case err, ok := <-errChan:
+			if ok {
+				return err
+			}
 		}
 	}
-
-	return nil
 }
+
 func (ss *ScannerServer) GetSkills(ctx context.Context, request *scanner_grpc.ScanComplete) (*scanner_grpc.Skills, error) {
 	skillNames, err := ss.skillNameRepo.GetSkills(ctx, request.IsScanComplete)
 	if err != nil {
