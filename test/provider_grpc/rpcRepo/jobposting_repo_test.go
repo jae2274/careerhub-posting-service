@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 	"github.com/jae2274/careerhub-posting-service/test/testutils"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
@@ -16,7 +17,7 @@ func TestJobPostingRepo(t *testing.T) {
 	sampleJobPostings := samples()
 
 	t.Run("FindAll from empty DB", func(t *testing.T) {
-		jpRepo := tinit.InitProviderJobPostingRepo(t)
+		jpRepo := rpcRepo.NewJobPostingRepo(tinit.InitDB(t))
 
 		jobPostings, err := jpRepo.FindAll()
 		if err != nil {
@@ -27,7 +28,7 @@ func TestJobPostingRepo(t *testing.T) {
 	})
 
 	t.Run("Save and FindAll", func(t *testing.T) {
-		jpRepo := tinit.InitProviderJobPostingRepo(t)
+		jpRepo := rpcRepo.NewJobPostingRepo(tinit.InitDB(t))
 
 		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
@@ -45,7 +46,7 @@ func TestJobPostingRepo(t *testing.T) {
 	})
 
 	t.Run("CloseAll", func(t *testing.T) {
-		jpRepo := tinit.InitProviderJobPostingRepo(t)
+		jpRepo := rpcRepo.NewJobPostingRepo(tinit.InitDB(t))
 
 		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)

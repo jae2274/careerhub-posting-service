@@ -2,6 +2,8 @@ package tinit
 
 import (
 	"context"
+	"fmt"
+	"runtime"
 	"testing"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
@@ -63,5 +65,14 @@ func createIndexes(t *testing.T, col *mongo.Collection, indexModels map[string]*
 
 		_, err := col.Indexes().CreateOne(context.TODO(), *indexModel, nil)
 		checkError(t, err)
+	}
+}
+
+func checkError(t *testing.T, err error) {
+	if err != nil {
+		_, file, line, _ := runtime.Caller(1)
+		fmt.Printf("%s:%d\n", file, line)
+		t.Error(err)
+		t.FailNow()
 	}
 }

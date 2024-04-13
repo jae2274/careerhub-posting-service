@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
 	"github.com/jae2274/careerhub-posting-service/test/testutils"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
@@ -16,8 +18,9 @@ func TestJobPostingRepo(t *testing.T) {
 
 	t.Run("Test Queries", func(t *testing.T) {
 		ctx := context.Background()
-		forSaveRepo := tinit.InitProviderJobPostingRepo(t)
-		jobPostingRepo := tinit.InitRestApiJobPostingRepo(t)
+		db := tinit.InitDB(t)
+		forSaveRepo := rpcRepo.NewJobPostingRepo(db)
+		jobPostingRepo := apirepo.NewJobPostingRepo(db)
 
 		jumpit1 := &TestSample{
 			Site:           "jumpit",

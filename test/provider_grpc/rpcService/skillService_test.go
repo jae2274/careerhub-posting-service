@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
@@ -11,8 +12,9 @@ import (
 
 func TestSkillService(t *testing.T) {
 	t.Run("RegisterSkill", func(t *testing.T) {
-		skillRepo := tinit.InitProviderSkillRepo(t)
-		skillNameRepo := tinit.InitProviderSkillNameRepo(t)
+		db := tinit.InitDB(t)
+		skillRepo := rpcRepo.NewSkillRepo(db)
+		skillNameRepo := rpcRepo.NewSkillNameRepo(db)
 		skillService := rpcService.NewSkillService(skillRepo, skillNameRepo)
 
 		sampleSkillGroups := [][]string{

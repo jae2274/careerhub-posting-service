@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_server"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
@@ -13,8 +15,9 @@ import (
 func TestRestApiService(t *testing.T) {
 
 	t.Run("GetAllCategories", func(t *testing.T) {
-		provCategoryRepo := tinit.InitProviderCategoryRepo(t)
-		restApiCategoryRepo := tinit.InitRestApiCategoryRepo(t)
+		db := tinit.InitDB(t)
+		provCategoryRepo := rpcRepo.NewCategoryRepo(db)
+		restApiCategoryRepo := apirepo.NewCategoryRepo(db)
 		// skillNameRepo := tinit.InitRestApiSkillNameRepo(t)
 		restApiService := restapi_server.NewRestApiService(nil, restApiCategoryRepo, nil)
 

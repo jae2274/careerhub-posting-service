@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
@@ -12,7 +13,7 @@ import (
 
 func TestCategoryService(t *testing.T) {
 	t.Run("RegisterCategories", func(t *testing.T) {
-		categoryRepo := tinit.InitProviderCategoryRepo(t)
+		categoryRepo := rpcRepo.NewCategoryRepo(tinit.InitDB(t))
 		ctx := context.TODO()
 		type SiteCategory struct {
 			Site       string

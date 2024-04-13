@@ -7,6 +7,7 @@ import (
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
@@ -16,7 +17,7 @@ import (
 func TestRegisterCompany(t *testing.T) {
 	t.Run("RegisterCompany", func(t *testing.T) {
 		mainCtx := context.TODO()
-		companyRepo := tinit.InitProviderCompanyRepo(t)
+		companyRepo := rpcRepo.NewCompanyRepo(tinit.InitDB(t))
 		companyService := rpcService.NewCompanyService(companyRepo)
 
 		pbCompanies := samplePbCompany()

@@ -7,6 +7,7 @@ import (
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/provider_grpc"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcService"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
@@ -16,7 +17,7 @@ import (
 func TestRegisterNCloseJobPostings(t *testing.T) {
 	t.Run("RegisterNCloseJobPostings", func(t *testing.T) {
 		ctx := context.TODO()
-		jobPostingRepo := tinit.InitProviderJobPostingRepo(t)
+		jobPostingRepo := rpcRepo.NewJobPostingRepo(tinit.InitDB(t))
 		jobPostingService := rpcService.NewJobPostingService(jobPostingRepo)
 
 		pbJobPostings := samplePbJobPostings()

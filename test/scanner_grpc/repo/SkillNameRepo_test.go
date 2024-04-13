@@ -4,13 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/repo"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 
 func TestSkillNameRepo(t *testing.T) {
-	providerRepo := tinit.InitProviderSkillNameRepo(t)
-	skillNameRepo := tinit.InitScannerSkillNameRepo(t)
+	db := tinit.InitDB(t)
+	providerRepo := rpcRepo.NewSkillNameRepo(db)
+	skillNameRepo := repo.NewSkillNameRepo(db)
 
 	savedSkillNames := []string{"java", "python", "go"}
 	err := providerRepo.SaveSkillNames(context.Background(), savedSkillNames)

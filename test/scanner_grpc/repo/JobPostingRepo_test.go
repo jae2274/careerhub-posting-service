@@ -5,14 +5,17 @@ import (
 	"testing"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc/rpcRepo"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc/repo"
 	"github.com/jae2274/careerhub-posting-service/test/testutils"
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/stretchr/testify/require"
 )
 
 func TestJobPostingRepo(t *testing.T) {
-	providerRepo := tinit.InitProviderJobPostingRepo(t)
-	scannerRepo := tinit.InitScannerJobPostingRepo(t)
+	db := tinit.InitDB(t)
+	providerRepo := rpcRepo.NewJobPostingRepo(db)
+	scannerRepo := repo.NewJobPostingRepo(db)
 
 	savedJobPosting1 := testutils.JobPosting("jumpit", "1", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"))
 	savedJobPosting2 := testutils.JobPosting("jumpit", "2", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "javascript", "react"))
