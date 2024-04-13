@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package careerhub.posting_service.suggester_grpc;
+option go_package = "careerhub/posting_service/suggester_grpc";
+
+service Posting {
+  rpc GetPostings(GetPostingsRequest) returns ( GetPostingsResponse) ;
+}
+
+message GetPostingsRequest {
+  int64  minUnixMilli = 1;
+  int64  maxUnixMilli = 2;
+}
+
+message GetPostingsResponse {
+  repeated JobPosting postings = 1;
+}
+
+message JobPosting{
+  string site = 1;
+  string postingId = 2;
+  string title = 3;
+  string companyId = 4;
+  string companyName = 5;
+  PostingInfo info = 6;
+  optional string imageUrl = 7;
+}
+
+message PostingInfo{
+  repeated string categories = 1;
+  repeated string skillNames = 2;
+  optional int32 minCareer = 3;
+  optional int32 maxCareer = 4;
+}
+
+message Category {
+  string site = 1;
+  string categoryName = 2;
+}

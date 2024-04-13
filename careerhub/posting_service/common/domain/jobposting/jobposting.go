@@ -25,6 +25,10 @@ const (
 	MinCareerField               = "requiredCareer.min"
 	MaxCareerField               = "requiredCareer.max"
 	CreatedAtField               = "createdAt"
+
+	MainContent_TitleField = "mainContent.title"
+	CompanyIdField         = "companyId"
+	CompanyNameField       = "companyName"
 )
 
 type StatusValues struct{}

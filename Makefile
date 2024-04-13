@@ -44,6 +44,7 @@ proto:
 	@protoc careerhub/posting_service/provider_grpc/provider_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 	@protoc careerhub/posting_service/scanner_grpc/scanner_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 	@protoc careerhub/posting_service/rest_api/restapi_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
+	@protoc careerhub/posting_service/suggester/suggester_grpc/*.proto  --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  --go_opt=paths=source_relative  --proto_path=.
 
 ## test: runs all tests
 test:	
