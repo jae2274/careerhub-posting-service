@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	IDField                      = "_id"
 	SiteField                    = "jobPostingId.site"
 	PostingIdField               = "jobPostingId.postingId"
 	StatusField                  = "status"
@@ -25,6 +26,8 @@ const (
 	MinCareerField               = "requiredCareer.min"
 	MaxCareerField               = "requiredCareer.max"
 	CreatedAtField               = "createdAt"
+	InsertedAtField              = "insertedAt"
+	UpdatedAtField               = "updatedAt"
 
 	MainContent_TitleField = "mainContent.title"
 	CompanyIdField         = "companyId"
@@ -77,8 +80,8 @@ type JobPostingInfo struct {
 	ClosedAt       *time.Time         `bson:"closedAt,omitempty"`
 	Address        []string           `bson:"address"`
 	CreatedAt      time.Time          `bson:"createdAt"`
-	InsertedAt     time.Time          `bson:"insertedAt"`
-	UpdatedAt      time.Time          `bson:"updatedAt"`
+	InsertedAt     time.Time          `bson:"insertedAt,omitempty"`
+	UpdatedAt      time.Time          `bson:"updatedAt,omitempty"`
 	IsScanComplete bool               `bson:"isScanComplete"`
 }
 

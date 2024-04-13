@@ -11,7 +11,7 @@ import (
 )
 
 type PostingRepo interface {
-	GetPostings(ctx context.Context, minCreatedAt time.Time, maxCreatedAt time.Time) ([]*jobposting.JobPostingInfo, error)
+	GetPostings(ctx context.Context, minInsertedAt time.Time, maxInsertedAt time.Time) ([]*jobposting.JobPostingInfo, error)
 }
 
 type PostingRepoImpl struct {
@@ -23,8 +23,9 @@ func NewPostingRepo(db *mongo.Database) PostingRepo {
 	return &PostingRepoImpl{col: col}
 }
 
-func (r *PostingRepoImpl) GetPostings(ctx context.Context, minCreatedAt time.Time, maxCreatedAt time.Time) ([]*jobposting.JobPostingInfo, error) {
-	filter := bson.M{jobposting.CreatedAtField: bson.M{"$gte": minCreatedAt, "$lt": maxCreatedAt}}
+func (r *PostingRepoImpl) GetPostings(ctx context.Context, minInsertedAt time.Time, maxInsertedAt time.Time) ([]*jobposting.JobPostingInfo, error) {
+	filter := bson.M{jobposting.InsertedAtField: bson.M{"$gte": minInsertedAt, "$lt": maxInsertedAt}}
+
 	opts := options.Find().SetProjection(
 		bson.M{
 			jobposting.SiteField:                    1,

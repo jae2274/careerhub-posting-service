@@ -2,10 +2,9 @@ package rpcRepo
 
 import (
 	"context"
-	"time"
+	"fmt"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
-	"github.com/jae2274/goutils/ptr"
 	"github.com/jae2274/goutils/terr"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -24,16 +23,36 @@ func NewJobPostingRepo(db *mongo.Database) *JobPostingRepo {
 
 func (jpRepo *JobPostingRepo) Save(ctx context.Context, jobPosting *jobposting.JobPostingInfo) (bool, error) {
 	// Convert decks to []interface{}
-	now := time.Now()
 	jobPosting.Status = jobposting.HIRING
-	jobPosting.InsertedAt = now
-	jobPosting.UpdatedAt = now
 	jobPosting.IsScanComplete = false
 
-	_, err := jpRepo.col.UpdateOne(ctx, bson.M{jobposting.SiteField: jobPosting.JobPostingId.Site, jobposting.PostingIdField: jobPosting.JobPostingId.PostingId}, bson.M{"$set": jobPosting}, &options.UpdateOptions{Upsert: ptr.P(true)})
+	result, err := jpRepo.col.UpdateOne(ctx, bson.M{jobposting.SiteField: jobPosting.JobPostingId.Site, jobposting.PostingIdField: jobPosting.JobPostingId.PostingId},
+		bson.M{
+			"$currentDate": bson.M{
+				jobposting.UpdatedAtField: true,
+			},
+			"$set": jobPosting,
+		},
+		options.Update().SetUpsert(true))
 
 	if err != nil {
 		return false, err
+	}
+
+	if result.UpsertedID != nil { //본래 $setOnInsert를 사용하여 insertedAt을 설정하려 하였으나, $setOnInsert는 $currentDate와 다르게 mongodb의 기준으로 시간을 설정하는 방법이 존재하지 않아 아래와 같이 처리함
+		//TODO: mongodb 시간 기준으로 insertedAt과 updatedAt을 동시에 설정하는 방법 찾기. time.Now() 금지!
+		_, err = jpRepo.col.UpdateOne(ctx, bson.M{jobposting.SiteField: jobPosting.JobPostingId.Site, jobposting.PostingIdField: jobPosting.JobPostingId.PostingId},
+			bson.A{
+				bson.M{
+					"$set": bson.M{
+						jobposting.InsertedAtField: fmt.Sprintf("$%s", jobposting.UpdatedAtField),
+					},
+				},
+			},
+		)
+		if err != nil {
+			return false, err
+		}
 	}
 
 	return true, nil

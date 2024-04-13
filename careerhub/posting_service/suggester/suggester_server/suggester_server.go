@@ -26,7 +26,7 @@ func (s *SuggesterService) GetPostings(ctx context.Context, req *suggester_grpc.
 
 	grpcPostings := make([]*suggester_grpc.JobPosting, len(postings))
 	for i, posting := range postings {
-		grpcPostings[i] = convertJobPostingToGrpc(posting)
+		grpcPostings[i] = ConvertJobPostingToGrpc(posting)
 	}
 
 	return &suggester_grpc.GetPostingsResponse{
@@ -34,7 +34,7 @@ func (s *SuggesterService) GetPostings(ctx context.Context, req *suggester_grpc.
 	}, nil
 }
 
-func convertJobPostingToGrpc(posting *jobposting.JobPostingInfo) *suggester_grpc.JobPosting {
+func ConvertJobPostingToGrpc(posting *jobposting.JobPostingInfo) *suggester_grpc.JobPosting {
 	skillNames := make([]string, len(posting.RequiredSkill))
 	for i, skill := range posting.RequiredSkill {
 		skillNames[i] = skill.SkillName

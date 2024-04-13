@@ -11,8 +11,8 @@ import (
 func SetIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
 	for _, jobPosting := range jobPostings {
 		jobPosting.ID = primitive.ObjectID{} // ignore ID
-		jobPosting.InsertedAt = time.Unix(jobPosting.InsertedAt.Unix(), 0)
-		jobPosting.UpdatedAt = time.Unix(jobPosting.UpdatedAt.Unix(), 0)
+		jobPosting.InsertedAt = time.Unix(jobPosting.CreatedAt.Unix(), 0)
+		jobPosting.UpdatedAt = time.Unix(jobPosting.CreatedAt.Unix(), 0)
 		jobPosting.CreatedAt = time.Unix(jobPosting.CreatedAt.Unix(), 0)
 
 		if jobPosting.PublishedAt != nil {
