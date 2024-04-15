@@ -30,9 +30,9 @@ func TestJobPostingRepo(t *testing.T) {
 	t.Run("Save and FindAll", func(t *testing.T) {
 		jpRepo := rpcRepo.NewJobPostingRepo(tinit.InitDB(t))
 
-		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
+		_, err := jpRepo.SaveHiring(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
-		_, err = jpRepo.Save(context.TODO(), sampleJobPostings[1])
+		_, err = jpRepo.SaveHiring(context.TODO(), sampleJobPostings[1])
 		require.NoError(t, err)
 
 		jobPostings, err := jpRepo.FindAll()
@@ -48,9 +48,9 @@ func TestJobPostingRepo(t *testing.T) {
 	t.Run("CloseAll", func(t *testing.T) {
 		jpRepo := rpcRepo.NewJobPostingRepo(tinit.InitDB(t))
 
-		_, err := jpRepo.Save(context.TODO(), sampleJobPostings[0])
+		_, err := jpRepo.SaveHiring(context.TODO(), sampleJobPostings[0])
 		require.NoError(t, err)
-		_, err = jpRepo.Save(context.TODO(), sampleJobPostings[1])
+		_, err = jpRepo.SaveHiring(context.TODO(), sampleJobPostings[1])
 		require.NoError(t, err)
 
 		err = jpRepo.CloseAll(context.TODO(), []*jobposting.JobPostingId{&sampleJobPostings[1].JobPostingId})

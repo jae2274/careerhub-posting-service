@@ -103,7 +103,7 @@ func TestSuggesterPostingRepo(t *testing.T) {
 }
 
 func save(t *testing.T, ctx context.Context, postingRepo *rpcRepo.JobPostingRepo, jp *jobposting.JobPostingInfo) {
-	_, err := postingRepo.Save(ctx, jp)
+	_, err := postingRepo.SaveHiring(ctx, jp)
 	require.NoError(t, err)
 }
 

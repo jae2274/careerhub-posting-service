@@ -82,7 +82,7 @@ func (sv *JobPostingService) RegisterJobPostingInfo(ctx context.Context, msg *pr
 		CreatedAt:   createdAt,
 	}
 
-	return sv.jpRepo.Save(ctx, &jobPosting)
+	return sv.jpRepo.SaveHiring(ctx, &jobPosting)
 }
 
 func (sv *JobPostingService) CloseJobPostings(ctx context.Context, gJpId *provider_grpc.JobPostings) error {

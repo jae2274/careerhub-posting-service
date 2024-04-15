@@ -87,7 +87,7 @@ func TestJobPostingRepo(t *testing.T) {
 
 		for _, sample := range testSamples {
 			jp := testutils.JobPosting(sample.Site, sample.PostingId, sample.Categories, sample.MinCareer, sample.MaxCareer, sample.RequiredSkills)
-			success, err := forSaveRepo.Save(ctx, jp)
+			success, err := forSaveRepo.SaveHiring(ctx, jp)
 			require.NoError(t, err)
 			require.True(t, success)
 		}

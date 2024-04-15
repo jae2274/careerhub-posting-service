@@ -23,7 +23,7 @@ func TestJobPostingRepo(t *testing.T) {
 	savedJobPostings := []*jobposting.JobPostingInfo{savedJobPosting1, savedJobPosting2, savedJobPosting3}
 
 	for _, jobPosting := range savedJobPostings {
-		isSuccess, err := providerRepo.Save(context.Background(), jobPosting)
+		isSuccess, err := providerRepo.SaveHiring(context.Background(), jobPosting)
 		require.NoError(t, err)
 		require.True(t, isSuccess)
 	}
