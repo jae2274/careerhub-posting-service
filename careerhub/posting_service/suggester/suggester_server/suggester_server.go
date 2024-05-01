@@ -14,6 +14,12 @@ type SuggesterService struct {
 	suggester_grpc.UnimplementedPostingServer
 }
 
+func NewSuggesterService(postingRepo repo.PostingRepo) *SuggesterService {
+	return &SuggesterService{
+		postingRepo: postingRepo,
+	}
+}
+
 func (s *SuggesterService) GetPostings(ctx context.Context, req *suggester_grpc.GetPostingsRequest) (*suggester_grpc.GetPostingsResponse, error) {
 	minCreatedAt := time.UnixMilli(req.MinUnixMilli)
 	maxCreatedAt := time.UnixMilli(req.MaxUnixMilli)

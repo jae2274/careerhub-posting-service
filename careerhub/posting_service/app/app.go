@@ -13,6 +13,7 @@ import (
 	providergrpc "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/provider_grpc"
 	restapi "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api"
 	scannergrpc "github.com/jae2274/careerhub-posting-service/careerhub/posting_service/scanner_grpc"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/suggester"
 	"github.com/jae2274/goutils/llog"
 	"github.com/jae2274/goutils/mw"
 )
@@ -52,6 +53,11 @@ func Run(ctx context.Context) {
 
 	go func() {
 		err := restapi.Run(ctx, envVars.RestApiGrpcPort, db)
+		runErr <- err
+	}()
+
+	go func() {
+		err := suggester.Run(ctx, envVars.SuggesterGrpcPort, db)
 		runErr <- err
 	}()
 
