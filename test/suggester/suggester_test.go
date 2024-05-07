@@ -19,7 +19,7 @@ func TestSuggesterGrpc(t *testing.T) {
 	defer cancelFunc()
 
 	t.Run("return empty", func(t *testing.T) {
-		client := initSuggesterClient(t)
+		client := tinit.InitSuggesterClient(t)
 
 		ctx := context.Background()
 		postings, err := client.GetPostings(ctx, &suggester_grpc.GetPostingsRequest{
@@ -57,7 +57,7 @@ func TestSuggesterGrpc(t *testing.T) {
 		saveWithDelay(willSavedPostings[len(willSavedPostings)-1])
 
 		//when
-		client := initSuggesterClient(t)
+		client := tinit.InitSuggesterClient(t)
 
 		postings, err := client.GetPostings(ctx, &suggester_grpc.GetPostingsRequest{
 			MinUnixMilli: minUnixMilli,
@@ -74,13 +74,6 @@ func TestSuggesterGrpc(t *testing.T) {
 			require.Equal(t, saved.CompanyId, postings.Postings[i].CompanyId)
 		}
 	})
-}
-
-func initSuggesterClient(t *testing.T) suggester_grpc.PostingClient {
-	envVars := tinit.InitEnvVars(t)
-	conn := tinit.InitGrpcClient(t, envVars.SuggesterGrpcPort)
-
-	return suggester_grpc.NewPostingClient(conn)
 }
 
 func newJobPosting(number int) *jobposting.JobPostingInfo {

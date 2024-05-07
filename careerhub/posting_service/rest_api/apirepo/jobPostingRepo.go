@@ -14,6 +14,7 @@ import (
 type JobPostingRepo interface {
 	GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]jobposting.JobPostingInfo, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error)
+	GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]jobposting.JobPostingInfo, error)
 }
 
 type JobPostingRepoImpl struct {
@@ -72,21 +73,6 @@ func createFilter(query *restapi_grpc.QueryReq) bson.M {
 		filter["$and"] = and
 	}
 
-	// if len(query.SkillNames) > 0 {
-	// 	fromPrefferedSkills := make([]bson.M, len(query.SkillNames))
-	// 	for i, skillName := range query.SkillNames {
-	// 		fromPrefferedSkills[i] = bson.M{jobposting.RequiresSkill_SkillNameField: skillName.Or[0], jobposting.RequiredSkill_SkillFromField: jobposting.FromPreferred}
-	// 	}
-	// 	filter["$nor"] = fromPrefferedSkills
-
-	// 	var skillNamesStr []string
-	// 	for _, skillName := range query.SkillNames {
-	// 		skillNamesStr = append(skillNamesStr, skillName.Or...)
-	// 	}
-
-	// 	filter[jobposting.RequiresSkill_SkillNameField] = bson.M{"$all": skillNamesStr}
-	// }
-
 	if query.MinCareer != nil {
 		filter[jobposting.MinCareerField] = bson.M{"$gte": *query.MinCareer}
 	}
@@ -112,4 +98,26 @@ func (repo *JobPostingRepoImpl) GetJobPostingDetail(ctx context.Context, site, p
 	}
 
 	return &jobPosting, nil
+}
+
+func (repo *JobPostingRepoImpl) GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]jobposting.JobPostingInfo, error) {
+	var ors bson.A
+	for _, jobPostingId := range jobPostingIds {
+		ors = append(ors, bson.M{jobposting.SiteField: jobPostingId.Site, jobposting.PostingIdField: jobPostingId.PostingId})
+	}
+	filter := bson.M{
+		"$or": ors,
+	}
+	cur, err := repo.col.Find(ctx, filter)
+	if err != nil {
+		return nil, terr.Wrap(err)
+	}
+
+	var jobPostings []jobposting.JobPostingInfo
+	err = cur.All(ctx, &jobPostings)
+	if err != nil {
+		return nil, terr.Wrap(err)
+	}
+
+	return jobPostings, nil
 }
