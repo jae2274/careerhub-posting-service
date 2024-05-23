@@ -12,82 +12,79 @@ import (
 	"github.com/jae2274/careerhub-posting-service/test/tinit"
 	"github.com/jae2274/goutils/ptr"
 	"github.com/stretchr/testify/require"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func TestJobPostingRepo(t *testing.T) {
 
-	t.Run("Test Queries", func(t *testing.T) {
-		ctx := context.Background()
-		db := tinit.InitDB(t)
+	jumpit1 := &TestSample{
+		Site:           "jumpit",
+		PostingId:      "1",
+		Categories:     []string{"backend", "frontend", "devops"},
+		MinCareer:      ptr.P(3),
+		MaxCareer:      ptr.P(5),
+		RequiredSkills: testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"),
+	}
+	jumpit2 := &TestSample{
+		Site:           "jumpit",
+		PostingId:      "2",
+		Categories:     []string{"backend"},
+		MinCareer:      ptr.P(5),
+		MaxCareer:      ptr.P(7),
+		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromTitle, "go")...),
+	}
+	jumpit3 := &TestSample{
+		Site:           "jumpit",
+		PostingId:      "3",
+		Categories:     []string{"frontend"},
+		MinCareer:      ptr.P(7),
+		MaxCareer:      ptr.P(9),
+		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromMainTask, "go", "c++")...),
+	}
+	jumpit4 := &TestSample{
+		Site:           "jumpit",
+		PostingId:      "4",
+		Categories:     []string{"devops"},
+		MinCareer:      ptr.P(5),
+		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromQualifications, "go", "c++")...),
+	}
+	jumpit5 := &TestSample{
+		Site:           "jumpit",
+		PostingId:      "5",
+		Categories:     []string{"pm", "cto"},
+		MinCareer:      ptr.P(7),
+		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromPreferred, "go")...),
+	}
+	jumpit6 := &TestSample{
+		Site:           "jumpit",
+		PostingId:      "6",
+		Categories:     []string{"pm"},
+		MaxCareer:      ptr.P(3),
+		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java"), testutils.RequiredSkills(jobposting.FromPreferred, "python", "go")...),
+	}
+	wanted1 := &TestSample{
+		Site:           "wanted",
+		PostingId:      "1",
+		Categories:     []string{"pm"},
+		MaxCareer:      ptr.P(6),
+		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "python", "gcp", "golang"), testutils.RequiredSkills(jobposting.FromQualifications, "k8s")...),
+	}
+	wanted2 := &TestSample{
+		Site:      "wanted",
+		PostingId: "2",
+	}
+	willClosed := &TestSample{
+		Site:      "wanted",
+		PostingId: "3",
+	}
+	testSamples := []*TestSample{jumpit1, jumpit2, jumpit3, jumpit4, jumpit5, jumpit6, wanted1, wanted2, willClosed}
+
+	initSaveJobPostings := func(t *testing.T, ctx context.Context, db *mongo.Database) {
 		forSaveRepo := rpcRepo.NewJobPostingRepo(db)
-		jobPostingRepo := apirepo.NewJobPostingRepo(db)
-
-		jumpit1 := &TestSample{
-			Site:           "jumpit",
-			PostingId:      "1",
-			Categories:     []string{"backend", "frontend", "devops"},
-			MinCareer:      ptr.P(3),
-			MaxCareer:      ptr.P(5),
-			RequiredSkills: testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"),
-		}
-		jumpit2 := &TestSample{
-			Site:           "jumpit",
-			PostingId:      "2",
-			Categories:     []string{"backend"},
-			MinCareer:      ptr.P(5),
-			MaxCareer:      ptr.P(7),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromTitle, "go")...),
-		}
-		jumpit3 := &TestSample{
-			Site:           "jumpit",
-			PostingId:      "3",
-			Categories:     []string{"frontend"},
-			MinCareer:      ptr.P(7),
-			MaxCareer:      ptr.P(9),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromMainTask, "go", "c++")...),
-		}
-		jumpit4 := &TestSample{
-			Site:           "jumpit",
-			PostingId:      "4",
-			Categories:     []string{"devops"},
-			MinCareer:      ptr.P(5),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromQualifications, "go", "c++")...),
-		}
-		jumpit5 := &TestSample{
-			Site:           "jumpit",
-			PostingId:      "5",
-			Categories:     []string{"pm", "cto"},
-			MinCareer:      ptr.P(7),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromPreferred, "go")...),
-		}
-		jumpit6 := &TestSample{
-			Site:           "jumpit",
-			PostingId:      "6",
-			Categories:     []string{"pm"},
-			MaxCareer:      ptr.P(3),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java"), testutils.RequiredSkills(jobposting.FromPreferred, "python", "go")...),
-		}
-		wanted1 := &TestSample{
-			Site:           "wanted",
-			PostingId:      "1",
-			Categories:     []string{"pm"},
-			MaxCareer:      ptr.P(6),
-			RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "python", "gcp", "golang"), testutils.RequiredSkills(jobposting.FromQualifications, "k8s")...),
-		}
-		wanted2 := &TestSample{
-			Site:      "wanted",
-			PostingId: "2",
-		}
-		willClosed := &TestSample{
-			Site:      "wanted",
-			PostingId: "3",
-		}
-
-		testSamples := []*TestSample{jumpit1, jumpit2, jumpit3, jumpit4, jumpit5, jumpit6, wanted1, wanted2, willClosed}
 
 		for _, sample := range testSamples {
 			jp := testutils.JobPosting(sample.Site, sample.PostingId, sample.Categories, sample.MinCareer, sample.MaxCareer, sample.RequiredSkills)
-			success, err := forSaveRepo.SaveHiring(ctx, jp)
+			success, err := forSaveRepo.SaveHiring(context.Background(), jp)
 			require.NoError(t, err)
 			require.True(t, success)
 		}
@@ -95,13 +92,21 @@ func TestJobPostingRepo(t *testing.T) {
 		require.NoError(t,
 			forSaveRepo.CloseAll(ctx, []*jobposting.JobPostingId{{Site: willClosed.Site, PostingId: willClosed.PostingId}}),
 		)
+	}
+
+	t.Run("Test Queries", func(t *testing.T) {
+		ctx := context.Background()
+		db := tinit.InitDB(t)
+		jobPostingRepo := apirepo.NewJobPostingRepo(db)
+
+		initSaveJobPostings(t, ctx, db)
 
 		var reversedTestSamples []*TestSample
 		for i := len(testSamples) - 1; i >= 0; i-- {
 			reversedTestSamples = append(reversedTestSamples, testSamples[i])
 		}
 
-		testCases := []TestCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
+		testCases := []TestQueryCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
 			{"Exclude FromPreferred", NewQueryReqBuilder().AddSkillNames("go").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
 			{"Skill has \"OR\" conditions(For example: Different name, same skill)", NewQueryReqBuilder().AddSkillNames("go", "golang").Build(), []*TestSample{wanted1, jumpit4, jumpit3, jumpit2, jumpit1}},
 			{"Skill has \"AND\" conditions", NewQueryReqBuilder().AddSkillNames("c++").AddSkillNames("go", "golang").Build(), []*TestSample{jumpit4, jumpit3}},
@@ -125,6 +130,40 @@ func TestJobPostingRepo(t *testing.T) {
 				}
 			})
 
+		}
+	})
+
+	t.Run("Test Queries for count", func(t *testing.T) {
+		ctx := context.Background()
+		db := tinit.InitDB(t)
+		jobPostingRepo := apirepo.NewJobPostingRepo(db)
+
+		initSaveJobPostings(t, ctx, db)
+
+		var reversedTestSamples []*TestSample
+		for i := len(testSamples) - 1; i >= 0; i-- {
+			reversedTestSamples = append(reversedTestSamples, testSamples[i])
+		}
+
+		testCases := []TestCountCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
+			{"Exclude FromPreferred", NewQueryReqBuilder().AddSkillNames("go").Build(), 4},
+			{"Skill has \"OR\" conditions(For example: Different name, same skill)", NewQueryReqBuilder().AddSkillNames("go", "golang").Build(), 5},
+			{"Skill has \"AND\" conditions", NewQueryReqBuilder().AddSkillNames("c++").AddSkillNames("go", "golang").Build(), 2},
+			{"Category has \"OR\" conditions", NewQueryReqBuilder().AddCategory("jumpit", "backend").AddCategory("jumpit", "frontend").AddCategory("jumpit", "devops").Build(), 4},
+			{"Category: same name, different site", NewQueryReqBuilder().AddCategory("jumpit", "pm").Build(), 2},
+			{"Career range contains posting's career range", NewQueryReqBuilder().SetMinCareer(4).SetMaxCareer(8).Build(), 1},
+			{"MinCareer=nil contains posting's maxCareer", NewQueryReqBuilder().SetMaxCareer(5).Build(), 2},
+			{"MaxCareer=nil contains posting's minCareer", NewQueryReqBuilder().SetMinCareer(6).Build(), 2},
+			{"All jobpostings except closed", &restapi_grpc.QueryReq{}, int64(len(reversedTestSamples) - 1)},
+			{"Empty jobpostings", NewQueryReqBuilder().AddSkillNames("notExistSkill").Build(), 0},
+		}
+
+		for _, testCase := range testCases {
+			t.Run(testCase.TestName, func(t *testing.T) {
+				count, err := jobPostingRepo.CountJobPostings(ctx, testCase.Query)
+				require.NoError(t, err)
+				require.Equal(t, testCase.ExpectedCount, count)
+			})
 		}
 	})
 }
@@ -178,7 +217,7 @@ type TestSample struct {
 	MaxCareer      *int
 }
 
-type TestCase struct {
+type TestQueryCase struct {
 	TestName        string
 	Query           *restapi_grpc.QueryReq
 	ExpectedResults []*TestSample
@@ -187,6 +226,12 @@ type TestCase struct {
 func ptrInt32(i int) *int32 {
 	ptrI32 := int32(i)
 	return &ptrI32
+}
+
+type TestCountCase struct {
+	TestName      string
+	Query         *restapi_grpc.QueryReq
+	ExpectedCount int64
 }
 
 // func initJobPostings() []*jobposting.JobPostingInfo {

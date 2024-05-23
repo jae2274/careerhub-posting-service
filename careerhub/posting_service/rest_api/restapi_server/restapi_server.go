@@ -40,6 +40,17 @@ func (service *RestApiService) JobPostings(ctx context.Context, req *restapi_grp
 	}, nil
 }
 
+func (service *RestApiService) CountJobPostings(ctx context.Context, req *restapi_grpc.JobPostingsRequest) (*restapi_grpc.CountJobPostingsResponse, error) {
+	count, err := service.jobPostingRepo.CountJobPostings(ctx, req.QueryReq)
+	if err != nil {
+		return nil, err
+	}
+
+	return &restapi_grpc.CountJobPostingsResponse{
+		Count: count,
+	}, nil
+}
+
 func convertJobPostingInfoToGrpc(jobPosting *jobposting.JobPostingInfo) *restapi_grpc.JobPostingRes {
 	skills := make([]string, len(jobPosting.RequiredSkill))
 	for i, skill := range jobPosting.RequiredSkill {

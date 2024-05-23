@@ -15,6 +15,7 @@ type JobPostingRepo interface {
 	GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]jobposting.JobPostingInfo, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error)
 	GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]jobposting.JobPostingInfo, error)
+	CountJobPostings(ctx context.Context, query *restapi_grpc.QueryReq) (int64, error)
 }
 
 type JobPostingRepoImpl struct {
@@ -45,6 +46,16 @@ func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size i
 	}
 
 	return jobPostings, nil
+}
+
+func (repo *JobPostingRepoImpl) CountJobPostings(ctx context.Context, query *restapi_grpc.QueryReq) (int64, error) {
+	filter := createFilter(query)
+	count, err := repo.col.CountDocuments(ctx, filter)
+	if err != nil {
+		return 0, terr.Wrap(err)
+	}
+
+	return count, nil
 }
 
 func createFilter(query *restapi_grpc.QueryReq) bson.M {
