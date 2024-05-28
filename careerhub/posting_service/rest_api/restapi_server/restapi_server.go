@@ -101,6 +101,7 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 		CompanyImages:  jobPosting.CompanyImages,
 		Intro:          jobPosting.MainContent.Intro,
 		Tags:           jobPosting.Tags,
+		Status:         string(jobPosting.Status),
 	}, nil
 }
 
