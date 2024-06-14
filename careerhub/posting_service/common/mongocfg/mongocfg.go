@@ -3,7 +3,6 @@ package mongocfg
 import (
 	"context"
 	"errors"
-	"net"
 	"time"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
@@ -17,13 +16,15 @@ func NewDatabase(uri string, dbName string, dbUser *vars.DBUser) (*mongo.Databas
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	dialer := &net.Dialer{
-		Timeout:   30 * time.Second,
-		KeepAlive: 300 * time.Second,
-	}
+	// dialer := &net.Dialer{
+	// 	Timeout:   30 * time.Second,
+	// 	KeepAlive: 300 * time.Second,
+	// }
 	clientOptions := options.Client().ApplyURI(uri)
+	//해당 시간이 지나면 커넥션을 닫는다. 설정하지 않을 시 broken connection pipe의 에러 원인으로 추정된다.
+	//시간을 수정하며 동작에 어떤 영향을 미치는지 파악하자
 	clientOptions.SetMaxConnIdleTime(10 * time.Second)
-	clientOptions.SetDialer(dialer)
+	// clientOptions.SetDialer(dialer)
 
 	if dbUser != nil {
 		credential := options.Credential{
