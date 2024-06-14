@@ -3,6 +3,7 @@ package mongocfg
 import (
 	"context"
 	"errors"
+	"net"
 	"time"
 
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
@@ -16,7 +17,13 @@ func NewDatabase(uri string, dbName string, dbUser *vars.DBUser) (*mongo.Databas
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
+	dialer := &net.Dialer{
+		Timeout:   30 * time.Second,
+		KeepAlive: 300 * time.Second,
+	}
 	clientOptions := options.Client().ApplyURI(uri)
+	clientOptions.SetMaxConnIdleTime(10 * time.Second)
+	clientOptions.SetDialer(dialer)
 
 	if dbUser != nil {
 		credential := options.Credential{
