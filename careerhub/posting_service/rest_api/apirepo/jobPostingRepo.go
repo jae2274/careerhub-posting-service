@@ -12,9 +12,9 @@ import (
 )
 
 type JobPostingRepo interface {
-	GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]jobposting.JobPostingInfo, error)
+	GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]*restapi_grpc.JobPostingRes, error)
 	GetJobPostingDetail(ctx context.Context, site, postingId string) (*jobposting.JobPostingInfo, error)
-	GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]jobposting.JobPostingInfo, error)
+	GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]*restapi_grpc.JobPostingRes, error)
 	CountJobPostings(ctx context.Context, query *restapi_grpc.QueryReq) (int64, error)
 }
 
@@ -29,9 +29,19 @@ func NewJobPostingRepo(db *mongo.Database) JobPostingRepo {
 	}
 }
 
-func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]jobposting.JobPostingInfo, error) {
+var projection = bson.M{
+	jobposting.MainContent_PostUrlField:        0,
+	jobposting.MainContent_IntroField:          0,
+	jobposting.MainContent_MainTaskField:       0,
+	jobposting.MainContent_QualificationsField: 0,
+	jobposting.MainContent_PreferredField:      0,
+	jobposting.MainContent_BenefitsField:       0,
+	jobposting.MainContent_RecruitProcessField: 0,
+}
 
-	opt := options.Find().SetSkip(int64(page * size)).SetLimit(int64(size)).SetSort(bson.M{jobposting.CreatedAtField: -1})
+func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size int32, query *restapi_grpc.QueryReq) ([]*restapi_grpc.JobPostingRes, error) {
+
+	opt := options.Find().SetProjection(projection).SetSkip(int64(page * size)).SetLimit(int64(size)).SetSort(bson.M{jobposting.CreatedAtField: -1})
 
 	filter := createFilter(query)
 	cursor, err := repo.col.Find(ctx, filter, opt)
@@ -45,7 +55,12 @@ func (repo *JobPostingRepoImpl) GetJobPostings(ctx context.Context, page, size i
 		return nil, terr.Wrap(err)
 	}
 
-	return jobPostings, nil
+	jobPostingRes := make([]*restapi_grpc.JobPostingRes, len(jobPostings))
+	for i, jobPosting := range jobPostings {
+		jobPostingRes[i] = convertJobPostingInfoToGrpc(&jobPosting)
+	}
+
+	return jobPostingRes, nil
 }
 
 func (repo *JobPostingRepoImpl) CountJobPostings(ctx context.Context, query *restapi_grpc.QueryReq) (int64, error) {
@@ -111,7 +126,7 @@ func (repo *JobPostingRepoImpl) GetJobPostingDetail(ctx context.Context, site, p
 	return &jobPosting, nil
 }
 
-func (repo *JobPostingRepoImpl) GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]jobposting.JobPostingInfo, error) {
+func (repo *JobPostingRepoImpl) GetJobPostingsById(ctx context.Context, jobPostingIds []*restapi_grpc.JobPostingIdReq) ([]*restapi_grpc.JobPostingRes, error) {
 	var ors bson.A
 	for _, jobPostingId := range jobPostingIds {
 		ors = append(ors, bson.M{jobposting.SiteField: jobPostingId.Site, jobposting.PostingIdField: jobPostingId.PostingId})
@@ -119,7 +134,8 @@ func (repo *JobPostingRepoImpl) GetJobPostingsById(ctx context.Context, jobPosti
 	filter := bson.M{
 		"$or": ors,
 	}
-	cur, err := repo.col.Find(ctx, filter)
+
+	cur, err := repo.col.Find(ctx, filter, options.Find().SetProjection(projection))
 	if err != nil {
 		return nil, terr.Wrap(err)
 	}
@@ -130,5 +146,31 @@ func (repo *JobPostingRepoImpl) GetJobPostingsById(ctx context.Context, jobPosti
 		return nil, terr.Wrap(err)
 	}
 
-	return jobPostings, nil
+	jobPostingRes := make([]*restapi_grpc.JobPostingRes, len(jobPostings))
+	for i, jobPosting := range jobPostings {
+		jobPostingRes[i] = convertJobPostingInfoToGrpc(&jobPosting)
+	}
+
+	return jobPostingRes, nil
+}
+
+func convertJobPostingInfoToGrpc(jobPosting *jobposting.JobPostingInfo) *restapi_grpc.JobPostingRes {
+	skills := make([]string, len(jobPosting.RequiredSkill))
+	for i, skill := range jobPosting.RequiredSkill {
+		skills[i] = skill.SkillName
+	}
+
+	return &restapi_grpc.JobPostingRes{
+		Site:        jobPosting.JobPostingId.Site,
+		PostingId:   jobPosting.JobPostingId.PostingId,
+		Title:       jobPosting.MainContent.Title,
+		CompanyName: jobPosting.CompanyName,
+		Skills:      skills,
+		Categories:  jobPosting.JobCategory,
+		Addresses:   jobPosting.Address,
+		MinCareer:   jobPosting.RequiredCareer.Min,
+		MaxCareer:   jobPosting.RequiredCareer.Max,
+		ImageUrl:    jobPosting.ImageUrl,
+		Status:      string(jobPosting.Status),
+	}
 }

@@ -125,8 +125,8 @@ func TestJobPostingRepo(t *testing.T) {
 				require.Len(t, results, len(testCase.ExpectedResults))
 
 				for i, expected := range testCase.ExpectedResults {
-					require.Equal(t, expected.Site, results[i].JobPostingId.Site)
-					require.Equal(t, expected.PostingId, results[i].JobPostingId.PostingId)
+					require.Equal(t, expected.Site, results[i].Site)
+					require.Equal(t, expected.PostingId, results[i].PostingId)
 				}
 			})
 

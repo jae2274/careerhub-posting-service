@@ -3,7 +3,6 @@ package restapi_server
 import (
 	"context"
 
-	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -25,14 +24,9 @@ func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apire
 }
 
 func (service *RestApiService) JobPostings(ctx context.Context, req *restapi_grpc.JobPostingsRequest) (*restapi_grpc.JobPostingsResponse, error) {
-	jobPostings, err := service.jobPostingRepo.GetJobPostings(ctx, req.Page, req.Size, req.QueryReq)
+	jobPostingRes, err := service.jobPostingRepo.GetJobPostings(ctx, req.Page, req.Size, req.QueryReq)
 	if err != nil {
 		return nil, err
-	}
-
-	jobPostingRes := make([]*restapi_grpc.JobPostingRes, len(jobPostings))
-	for i, jobPosting := range jobPostings {
-		jobPostingRes[i] = convertJobPostingInfoToGrpc(&jobPosting)
 	}
 
 	return &restapi_grpc.JobPostingsResponse{
@@ -49,27 +43,6 @@ func (service *RestApiService) CountJobPostings(ctx context.Context, req *restap
 	return &restapi_grpc.CountJobPostingsResponse{
 		Count: count,
 	}, nil
-}
-
-func convertJobPostingInfoToGrpc(jobPosting *jobposting.JobPostingInfo) *restapi_grpc.JobPostingRes {
-	skills := make([]string, len(jobPosting.RequiredSkill))
-	for i, skill := range jobPosting.RequiredSkill {
-		skills[i] = skill.SkillName
-	}
-
-	return &restapi_grpc.JobPostingRes{
-		Site:        jobPosting.JobPostingId.Site,
-		PostingId:   jobPosting.JobPostingId.PostingId,
-		Title:       jobPosting.MainContent.Title,
-		CompanyName: jobPosting.CompanyName,
-		Skills:      skills,
-		Categories:  jobPosting.JobCategory,
-		Addresses:   jobPosting.Address,
-		MinCareer:   jobPosting.RequiredCareer.Min,
-		MaxCareer:   jobPosting.RequiredCareer.Max,
-		ImageUrl:    jobPosting.ImageUrl,
-		Status:      string(jobPosting.Status),
-	}
 }
 
 func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restapi_grpc.JobPostingDetailRequest) (*restapi_grpc.JobPostingDetailResponse, error) {
@@ -158,14 +131,10 @@ func (service *RestApiService) JobPostingsById(ctx context.Context, in *restapi_
 	if len(in.JobPostingIds) == 0 {
 		return &restapi_grpc.JobPostingsResponse{JobPostings: []*restapi_grpc.JobPostingRes{}}, nil
 	}
-	postings, err := service.jobPostingRepo.GetJobPostingsById(ctx, in.JobPostingIds)
+
+	jobPostingRes, err := service.jobPostingRepo.GetJobPostingsById(ctx, in.JobPostingIds)
 	if err != nil {
 		return nil, err
-	}
-
-	jobPostingRes := make([]*restapi_grpc.JobPostingRes, len(postings))
-	for i, jobPosting := range postings {
-		jobPostingRes[i] = convertJobPostingInfoToGrpc(&jobPosting)
 	}
 
 	return &restapi_grpc.JobPostingsResponse{JobPostings: jobPostingRes}, nil

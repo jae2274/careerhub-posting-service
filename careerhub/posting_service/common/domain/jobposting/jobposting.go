@@ -29,9 +29,17 @@ const (
 	InsertedAtField              = "insertedAt"
 	UpdatedAtField               = "updatedAt"
 
-	MainContent_TitleField = "mainContent.title"
-	CompanyIdField         = "companyId"
-	CompanyNameField       = "companyName"
+	MainContent_TitleField          = "mainContent.title"
+	MainContent_PostUrlField        = "mainContent.postUrl"
+	MainContent_IntroField          = "mainContent.intro"
+	MainContent_MainTaskField       = "mainContent.mainTask"
+	MainContent_QualificationsField = "mainContent.qualifications"
+	MainContent_PreferredField      = "mainContent.preferred"
+	MainContent_BenefitsField       = "mainContent.benefits"
+	MainContent_RecruitProcessField = "mainContent.recruitProcess"
+
+	CompanyIdField   = "companyId"
+	CompanyNameField = "companyName"
 )
 
 type StatusValues struct{}
