@@ -2,9 +2,14 @@ package restapi_server
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/site"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/apirepo"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/rest_api/restapi_grpc"
+	"github.com/jae2274/goutils/cchan/async"
+	"github.com/jae2274/goutils/llog"
+	"github.com/jae2274/goutils/optional"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
@@ -12,14 +17,18 @@ type RestApiService struct {
 	jobPostingRepo apirepo.JobPostingRepo
 	categoryRepo   apirepo.CategoryRepo
 	skillRepo      apirepo.SkillRepo
+	companyRepo    apirepo.CompanyRepo
+	siteRepo       apirepo.SiteRepo
 	restapi_grpc.UnimplementedRestApiGrpcServer
 }
 
-func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillRepo) *RestApiService {
+func NewRestApiService(jobPostingRepo apirepo.JobPostingRepo, categoryRepo apirepo.CategoryRepo, skillRepo apirepo.SkillRepo, companyRepo apirepo.CompanyRepo, siteRepo apirepo.SiteRepo) *RestApiService {
 	return &RestApiService{
 		jobPostingRepo: jobPostingRepo,
 		categoryRepo:   categoryRepo,
 		skillRepo:      skillRepo,
+		companyRepo:    companyRepo,
+		siteRepo:       siteRepo,
 	}
 }
 
@@ -56,7 +65,7 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 		skills[i] = skill.SkillName
 	}
 
-	return &restapi_grpc.JobPostingDetailResponse{
+	response := &restapi_grpc.JobPostingDetailResponse{
 		Site:           jobPosting.JobPostingId.Site,
 		PostingId:      jobPosting.JobPostingId.PostingId,
 		Title:          jobPosting.MainContent.Title,
@@ -75,7 +84,47 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 		Intro:          jobPosting.MainContent.Intro,
 		Tags:           jobPosting.Tags,
 		Status:         string(jobPosting.Status),
-	}, nil
+	}
+
+	companySummaryChan := async.ExecAsync(func() (optional.Optional[apirepo.CompanySummary], error) {
+		return service.companyRepo.FindByCompanySiteID(ctx, jobPosting.JobPostingId.Site, jobPosting.CompanyId)
+	})
+
+	siteChan := async.ExecAsync(func() (optional.Optional[site.Site], error) {
+		return service.siteRepo.FindBySiteName(ctx, jobPosting.JobPostingId.Site)
+	})
+
+	attachCompanyInfo(ctx, response, <-companySummaryChan)
+	attachSiteInfo(ctx, response, <-siteChan)
+
+	return response, nil
+}
+
+func attachCompanyInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailResponse, companyOptResult async.Result[optional.Optional[apirepo.CompanySummary]]) {
+	if companyOptResult.Err != nil {
+		llog.LogErr(ctx, companyOptResult.Err)
+		return //에러 발생 시 회사 정보는 무시하고 진행
+	}
+
+	if companyOptResult.Value.IsPresent() {
+		response.CompanyUrl = companyOptResult.Value.GetPtr().CompanyUrl
+		response.CompanyLogo = companyOptResult.Value.GetPtr().CompanyLogo
+	} else {
+		llog.LogErr(ctx, fmt.Errorf("company not found. site: %s, company_id: %s", response.Site, response.CompanyId)) //회사 정보가 없을 경우 로그 남김
+	}
+}
+
+func attachSiteInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailResponse, siteOptResult async.Result[optional.Optional[site.Site]]) {
+	if siteOptResult.Err != nil {
+		llog.LogErr(ctx, siteOptResult.Err)
+		return //에러 발생 시 사이트 정보는 무시하고 진행
+	}
+
+	if siteOptResult.Value.IsPresent() {
+		response.PostUrl = fmt.Sprintf(siteOptResult.Value.GetPtr().PostingUrlFormat, response.PostingId)
+	} else {
+		llog.LogErr(ctx, fmt.Errorf("site not found. site: %s", response.Site)) //사이트 정보가 없을 경우 로그 남김
+	}
 }
 
 func (service *RestApiService) Categories(ctx context.Context, _ *emptypb.Empty) (*restapi_grpc.CategoriesResponse, error) {

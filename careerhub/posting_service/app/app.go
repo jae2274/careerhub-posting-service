@@ -7,6 +7,7 @@ import (
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/site"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/mongocfg"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
@@ -37,7 +38,7 @@ func Run(ctx context.Context) {
 	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
 	checkErr(ctx, err)
 
-	err = mongocfg.InitCollections(db, &jobposting.JobPostingInfo{}, &company.Company{}, &skill.Skill{}, &skill.SkillName{}, &category.Category{})
+	err = mongocfg.InitCollections(db, &jobposting.JobPostingInfo{}, &company.Company{}, &skill.Skill{}, &skill.SkillName{}, &category.Category{}, &site.Site{})
 	checkErr(ctx, err)
 
 	runErr := make(chan error)

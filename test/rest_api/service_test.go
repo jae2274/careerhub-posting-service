@@ -19,7 +19,7 @@ func TestRestApiService(t *testing.T) {
 		provCategoryRepo := rpcRepo.NewCategoryRepo(db)
 		restApiCategoryRepo := apirepo.NewCategoryRepo(db)
 		// skillNameRepo := tinit.InitRestApiSkillNameRepo(t)
-		restApiService := restapi_server.NewRestApiService(nil, restApiCategoryRepo, nil)
+		restApiService := restapi_server.NewRestApiService(nil, restApiCategoryRepo, nil, nil, nil)
 
 		mainCtx := context.Background()
 

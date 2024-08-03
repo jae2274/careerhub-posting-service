@@ -19,8 +19,10 @@ func Run(ctx context.Context, apiGrpcPort int, db *mongo.Database) error {
 	jobPostingRepo := apirepo.NewJobPostingRepo(db)
 	categoryRepo := apirepo.NewCategoryRepo(db)
 	skillRepo := apirepo.NewSkillRepo(db)
+	companyRepo := apirepo.NewCompanyRepo(db)
+	siteRepo := apirepo.NewSiteRepo(db)
 
-	restApiService := restapi_server.NewRestApiService(jobPostingRepo, categoryRepo, skillRepo)
+	restApiService := restapi_server.NewRestApiService(jobPostingRepo, categoryRepo, skillRepo, companyRepo, siteRepo)
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", apiGrpcPort))
 	if err != nil {

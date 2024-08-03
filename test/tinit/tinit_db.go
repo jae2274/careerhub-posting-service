@@ -9,6 +9,7 @@ import (
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/category"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/company"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/jobposting"
+	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/site"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/domain/skill"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/mongocfg"
 	"github.com/jae2274/careerhub-posting-service/careerhub/posting_service/common/vars"
@@ -23,37 +24,21 @@ func InitDB(t *testing.T) *mongo.Database {
 	db, err := mongocfg.NewDatabase(envVars.MongoUri, envVars.DbName, envVars.DBUser)
 	checkError(t, err)
 
-	jpModel := &jobposting.JobPostingInfo{}
-	jpCol := db.Collection(jpModel.Collection())
-	err = jpCol.Drop(context.TODO())
-	checkError(t, err)
-	createIndexes(t, jpCol, jpModel.IndexModels())
-
-	companyModel := &company.Company{}
-	companyCol := db.Collection(companyModel.Collection())
-	err = companyCol.Drop(context.TODO())
-	checkError(t, err)
-	createIndexes(t, companyCol, companyModel.IndexModels())
-
-	skillModel := &skill.Skill{}
-	skillCol := db.Collection(skillModel.Collection())
-	err = skillCol.Drop(context.TODO())
-	checkError(t, err)
-	createIndexes(t, skillCol, skillModel.IndexModels())
-
-	skillNameModel := &skill.SkillName{}
-	skillNameCol := db.Collection(skillNameModel.Collection())
-	err = skillNameCol.Drop(context.TODO())
-	checkError(t, err)
-	createIndexes(t, skillNameCol, skillNameModel.IndexModels())
-
-	categoryModel := &category.Category{}
-	categoryCol := db.Collection(categoryModel.Collection())
-	err = categoryCol.Drop(context.TODO())
-	checkError(t, err)
-	createIndexes(t, categoryCol, categoryModel.IndexModels())
+	initCollection(t, db, &jobposting.JobPostingInfo{})
+	initCollection(t, db, &company.Company{})
+	initCollection(t, db, &skill.Skill{})
+	initCollection(t, db, &skill.SkillName{})
+	initCollection(t, db, &category.Category{})
+	initCollection(t, db, &site.Site{})
 
 	return db
+}
+
+func initCollection(t *testing.T, db *mongo.Database, model mongocfg.MongoDBModel) {
+	col := db.Collection(model.Collection())
+	err := col.Drop(context.TODO())
+	checkError(t, err)
+	createIndexes(t, col, model.IndexModels())
 }
 
 func createIndexes(t *testing.T, col *mongo.Collection, indexModels map[string]*mongo.IndexModel) {
