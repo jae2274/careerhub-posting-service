@@ -90,5 +90,6 @@ func newJobPosting(number int) *jobposting.JobPostingInfo {
 			{SkillFrom: jobposting.FromMainTask, SkillName: attachN("skill", number)},
 			{SkillFrom: jobposting.FromMainTask, SkillName: attachN("skill", number+1)},
 		},
+		"companyId1",
 	)
 }

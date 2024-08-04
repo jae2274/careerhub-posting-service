@@ -81,7 +81,11 @@ func createFilter(query *restapi_grpc.QueryReq) bson.M {
 		for i, category := range query.Categories {
 			categories[i] = bson.M{jobposting.SiteField: category.Site, jobposting.JobCategoryField: category.CategoryName}
 		}
-		filter["$or"] = categories
+		if _, ok := filter["$and"]; !ok {
+			filter["$and"] = []bson.M{}
+		}
+
+		filter["$and"] = append(filter["$and"].([]bson.M), bson.M{"$or": categories})
 	}
 
 	if len(query.SkillNames) > 0 {
@@ -96,7 +100,11 @@ func createFilter(query *restapi_grpc.QueryReq) bson.M {
 				},
 			}
 		}
-		filter["$and"] = and
+		if _, ok := filter["$and"]; !ok {
+			filter["$and"] = []bson.M{}
+		}
+
+		filter["$and"] = append(filter["$and"].([]bson.M), and...)
 	}
 
 	if query.MinCareer != nil {
@@ -105,6 +113,18 @@ func createFilter(query *restapi_grpc.QueryReq) bson.M {
 
 	if query.MaxCareer != nil {
 		filter[jobposting.MaxCareerField] = bson.M{"$lte": *query.MaxCareer}
+	}
+
+	if len(query.Companies) > 0 {
+		companies := make([]bson.M, 0, len(query.Companies))
+		for _, companyQuery := range query.Companies {
+			companies = append(companies, bson.M{jobposting.SiteField: companyQuery.Site, jobposting.CompanyIdField: companyQuery.CompanyId})
+		}
+		if _, ok := filter["$and"]; !ok {
+			filter["$and"] = []bson.M{}
+		}
+
+		filter["$and"] = append(filter["$and"].([]bson.M), bson.M{"$or": companies})
 	}
 
 	filter[jobposting.StatusField] = jobposting.HIRING

@@ -17,9 +17,9 @@ func TestJobPostingRepo(t *testing.T) {
 	providerRepo := rpcRepo.NewJobPostingRepo(db)
 	scannerRepo := repo.NewJobPostingRepo(db)
 
-	savedJobPosting1 := testutils.JobPosting("jumpit", "1", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"))
-	savedJobPosting2 := testutils.JobPosting("jumpit", "2", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "javascript", "react"))
-	savedJobPosting3 := testutils.JobPosting("jumpit", "3", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure"))
+	savedJobPosting1 := testutils.JobPosting("jumpit", "1", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"), "companyId1")
+	savedJobPosting2 := testutils.JobPosting("jumpit", "2", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "javascript", "react"), "companyId1")
+	savedJobPosting3 := testutils.JobPosting("jumpit", "3", []string{}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure"), "companyId1")
 	savedJobPostings := []*jobposting.JobPostingInfo{savedJobPosting1, savedJobPosting2, savedJobPosting3}
 
 	for _, jobPosting := range savedJobPostings {

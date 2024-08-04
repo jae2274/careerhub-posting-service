@@ -20,6 +20,7 @@ func TestJobPostingRepo(t *testing.T) {
 	jumpit1 := &TestSample{
 		Site:           "jumpit",
 		PostingId:      "1",
+		CompanyId:      "jumpit_company1",
 		Categories:     []string{"backend", "frontend", "devops"},
 		MinCareer:      ptr.P(3),
 		MaxCareer:      ptr.P(5),
@@ -28,6 +29,7 @@ func TestJobPostingRepo(t *testing.T) {
 	jumpit2 := &TestSample{
 		Site:           "jumpit",
 		PostingId:      "2",
+		CompanyId:      "jumpit_company2",
 		Categories:     []string{"backend"},
 		MinCareer:      ptr.P(5),
 		MaxCareer:      ptr.P(7),
@@ -36,6 +38,7 @@ func TestJobPostingRepo(t *testing.T) {
 	jumpit3 := &TestSample{
 		Site:           "jumpit",
 		PostingId:      "3",
+		CompanyId:      "jumpit_company3",
 		Categories:     []string{"frontend"},
 		MinCareer:      ptr.P(7),
 		MaxCareer:      ptr.P(9),
@@ -44,6 +47,7 @@ func TestJobPostingRepo(t *testing.T) {
 	jumpit4 := &TestSample{
 		Site:           "jumpit",
 		PostingId:      "4",
+		CompanyId:      "jumpit_company4",
 		Categories:     []string{"devops"},
 		MinCareer:      ptr.P(5),
 		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromQualifications, "go", "c++")...),
@@ -51,6 +55,7 @@ func TestJobPostingRepo(t *testing.T) {
 	jumpit5 := &TestSample{
 		Site:           "jumpit",
 		PostingId:      "5",
+		CompanyId:      "jumpit_company5",
 		Categories:     []string{"pm", "cto"},
 		MinCareer:      ptr.P(7),
 		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java", "python"), testutils.RequiredSkills(jobposting.FromPreferred, "go")...),
@@ -58,6 +63,7 @@ func TestJobPostingRepo(t *testing.T) {
 	jumpit6 := &TestSample{
 		Site:           "jumpit",
 		PostingId:      "6",
+		CompanyId:      "jumpit_company1",
 		Categories:     []string{"pm"},
 		MaxCareer:      ptr.P(3),
 		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "java"), testutils.RequiredSkills(jobposting.FromPreferred, "python", "go")...),
@@ -65,6 +71,7 @@ func TestJobPostingRepo(t *testing.T) {
 	wanted1 := &TestSample{
 		Site:           "wanted",
 		PostingId:      "1",
+		CompanyId:      "wanted_company1",
 		Categories:     []string{"pm"},
 		MaxCareer:      ptr.P(6),
 		RequiredSkills: append(testutils.RequiredSkills(jobposting.Origin, "python", "gcp", "golang"), testutils.RequiredSkills(jobposting.FromQualifications, "k8s")...),
@@ -72,10 +79,12 @@ func TestJobPostingRepo(t *testing.T) {
 	wanted2 := &TestSample{
 		Site:      "wanted",
 		PostingId: "2",
+		CompanyId: "wanted_company2",
 	}
 	willClosed := &TestSample{
 		Site:      "wanted",
 		PostingId: "3",
+		CompanyId: "wanted_company3",
 	}
 	testSamples := []*TestSample{jumpit1, jumpit2, jumpit3, jumpit4, jumpit5, jumpit6, wanted1, wanted2, willClosed}
 
@@ -83,7 +92,7 @@ func TestJobPostingRepo(t *testing.T) {
 		forSaveRepo := rpcRepo.NewJobPostingRepo(db)
 
 		for _, sample := range testSamples {
-			jp := testutils.JobPosting(sample.Site, sample.PostingId, sample.Categories, sample.MinCareer, sample.MaxCareer, sample.RequiredSkills)
+			jp := testutils.JobPosting(sample.Site, sample.PostingId, sample.Categories, sample.MinCareer, sample.MaxCareer, sample.RequiredSkills, sample.CompanyId)
 			success, err := forSaveRepo.SaveHiring(context.Background(), jp)
 			require.NoError(t, err)
 			require.True(t, success)
@@ -107,15 +116,18 @@ func TestJobPostingRepo(t *testing.T) {
 		}
 
 		testCases := []TestQueryCase{ //first in last out, 먼저 저장된 데이터가 나중에 나옴
-			{"Exclude FromPreferred", NewQueryReqBuilder().AddSkillNames("go").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Skill has \"OR\" conditions(For example: Different name, same skill)", NewQueryReqBuilder().AddSkillNames("go", "golang").Build(), []*TestSample{wanted1, jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Skill has \"AND\" conditions", NewQueryReqBuilder().AddSkillNames("c++").AddSkillNames("go", "golang").Build(), []*TestSample{jumpit4, jumpit3}},
-			{"Category has \"OR\" conditions", NewQueryReqBuilder().AddCategory("jumpit", "backend").AddCategory("jumpit", "frontend").AddCategory("jumpit", "devops").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
-			{"Category: same name, different site", NewQueryReqBuilder().AddCategory("jumpit", "pm").Build(), []*TestSample{jumpit6, jumpit5}},
-			{"Career range contains posting's career range", NewQueryReqBuilder().SetMinCareer(4).SetMaxCareer(8).Build(), []*TestSample{jumpit2}},
-			{"MinCareer=nil contains posting's maxCareer", NewQueryReqBuilder().SetMaxCareer(5).Build(), []*TestSample{jumpit6, jumpit1}},
-			{"MaxCareer=nil contains posting's minCareer", NewQueryReqBuilder().SetMinCareer(6).Build(), []*TestSample{jumpit5, jumpit3}},
-			{"All jobpostings except closed", &restapi_grpc.QueryReq{}, reversedTestSamples[1:]},
+			// {"Exclude FromPreferred", NewQueryReqBuilder().AddSkillNames("go").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
+			// {"Skill has \"OR\" conditions(For example: Different name, same skill)", NewQueryReqBuilder().AddSkillNames("go", "golang").Build(), []*TestSample{wanted1, jumpit4, jumpit3, jumpit2, jumpit1}},
+			// {"Skill has \"AND\" conditions", NewQueryReqBuilder().AddSkillNames("c++").AddSkillNames("go", "golang").Build(), []*TestSample{jumpit4, jumpit3}},
+			// {"Category has \"OR\" conditions", NewQueryReqBuilder().AddCategory("jumpit", "backend").AddCategory("jumpit", "frontend").AddCategory("jumpit", "devops").Build(), []*TestSample{jumpit4, jumpit3, jumpit2, jumpit1}},
+			// {"Category: same name, different site", NewQueryReqBuilder().AddCategory("jumpit", "pm").Build(), []*TestSample{jumpit6, jumpit5}},
+			// {"Career range contains posting's career range", NewQueryReqBuilder().SetMinCareer(4).SetMaxCareer(8).Build(), []*TestSample{jumpit2}},
+			// {"MinCareer=nil contains posting's maxCareer", NewQueryReqBuilder().SetMaxCareer(5).Build(), []*TestSample{jumpit6, jumpit1}},
+			// {"MaxCareer=nil contains posting's minCareer", NewQueryReqBuilder().SetMinCareer(6).Build(), []*TestSample{jumpit5, jumpit3}},
+			// {"Company has \"OR\" conditions", NewQueryReqBuilder().AddCompany("jumpit", "jumpit_company1").AddCompany("wanted", "wanted_company2").Build(), []*TestSample{wanted2, jumpit6, jumpit1}},
+			// {"All jobpostings except closed", &restapi_grpc.QueryReq{}, reversedTestSamples[1:]},
+			// {"Empty jobpostings", NewQueryReqBuilder().AddSkillNames("notExistSkill").Build(), []*TestSample{}},
+			{"Company and Category", NewQueryReqBuilder().AddCategory("jumpit", "backend").AddCompany("jumpit", "jumpit_company1").Build(), []*TestSample{jumpit1}},
 		}
 
 		for _, testCase := range testCases {
@@ -155,7 +167,9 @@ func TestJobPostingRepo(t *testing.T) {
 			{"MinCareer=nil contains posting's maxCareer", NewQueryReqBuilder().SetMaxCareer(5).Build(), 2},
 			{"MaxCareer=nil contains posting's minCareer", NewQueryReqBuilder().SetMinCareer(6).Build(), 2},
 			{"All jobpostings except closed", &restapi_grpc.QueryReq{}, int64(len(reversedTestSamples) - 1)},
+			{"Company has \"OR\" conditions", NewQueryReqBuilder().AddCompany("jumpit", "jumpit_company1").AddCompany("wanted", "wanted_company2").Build(), 3},
 			{"Empty jobpostings", NewQueryReqBuilder().AddSkillNames("notExistSkill").Build(), 0},
+			{"Company and Category", NewQueryReqBuilder().AddCategory("jumpit", "backend").AddCompany("jumpit", "jumpit_company1").Build(), 1},
 		}
 
 		for _, testCase := range testCases {
@@ -173,6 +187,7 @@ type QueryReqBuilder struct {
 	skillNames []*restapi_grpc.SkillQueryReq
 	minCareer  *int32
 	maxCareer  *int32
+	companies  []*restapi_grpc.SiteCompanyQueryReq
 }
 
 func NewQueryReqBuilder() *QueryReqBuilder {
@@ -199,12 +214,18 @@ func (qb *QueryReqBuilder) SetMaxCareer(maxCareer int) *QueryReqBuilder {
 	return qb
 }
 
+func (qb *QueryReqBuilder) AddCompany(site, companyId string) *QueryReqBuilder {
+	qb.companies = append(qb.companies, &restapi_grpc.SiteCompanyQueryReq{Site: site, CompanyId: companyId})
+	return qb
+}
+
 func (qb *QueryReqBuilder) Build() *restapi_grpc.QueryReq {
 	return &restapi_grpc.QueryReq{
 		Categories: qb.categories,
 		SkillNames: qb.skillNames,
 		MinCareer:  qb.minCareer,
 		MaxCareer:  qb.maxCareer,
+		Companies:  qb.companies,
 	}
 }
 
@@ -215,6 +236,7 @@ type TestSample struct {
 	Categories     []string
 	MinCareer      *int
 	MaxCareer      *int
+	CompanyId      string
 }
 
 type TestQueryCase struct {

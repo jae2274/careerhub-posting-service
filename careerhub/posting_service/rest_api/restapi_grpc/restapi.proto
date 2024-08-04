@@ -25,6 +25,7 @@ message QueryReq {
   repeated SkillQueryReq skillNames = 2;
   optional int32 minCareer = 3;
   optional int32 maxCareer = 4;
+  repeated SiteCompanyQueryReq companies = 5; 
 }
 
 message CategoryQueryReq {
@@ -34,6 +35,11 @@ message CategoryQueryReq {
 
 message SkillQueryReq {
   repeated string Or = 1;
+}
+
+message SiteCompanyQueryReq {
+  string site = 1;
+  string companyId = 2;
 }
 
 message JobPostingsResponse {

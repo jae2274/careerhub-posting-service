@@ -37,11 +37,11 @@ func TestSuggesterPostingRepo(t *testing.T) {
 			providerPostingRepo := rpcRepo.NewJobPostingRepo(db)
 
 			willSavedPostings := []*jobposting.JobPostingInfo{
-				testutils.JobPosting("jumpit", "1", []string{"backend"}, ptr.P(3), ptr.P(5), testutils.RequiredSkills(jobposting.Origin, "java", "python", "go")),
-				testutils.JobPosting("jumpit", "2", []string{"frontend"}, nil, ptr.P(5), testutils.RequiredSkills(jobposting.Origin, "javascript", "react")),
-				testutils.JobPosting("jumpit", "3", []string{"devops"}, ptr.P(3), nil, testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure")),
-				testutils.JobPosting("wanted", "4", []string{"devops", "backend"}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "terraform", "k8s")),
-				testutils.JobPosting("wanted", "5", []string{"embedded"}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "c", "c++")),
+				testutils.JobPosting("jumpit", "1", []string{"backend"}, ptr.P(3), ptr.P(5), testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"), "companyId1"),
+				testutils.JobPosting("jumpit", "2", []string{"frontend"}, nil, ptr.P(5), testutils.RequiredSkills(jobposting.Origin, "javascript", "react"), "companyId1"),
+				testutils.JobPosting("jumpit", "3", []string{"devops"}, ptr.P(3), nil, testutils.RequiredSkills(jobposting.Origin, "aws", "gcp", "azure"), "companyId1"),
+				testutils.JobPosting("wanted", "4", []string{"devops", "backend"}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "terraform", "k8s"), "companyId1"),
+				testutils.JobPosting("wanted", "5", []string{"embedded"}, nil, nil, testutils.RequiredSkills(jobposting.Origin, "c", "c++"), "companyId1"),
 			}
 
 			//db 저장
@@ -87,7 +87,7 @@ func TestSuggesterPostingRepo(t *testing.T) {
 		sugggesterPostingRepo := repo.NewPostingRepo(db)
 		providerPostingRepo := rpcRepo.NewJobPostingRepo(db)
 
-		willSaved := testutils.JobPosting("jumpit", "1", []string{"backend"}, ptr.P(3), ptr.P(5), testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"))
+		willSaved := testutils.JobPosting("jumpit", "1", []string{"backend"}, ptr.P(3), ptr.P(5), testutils.RequiredSkills(jobposting.Origin, "java", "python", "go"), "companyId1")
 		save(t, ctx, providerPostingRepo, willSaved)
 		providerPostingRepo.CloseAll(context.Background(), []*jobposting.JobPostingId{&willSaved.JobPostingId})
 

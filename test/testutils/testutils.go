@@ -24,7 +24,7 @@ func SetIgnoreJobPostingFields(jobPostings []*jobposting.JobPostingInfo) {
 	}
 }
 
-func JobPosting(site string, postingId string, categories []string, minCareer *int, maxCareer *int, requiredSkills []jobposting.RequiredSkill) *jobposting.JobPostingInfo {
+func JobPosting(site string, postingId string, categories []string, minCareer *int, maxCareer *int, requiredSkills []jobposting.RequiredSkill, companyId string) *jobposting.JobPostingInfo {
 	var min, max *int32
 	if minCareer != nil {
 		min = ptr.P(int32(*minCareer))
@@ -40,8 +40,8 @@ func JobPosting(site string, postingId string, categories []string, minCareer *i
 			PostingId: postingId,
 		},
 		Status:      jobposting.HIRING,
-		CompanyId:   "companyId",
-		CompanyName: "companyName",
+		CompanyId:   companyId,
+		CompanyName: companyId + "Name",
 		JobCategory: categories,
 		MainContent: jobposting.MainContent{
 			PostUrl:        "postUrl",
