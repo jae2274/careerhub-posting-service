@@ -11,13 +11,21 @@ import (
 )
 
 const (
-	IdField                      = "_id"
-	DefaultNameField             = "defaultName"
-	SiteCompaniesField           = "siteCompanies"
-	SiteCompanies_SiteField      = "siteCompanies.site"
-	SiteField                    = "site"
-	SiteCompanies_CompanyIdField = "siteCompanies.companyId"
-	CompanyIdField               = "companyId"
+	IdField                          = "_id"
+	DefaultNameField                 = "defaultName"
+	SiteCompaniesField               = "siteCompanies"
+	SiteCompanies_SiteField          = "siteCompanies.site"
+	SiteField                        = "site"
+	SiteCompanies_CompanyIdField     = "siteCompanies.companyId"
+	SiteCompanies_NameField          = "siteCompanies.name"
+	SiteCompanies_CompanyUrlField    = "siteCompanies.companyUrl"
+	SiteCompanies_CompanyLogoField   = "siteCompanies.companyLogo"
+	SiteCompanies_DescriptionField   = "siteCompanies.description"
+	SiteCompanies_CompanyImagesField = "siteCompanies.companyImages"
+	SiteCompanies_CreatedAtField     = "siteCompanies.createdAt"
+	SiteCompanies_InsertedAtField    = "siteCompanies.insertedAt"
+	SiteCompanies_UpdatedAtField     = "siteCompanies.updatedAt"
+	CompanyIdField                   = "companyId"
 )
 
 type Company struct {

@@ -86,7 +86,7 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 		Status:         string(jobPosting.Status),
 	}
 
-	companySummaryChan := async.ExecAsync(func() (optional.Optional[apirepo.CompanySummary], error) {
+	companySummaryChan := async.ExecAsync(func() (optional.Optional[apirepo.SiteCompanySummary], error) {
 		return service.companyRepo.FindByCompanySiteID(ctx, jobPosting.JobPostingId.Site, jobPosting.CompanyId)
 	})
 
@@ -100,7 +100,7 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 	return response, nil
 }
 
-func attachCompanyInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailResponse, companyOptResult async.Result[optional.Optional[apirepo.CompanySummary]]) {
+func attachCompanyInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailResponse, companyOptResult async.Result[optional.Optional[apirepo.SiteCompanySummary]]) {
 	if companyOptResult.Err != nil {
 		llog.LogErr(ctx, companyOptResult.Err)
 		return //에러 발생 시 회사 정보는 무시하고 진행
@@ -187,4 +187,31 @@ func (service *RestApiService) JobPostingsById(ctx context.Context, in *restapi_
 	}
 
 	return &restapi_grpc.JobPostingsResponse{JobPostings: jobPostingRes}, nil
+}
+
+func (service *RestApiService) Companies(ctx context.Context, req *restapi_grpc.CompaniesRequest) (*restapi_grpc.CompaniesResponse, error) {
+	companies, err := service.companyRepo.FindByPrefixCompanyName(ctx, req.PrefixKeyword)
+	if err != nil {
+		return nil, err
+	}
+
+	companyResList := make([]*restapi_grpc.CompanyRes, 0, len(companies))
+	for _, company := range companies {
+		siteCompanies := make([]*restapi_grpc.SiteCompanyRes, 0, len(company.SiteCompanies))
+		for _, siteCompany := range company.SiteCompanies {
+			siteCompanies = append(siteCompanies, &restapi_grpc.SiteCompanyRes{
+				Site:      siteCompany.Site,
+				CompanyId: siteCompany.CompanyId,
+			})
+		}
+
+		companyResList = append(companyResList, &restapi_grpc.CompanyRes{
+			DefaultName:   company.DefaultName,
+			SiteCompanies: siteCompanies,
+		})
+	}
+
+	return &restapi_grpc.CompaniesResponse{
+		Companies: companyResList,
+	}, nil
 }

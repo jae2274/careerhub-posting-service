@@ -11,6 +11,7 @@ service RestApiGrpc{
     rpc Categories(google.protobuf.Empty) returns (CategoriesResponse);
     rpc Skills(google.protobuf.Empty) returns (SkillsResponse);
     rpc JobPostingsById(JobPostingsByIdRequest) returns (JobPostingsResponse);
+    rpc Companies(CompaniesRequest) returns (CompaniesResponse);
 }
 
 message JobPostingsRequest {
@@ -108,4 +109,22 @@ message JobPostingsByIdRequest {
 message JobPostingIdReq {
   string site = 1;
   string postingId = 2;
+}
+
+message CompaniesRequest {
+  string prefixKeyword = 1;
+}
+
+message CompaniesResponse {
+  repeated CompanyRes companies = 1;
+}
+
+message CompanyRes {
+  string defaultName = 1;
+  repeated SiteCompanyRes siteCompanies = 2;
+}
+
+message SiteCompanyRes {
+  string site = 1;
+  string companyId = 2;
 }
