@@ -39,7 +39,7 @@ message SkillQueryReq {
 
 message SiteCompanyQueryReq {
   string site = 1;
-  string companyId = 2;
+  string companyName = 2;
 }
 
 message JobPostingsResponse {
@@ -119,6 +119,7 @@ message JobPostingIdReq {
 
 message CompaniesRequest {
   string prefixKeyword = 1;
+  int64 limit = 2;
 }
 
 message CompaniesResponse {
@@ -133,4 +134,5 @@ message CompanyRes {
 message SiteCompanyRes {
   string site = 1;
   string companyId = 2;
+  string companyName = 3;
 }

@@ -190,7 +190,7 @@ func (service *RestApiService) JobPostingsById(ctx context.Context, in *restapi_
 }
 
 func (service *RestApiService) Companies(ctx context.Context, req *restapi_grpc.CompaniesRequest) (*restapi_grpc.CompaniesResponse, error) {
-	companies, err := service.companyRepo.FindByPrefixCompanyName(ctx, req.PrefixKeyword)
+	companies, err := service.companyRepo.FindByPrefixCompanyName(ctx, req.PrefixKeyword, req.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -200,8 +200,8 @@ func (service *RestApiService) Companies(ctx context.Context, req *restapi_grpc.
 		siteCompanies := make([]*restapi_grpc.SiteCompanyRes, 0, len(company.SiteCompanies))
 		for _, siteCompany := range company.SiteCompanies {
 			siteCompanies = append(siteCompanies, &restapi_grpc.SiteCompanyRes{
-				Site:      siteCompany.Site,
-				CompanyId: siteCompany.CompanyId,
+				Site:        siteCompany.Site,
+				CompanyName: siteCompany.CompanyName,
 			})
 		}
 

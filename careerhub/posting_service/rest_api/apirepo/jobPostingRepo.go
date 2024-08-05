@@ -118,7 +118,7 @@ func createFilter(query *restapi_grpc.QueryReq) bson.M {
 	if len(query.Companies) > 0 {
 		companies := make([]bson.M, 0, len(query.Companies))
 		for _, companyQuery := range query.Companies {
-			companies = append(companies, bson.M{jobposting.SiteField: companyQuery.Site, jobposting.CompanyIdField: companyQuery.CompanyId})
+			companies = append(companies, bson.M{jobposting.SiteField: companyQuery.Site, jobposting.CompanyNameField: companyQuery.CompanyName})
 		}
 		if _, ok := filter["$and"]; !ok {
 			filter["$and"] = []bson.M{}

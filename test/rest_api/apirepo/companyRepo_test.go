@@ -62,7 +62,7 @@ func TestCompanyRepo(t *testing.T) {
 		mainCtx := context.TODO()
 		companyRepo := apirepo.NewCompanyRepo(tinit.InitDB(t))
 
-		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "not_exist")
+		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "not_exist", 100)
 
 		require.NoError(t, err)
 		require.Empty(t, companies)
@@ -132,7 +132,7 @@ func TestCompanyRepo(t *testing.T) {
 			require.True(t, isRegistered)
 		}
 
-		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "not_exist")
+		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "not_exist", 100)
 
 		require.NoError(t, err)
 		require.Len(t, companies, 0)
@@ -151,24 +151,29 @@ func TestCompanyRepo(t *testing.T) {
 			require.True(t, isRegistered)
 		}
 
-		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "hello")
+		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "hello", 100)
 
 		require.NoError(t, err)
 		require.Len(t, companies, 2)
 
 		require.Equal(t, "helloWorld", companies[0].DefaultName)
 		require.Len(t, companies[0].SiteCompanies, 2)
+
 		require.Equal(t, "jumpit", companies[0].SiteCompanies[0].Site)
 		require.Equal(t, "jumpit_company1", companies[0].SiteCompanies[0].CompanyId)
+		require.Equal(t, "helloWorld", companies[0].SiteCompanies[0].CompanyName)
+
 		require.Equal(t, "wanted", companies[0].SiteCompanies[1].Site)
 		require.Equal(t, "wanted_company1", companies[0].SiteCompanies[1].CompanyId)
+		require.Equal(t, "helloWorld", companies[0].SiteCompanies[1].CompanyName)
 
 		require.Equal(t, "helloCompany", companies[1].DefaultName)
 		require.Len(t, companies[1].SiteCompanies, 1)
 		require.Equal(t, "wanted", companies[1].SiteCompanies[0].Site)
 		require.Equal(t, "wanted_company2", companies[1].SiteCompanies[0].CompanyId)
+		require.Equal(t, "helloCompany", companies[1].SiteCompanies[0].CompanyName)
 
-		companies, err = companyRepo.FindByPrefixCompanyName(mainCtx, "company")
+		companies, err = companyRepo.FindByPrefixCompanyName(mainCtx, "company", 100)
 
 		require.NoError(t, err)
 		require.Len(t, companies, 2)
@@ -177,10 +182,38 @@ func TestCompanyRepo(t *testing.T) {
 		require.Len(t, companies[0].SiteCompanies, 1)
 		require.Equal(t, "wanted", companies[0].SiteCompanies[0].Site)
 		require.Equal(t, "wanted_company2", companies[0].SiteCompanies[0].CompanyId)
+		require.Equal(t, "helloCompany", companies[0].SiteCompanies[0].CompanyName)
 
 		require.Equal(t, "hiCompany", companies[1].DefaultName)
 		require.Len(t, companies[1].SiteCompanies, 1)
 		require.Equal(t, "jobkorea", companies[1].SiteCompanies[0].Site)
 		require.Equal(t, "jobkorea_company3", companies[1].SiteCompanies[0].CompanyId)
+		require.Equal(t, "hiCompany", companies[1].SiteCompanies[0].CompanyName)
+	})
+
+	t.Run("return companies if keyword matched with limit", func(t *testing.T) {
+		mainCtx := context.TODO()
+		db := tinit.InitDB(t)
+		companyRepo := apirepo.NewCompanyRepo(db)
+
+		providerCompanySvc := rpcService.NewCompanyService(rpcRepo.NewCompanyRepo(db))
+
+		for _, company := range sampleCompanies {
+			isRegistered, err := providerCompanySvc.RegisterCompany(mainCtx, company)
+			require.NoError(t, err)
+			require.True(t, isRegistered)
+		}
+
+		companies, err := companyRepo.FindByPrefixCompanyName(mainCtx, "hello", 1)
+
+		require.NoError(t, err)
+		require.Len(t, companies, 1)
+
+		require.Equal(t, "helloWorld", companies[0].DefaultName)
+		require.Len(t, companies[0].SiteCompanies, 2)
+		require.Equal(t, "jumpit", companies[0].SiteCompanies[0].Site)
+		require.Equal(t, "jumpit_company1", companies[0].SiteCompanies[0].CompanyId)
+		require.Equal(t, "wanted", companies[0].SiteCompanies[1].Site)
+		require.Equal(t, "wanted_company1", companies[0].SiteCompanies[1].CompanyId)
 	})
 }

@@ -12,7 +12,7 @@ import (
 
 type CompanyRepo interface {
 	FindByCompanySiteID(ctx context.Context, site, id string) (optional.Optional[SiteCompanySummary], error)
-	FindByPrefixCompanyName(ctx context.Context, prefixKeyword string) ([]*CompanySummary, error)
+	FindByPrefixCompanyName(ctx context.Context, prefixKeyword string, limit int64) ([]*CompanySummary, error)
 }
 
 type CompanyRepoImpl struct {
@@ -68,12 +68,13 @@ func (repo *CompanyRepoImpl) FindByCompanySiteID(ctx context.Context, site, site
 	return optional.NewEmptyOptional[SiteCompanySummary](), nil
 }
 
-func (repo *CompanyRepoImpl) FindByPrefixCompanyName(ctx context.Context, prefixKeyword string) ([]*CompanySummary, error) {
+func (repo *CompanyRepoImpl) FindByPrefixCompanyName(ctx context.Context, prefixKeyword string, limit int64) ([]*CompanySummary, error) {
 	option := options.Find().SetProjection(bson.D{
 		{company.DefaultNameField, 1},
 		{company.SiteCompanies_SiteField, 1},
 		{company.SiteCompanies_CompanyIdField, 1},
-	})
+		{company.SiteCompanies_NameField, 1},
+	}).SetLimit(limit)
 	cursor, err := repo.col.Find(ctx, bson.M{company.DefaultNameField: bson.M{"$regex": prefixKeyword, "$options": "i"}}, option)
 	if err != nil {
 		return nil, err
@@ -90,8 +91,9 @@ func (repo *CompanyRepoImpl) FindByPrefixCompanyName(ctx context.Context, prefix
 		siteCompanies := make([]SiteCompany, 0, len(company.SiteCompanies))
 		for _, siteCompany := range company.SiteCompanies {
 			siteCompanies = append(siteCompanies, SiteCompany{
-				Site:      siteCompany.Site,
-				CompanyId: siteCompany.CompanyId,
+				Site:        siteCompany.Site,
+				CompanyId:   siteCompany.CompanyId,
+				CompanyName: siteCompany.Name,
 			})
 		}
 
@@ -111,6 +113,7 @@ type CompanySummary struct {
 }
 
 type SiteCompany struct {
-	Site      string
-	CompanyId string
+	Site        string
+	CompanyId   string
+	CompanyName string
 }
