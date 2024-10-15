@@ -40,7 +40,7 @@ func (repo *CompanyRepoImpl) FindByCompanySiteID(ctx context.Context, site, site
 		{company.SiteCompanies_CompanyUrlField, 1},
 		{company.SiteCompanies_CompanyLogoField, 1},
 	})
-	result := repo.col.FindOne(ctx, bson.M{company.SiteCompanies_SiteField: site, company.SiteCompanies_CompanyIdField: siteCompanyId}, option)
+	result := repo.col.FindOne(ctx, bson.M{company.SiteCompaniesField: bson.M{"$elemMatch": bson.M{company.SiteField: site, company.CompanyIdField: siteCompanyId}}}, option)
 
 	if resultErr := result.Err(); resultErr != nil {
 		if resultErr == mongo.ErrNoDocuments {
