@@ -60,12 +60,16 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 		return nil, err
 	}
 
+	if jobPosting == nil {
+		return &restapi_grpc.JobPostingDetailResponse{IsExist: false}, nil
+	}
+
 	skills := make([]string, len(jobPosting.RequiredSkill))
 	for i, skill := range jobPosting.RequiredSkill {
 		skills[i] = skill.SkillName
 	}
 
-	response := &restapi_grpc.JobPostingDetailResponse{
+	response := &restapi_grpc.JobPostingDetailRes{
 		Site:           jobPosting.JobPostingId.Site,
 		PostingId:      jobPosting.JobPostingId.PostingId,
 		Title:          jobPosting.MainContent.Title,
@@ -97,10 +101,13 @@ func (service *RestApiService) JobPostingDetail(ctx context.Context, req *restap
 	attachCompanyInfo(ctx, response, <-companySummaryChan)
 	attachSiteInfo(ctx, response, <-siteChan)
 
-	return response, nil
+	return &restapi_grpc.JobPostingDetailResponse{
+		IsExist: true,
+		Detail:  response,
+	}, nil
 }
 
-func attachCompanyInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailResponse, companyOptResult async.Result[optional.Optional[apirepo.SiteCompanySummary]]) {
+func attachCompanyInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailRes, companyOptResult async.Result[optional.Optional[apirepo.SiteCompanySummary]]) {
 	if companyOptResult.Err != nil {
 		llog.LogErr(ctx, companyOptResult.Err)
 		return //에러 발생 시 회사 정보는 무시하고 진행
@@ -114,7 +121,7 @@ func attachCompanyInfo(ctx context.Context, response *restapi_grpc.JobPostingDet
 	}
 }
 
-func attachSiteInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailResponse, siteOptResult async.Result[optional.Optional[site.Site]]) {
+func attachSiteInfo(ctx context.Context, response *restapi_grpc.JobPostingDetailRes, siteOptResult async.Result[optional.Optional[site.Site]]) {
 	if siteOptResult.Err != nil {
 		llog.LogErr(ctx, siteOptResult.Err)
 		return //에러 발생 시 사이트 정보는 무시하고 진행
